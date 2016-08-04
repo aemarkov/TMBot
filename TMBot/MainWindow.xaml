@@ -4,9 +4,35 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TMBot"
+        xmlns:tabs="clr-namespace:TMBot.Tabs"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+        Title="MainWindow" 
+        Height="350" Width="525"
+        xmlns:viewModel="clr-namespace:TMBot.ViewModels">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewModel:HomeViewModel}">
+            <tabs:HomeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:MakeTradesViewModel}">
+            <tabs:MakeTradesView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:TradesViewModel}">
+            <tabs:TradesView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:OrdersViewModel}">
+            <tabs:OrdersView/>
+        </DataTemplate>
+    </Window.Resources>
+    <DockPanel>
+        <TabControl>
+            <TabItem Content="{Binding Path=HomePage}"
+                     Header="Главная"/>
+            <TabItem Content="{Binding Path=MakeTradesPage}"
+                     Header="Выставление предметов"/>
+            <TabItem Content="{Binding Path=TradesPage}"
+                     Header="Продажа"/>
+            <TabItem Content="{Binding Path=OrdersPage}"
+                     Header="Покупка"/>
+        </TabControl>
+    </DockPanel>
 </Window>

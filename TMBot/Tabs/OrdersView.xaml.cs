@@ -12,22 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using TMBot.ViewModels;
 
-namespace TMBot
+namespace TMBot.Tabs
 {
 	/// <summary>
-	/// Логика взаимодействия для MainWindow.xaml
+	/// Логика взаимодействия для OrdersView.xaml
 	/// </summary>
-	public partial class MainWindow : Window
+	public partial class OrdersView : UserControl
 	{
-		public MainViewModel ViewModel { get; set; }
-
-		public MainWindow()
+		public OrdersView()
 		{
-			ViewModel = new MainViewModel();
 			InitializeComponent();
-			DataContext = ViewModel;
 		}
 	}
 }

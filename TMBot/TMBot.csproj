@@ -65,9 +65,12 @@
     </ApplicationDefinition>
     <Compile Include="API\Exceptions\Exceptions.cs" />
     <Compile Include="API\KeyAuthenticator.cs" />
+    <Compile Include="API\SteamAPI\ISteamAPI.cs" />
+    <Compile Include="API\SteamAPI\SteamAPI.cs" />
     <Compile Include="API\TMAPI\ITMAPI.cs" />
     <Compile Include="API\TMAPI\CSTMAPI.cs" />
-    <Compile Include="Models\Steam\Trades.cs" />
+    <Compile Include="Models\Steam\SteamInventory.cs" />
+    <Compile Include="Models\Steam\SteamTrades.cs" />
     <Compile Include="Models\TM\ItemInfo.cs" />
     <Compile Include="Models\TM\Orders.cs" />
     <Compile Include="Models\TM\TMModels.cs" />
@@ -146,7 +149,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="API\SteamAPI\" />
     <Folder Include="API\TMWebSockAPI\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

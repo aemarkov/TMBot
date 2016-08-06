@@ -37,45 +37,49 @@ namespace TMBot.Models.TM
 		/// Ордеры на покупку этого прмдета
 		/// </summary>
 		public List<BuyOffer> buy_offers { get; set; }
+
+
+
+		public class Description
+		{
+			public string type { get; set; }
+			public string value { get; set; }
+		}
+
+		public class Tag
+		{
+			public string internal_name { get; set; }
+			public string name { get; set; }
+			public string category { get; set; }
+			public string category_name { get; set; }
+			public string color { get; set; }
+			public List<Value> value { get; set; }
+		}
+
+		public class Value
+		{
+			public string name { get; set; }
+			public string link { get; set; }
+			public bool link_true { get; set; }
+			public int link_updated { get; set; }
+		}
+
+		public class Offer
+		{
+			public string price { get; set; }
+			public string count { get; set; }
+			public string my_count { get; set; }
+		}
+
+		public class BuyOffer
+		{
+			public string o_price { get; set; }
+			public string c { get; set; }
+			public string my_count { get; set; }
+		}
 	}
 
-	public class Description
-	{
-		public string type { get; set; }
-		public string value { get; set; }
-	}
-
-	public class Tag
-	{
-		public string internal_name { get; set; }
-		public string name { get; set; }
-		public string category { get; set; }
-		public string category_name { get; set; }
-		public string color { get; set; }
-		public List<Value> value { get; set; }
-	}
-
-	public class Value
-	{
-		public string name { get; set; }
-		public string link { get; set; }
-		public bool link_true { get; set; }
-		public int link_updated { get; set; }
-	}
-
-	public class Offer
-	{
-		public string price { get; set; }
-		public string count { get; set; }
-		public string my_count { get; set; }
-	}
-
-	public class BuyOffer
-	{
-		public string o_price { get; set; }
-		public string c { get; set; }
-		public string my_count { get; set; }
-	}
+	
 
 	
 }

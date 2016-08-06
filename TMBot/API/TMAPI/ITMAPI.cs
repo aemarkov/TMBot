@@ -17,7 +17,7 @@ namespace TMBot.API.TMAPI
 	}
 
 	/// <summary>
-	/// АПИ для 
+	/// Интерфейс API для TM
 	/// </summary>
 	public interface ITMAPI
 	{

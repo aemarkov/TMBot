@@ -64,9 +64,13 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="API\Exceptions\Exceptions.cs" />
+    <Compile Include="API\Factory\AbstactAPIFactory.cs" />
+    <Compile Include="API\Factory\SteamFactory.cs" />
+    <Compile Include="API\Factory\TMFactory.cs" />
+    <Compile Include="API\IAbstractAPI.cs" />
     <Compile Include="API\KeyAuthenticator.cs" />
     <Compile Include="API\SteamAPI\ISteamAPI.cs" />
-    <Compile Include="API\SteamAPI\SteamAPI.cs" />
+    <Compile Include="API\SteamAPI\CSSteamAPI.cs" />
     <Compile Include="API\TMAPI\ITMAPI.cs" />
     <Compile Include="API\TMAPI\CSTMAPI.cs" />
     <Compile Include="Models\Steam\SteamInventory.cs" />
@@ -91,6 +95,7 @@
     <Compile Include="ViewModels\MakeTradesViewModel.cs" />
     <Compile Include="ViewModels\OrdersViewModel.cs" />
     <Compile Include="ViewModels\TradesViewModel.cs" />
+    <Compile Include="ViewModels\ViewModels\SteamInventoryItem.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

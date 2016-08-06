@@ -43,7 +43,7 @@ namespace TMBot.API.TMAPI
 			var response = rest_client.Execute<ItemInfo>(request);
 
 			//Если что-то пойдет не так, тут почему-то будут null в полях
-			//TODO: нормальная обработка ошибок
+			//TODO: нормальная обработка ошибок запросов
 			if (response.Data == null || response.Data.name	 == null)
 				throw new APIException();
 
@@ -110,7 +110,7 @@ namespace TMBot.API.TMAPI
 
 			var response = rest_client.Execute<ItemRequestResponse>(request);
 
-			//TODO: обработка ошибок
+			//TODO: нормальная обработка ошибок запросов
 			if (response.Data == null)
 				throw new APIException();
 
@@ -131,7 +131,7 @@ namespace TMBot.API.TMAPI
 
 			var response = rest_client.Execute<SetPriceResponse>(request);
 
-			//TODO: обработка ошибок
+			//TODO: нормальная обработка ошибок запросов
 			if (response.Data == null)
 				throw new APIException();
 
@@ -160,7 +160,7 @@ namespace TMBot.API.TMAPI
 
 			var response = rest_client.Execute<SetPriceResponse>(request);
 
-			//TODO: обработка ошибок
+			//TODO: нормальная обработка ошибок запросов
 			if (response.Data == null)
 				throw new APIException();
 
@@ -184,7 +184,7 @@ namespace TMBot.API.TMAPI
 
 			var response = rest_client.Execute<UpdateOrderResponse>(request);
 
-			//TODO: обработка ошибок
+			//TODO: нормальная обработка ошибок запросов
 			if (response.Data == null)
 				throw new APIException();
 

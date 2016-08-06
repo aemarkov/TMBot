@@ -10,7 +10,7 @@ namespace TMBot.API.TMAPI
 	/// <summary>
 	/// Направление ввода\вывода вещи
 	/// </summary>
-	public enum ItemRequestDirection
+	public enum ItemRequestDirection 
 	{
 		IN,   //Передача проданной вещи боту
 		OUT   //Вывод купленной вещи
@@ -19,7 +19,7 @@ namespace TMBot.API.TMAPI
 	/// <summary>
 	/// Интерфейс API для TM
 	/// </summary>
-	public interface ITMAPI
+	public interface ITMAPI : IAbstractAPI
 	{
 
 		/// <summary>

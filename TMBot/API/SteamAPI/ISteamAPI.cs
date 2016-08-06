@@ -10,7 +10,7 @@ namespace TMBot.API.SteamAPI
 	/// <summary>
 	/// Интерфейс API для Steam
 	/// </summary>
-	public interface ISteamAPI
+	public interface ISteamAPI : IAbstractAPI
 	{
 		/// <summary>
 		/// Возвращает инвентарь

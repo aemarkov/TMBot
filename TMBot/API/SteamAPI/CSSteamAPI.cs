@@ -10,7 +10,7 @@ using TMBot.Models.Steam;
 
 namespace TMBot.API.SteamAPI
 {
-	public class SteamAPI : ISteamAPI
+	public class CSSteamAPI : ISteamAPI
 	{
 		string userid;
 		string api_key;
@@ -21,7 +21,7 @@ namespace TMBot.API.SteamAPI
 		/// </summary>
 		/// <param name="userid">ID пользователя (http://steamcommunity.com/profiles/xxxxx/)</param>
 		/// <param name="key">API-key стима (надо получить)</param>
-		public SteamAPI(string userid, string key)
+		public CSSteamAPI(string userid, string key)
 		{
 			this.userid = userid;
 			http_client = new HttpClient();
@@ -34,6 +34,8 @@ namespace TMBot.API.SteamAPI
 		/// <returns></returns>
 		public async Task<SteamInventory> GetSteamInventoryAsync()
 		{
+			//TOOD: не только CS:GO
+			//TODO: нормальная обработка ошибок запросов
 			var response =  await http_client.GetAsync("http://steamcommunity.com/profiles/"+userid+"/inventory/json/730/2");
 			string content = await response.Content.ReadAsStringAsync();
 			return JsonConvert.DeserializeObject<SteamInventory>(content);
@@ -46,6 +48,7 @@ namespace TMBot.API.SteamAPI
 		public async Task<SteamTrades> GetSteamTradesAsync()
 		{
 			//TODO: можно будет настраивать параметры
+			//TODO: нормальная обработка ошибок запросов
 			var response = await http_client.GetAsync("https://api.steampowered.com/IEconService/GetTradeOffers/v1/?key="+api_key+"&format=json&get_sent_offers=1&get_received_offers=1&get_descriptions=0&active_only=1");
 			string content = await response.Content.ReadAsStringAsync();
 			return JsonConvert.DeserializeObject<SteamTrades>(content);

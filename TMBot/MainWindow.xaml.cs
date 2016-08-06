@@ -22,6 +22,8 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using TMBot.Models.Steam;
 using TMBot.API.SteamAPI;
+using TMBot.API.Factory;
+using TMBot.API.TMAPI;
 
 namespace TMBot
 {
@@ -37,6 +39,13 @@ namespace TMBot
 			ViewModel = new MainViewModel();
 			InitializeComponent();
 			DataContext = ViewModel;
+
+			TMFactory tm_factory = AbstactAPIFactory<ITMAPI>.GetInstance<TMFactory>();
+			tm_factory.CreateAPI<CSTMAPI>("Yg0skGdNIVST7811G6zGF8XDY29165T");
+
+			SteamFactory s_factory = AbstactAPIFactory<ISteamAPI>.GetInstance<SteamFactory>();
+			s_factory.CreateAPI<CSSteamAPI>("76561198289262955", "868AC98202BC8C4912E3864E26881E1C");
+
 
 			//var client = new RestClient();
 			//client.BaseUrl = new Uri("https://csgo.tm/api");

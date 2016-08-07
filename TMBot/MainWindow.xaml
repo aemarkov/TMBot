@@ -8,7 +8,8 @@
         mc:Ignorable="d"
         Title="MainWindow" 
         Height="350" Width="525"
-        xmlns:viewModel="clr-namespace:TMBot.ViewModels">
+        xmlns:viewModel="clr-namespace:TMBot.ViewModels"
+        xmlns:viewModel_viewModel="clr-namespace:TMBot.ViewModels.ViewModels">
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewModel:HomeViewModel}">
             <tabs:HomeView/>
@@ -22,9 +23,32 @@
         <DataTemplate DataType="{x:Type viewModel:OrdersViewModel}">
             <tabs:OrdersView/>
         </DataTemplate>
+
+        <DataTemplate DataType="{x:Type viewModel_viewModel:LogItem}">
+            <TextBlock Text="{Binding Text}" Name="txtLogItem"/>
+
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Path=Level}"
+                             Value="error">
+                    <Setter Property="Foreground" TargetName="txtLogItem" Value="Red"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Level}"
+                             Value="warning">
+                    <Setter Property="Foreground" TargetName="txtLogItem" Value="Orange"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+
+        </DataTemplate>
+        
     </Window.Resources>
-    <DockPanel>
-        <TabControl>
+    <Grid ShowGridLines="False">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+        
+        <TabControl DockPanel.Dock="Top" Grid.Row="0">
             <TabItem Content="{Binding Path=HomePage}"
                      Header="Главная"/>
             <TabItem Content="{Binding Path=MakeTradesPage}"
@@ -34,5 +58,9 @@
             <TabItem Content="{Binding Path=OrdersPage}"
                      Header="Покупка"/>
         </TabControl>
-    </DockPanel>
+        <ListBox Name="lbxLog"
+                     Grid.Row="1"
+                     Height="100" VerticalAlignment="Bottom"
+                     ItemsSource="{Binding LogList}"/>
+    </Grid>
 </Window>

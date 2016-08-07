@@ -22,6 +22,8 @@ namespace TMBot.API.TMAPI
 	public interface ITMAPI : IAbstractAPI
 	{
 
+		bool IsDebug { get; set; }
+
 		/// <summary>
 		/// Возвращает информацию о всех продажах
 		/// и покупках предмета
@@ -50,6 +52,7 @@ namespace TMBot.API.TMAPI
 		/// </summary>
 		/// <param name="price">цена в КОПЕЙКАХ</param>
 		/// <returns></returns>
+		
 		SetPriceResponse SetNewItem(string classid_instanceid, int price);
 
 		/// <summary>
@@ -57,6 +60,7 @@ namespace TMBot.API.TMAPI
 		/// </summary>
 		/// <param name="price">цена в КОПЕЙКАХ</param>
 		/// <returns></returns>
+		
 		SetPriceResponse SetNewItem(string classid, string instanceid, int price);
 
 		/// <summary>
@@ -65,6 +69,7 @@ namespace TMBot.API.TMAPI
 		/// <param name="itemid">Уникальный номер вещи (получатеся после выполнения SetNewItem)</param>
 		/// <param name="price">Цена в КОПЕЙКАХ, 0 - чтобы снять</param>
 		/// <returns></returns>
+		
 		SetPriceResponse SetPrice(string itemid, int price);
 
 
@@ -81,6 +86,7 @@ namespace TMBot.API.TMAPI
 		/// </summary>
 		/// <param name="price">Цена в КОПЕЙКАХ, 0 - снять ордер</param>
 		/// <returns></returns>
+		
 		UpdateOrderResponse UpdateOrder(string classid, string instanceid, int price);
 
 
@@ -94,6 +100,7 @@ namespace TMBot.API.TMAPI
 		/// <param name="in_out">Получение или передача. In - передача, Out - получение/param>
 		/// <param name="botid">ID бота, можно получить в результате Trades либо в событиях сокета</param>
 		/// <returns></returns>
+		
 		ItemRequestResponse ItemRequest(ItemRequestDirection in_out, string botid);
 
 	}

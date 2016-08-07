@@ -1,11 +1,14 @@
 ﻿using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using TMBot.API.Exceptions;
 using TMBot.Models.TM;
+using TMBot.Utilities;
 
 namespace TMBot.API.TMAPI
 {
@@ -18,6 +21,9 @@ namespace TMBot.API.TMAPI
 
 		RestClient rest_client;
 
+		//Не выполнять по-настоящему 
+		public bool IsDebug { get; set; }
+
 		/// <summary>
 		/// Создает новый объект для запросов к АПИ
 		/// </summary>
@@ -28,7 +34,9 @@ namespace TMBot.API.TMAPI
 			rest_client.BaseUrl = new Uri("https://csgo.tm/api");
 			rest_client.Authenticator = new KeyAuthenticator("key", "Yg0skGdNIVST7811G6zGF8XDY29165T");
 
+			IsDebug = false;
 		}
+
 
 		/// <summary>
 		/// Возвращает информацию о всех продажах
@@ -97,6 +105,12 @@ namespace TMBot.API.TMAPI
 		/// <returns></returns>
 		public ItemRequestResponse ItemRequest(ItemRequestDirection in_out, string botid)
 		{
+			if(IsDebug)
+			{
+				Log.w("ItemRequest({0},{1})",in_out, botid);
+				return null;
+			}
+
 			var request = new RestRequest("Trades/{in_out}/{botid}", Method.GET);
 
 			string direction;
@@ -125,6 +139,12 @@ namespace TMBot.API.TMAPI
 		/// <returns></returns>
 		public SetPriceResponse SetNewItem(string classid_instanceid, int price)
 		{
+			if (IsDebug)
+			{
+				Log.w("SetNewItem({0},{1})", classid_instanceid, price);
+				return null;
+			}
+
 			var request = new RestRequest("SetPrice/new_{classid_instanceid}/{price}", Method.GET);
 			request.AddParameter("classid_instanceid", classid_instanceid, ParameterType.UrlSegment);
 			request.AddParameter("price", price, ParameterType.UrlSegment);
@@ -154,6 +174,12 @@ namespace TMBot.API.TMAPI
 		/// <returns></returns>
 		public SetPriceResponse SetPrice(string itemid, int price)
 		{
+			if (IsDebug)
+			{
+				Log.w("SetPrice({0},{1})", itemid, price);
+				return null;
+			}
+
 			var request = new RestRequest("SetPrice/{itemid}/{price}", Method.GET);
 			request.AddParameter("itemid", itemid, ParameterType.UrlSegment);
 			request.AddParameter("price", price, ParameterType.UrlSegment);
@@ -177,6 +203,12 @@ namespace TMBot.API.TMAPI
 		/// <returns></returns>
 		public UpdateOrderResponse UpdateOrder(string classid, string instanceid, int price)
 		{
+			if (IsDebug)
+			{
+				Log.w("UpdateOrder({0},{1},{2})", classid, instanceid, price);
+				return null;
+			}
+
 			var request = new RestRequest("SetPrice/{classid}/{instanceid}/{price}", Method.GET);
 			request.AddParameter("classid", classid, ParameterType.UrlSegment);
 			request.AddParameter("instanceid", instanceid, ParameterType.UrlSegment);

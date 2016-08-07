@@ -13,5 +13,6 @@ namespace TMBot.ViewModels.ViewModels
 	{
 		public string Name { get; set; }
 		public string ImageUrl { get; set; }
+		public bool IsSelling { get; set; }
 	}
 }

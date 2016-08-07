@@ -7,12 +7,15 @@
              mc:Ignorable="d" 
              d:DesignHeight="480" d:DesignWidth="640"
              Background="White"
-             xmlns:viewModels="clr-namespace:TMBot.ViewModels.ViewModels">
+             xmlns:viewModels="clr-namespace:TMBot.ViewModels.ViewModels"
+             xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+             >
 
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type viewModels:SteamInventoryItem}">
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -20,12 +23,22 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <Image Source="{Binding Path=ImageUrl}" Grid.Column="0"
+                <Image Source="{Binding Path=ImageUrl}" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
                        MaxHeight="100"
                        MaxWidth="100"/>
-                <TextBlock Text="{Binding Path=Name}" Grid.Column="1"/>
-
+                <TextBlock Text="{Binding Path=Name}" Grid.Column="1" Grid.Row="0"/>
+                <TextBlock x:Name="txtSelling" Grid.Column="1" Grid.Row="1"
+                           Text="Не выставляется" Foreground="Red"/>
             </Grid>
+
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Path=IsSelling}"
+                             Value="True">
+                    <Setter Property="Text" TargetName="txtSelling" Value="Выставляется"/>
+                    <Setter Property="Foreground" TargetName="txtSelling" Value="Green"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+            
         </DataTemplate>
     </UserControl.Resources>
     
@@ -38,6 +51,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
         <GroupBox Header="Настройки сбора цен" Grid.Row="0" Grid.Column="0">
@@ -45,17 +59,36 @@
                 <RadioButton Name="rbSteam" Content="Цена из Steam" IsEnabled="False"/>
                 <RadioButton Name="rbMinimumPrice" Content="Минимальная цена на площадке TM" IsChecked="True"/>
                 <RadioButton Name="rbMaxOrder" Content="Самый дорогой ордер на покупку" IsEnabled="False"/>
+                <DockPanel>
+                    <TextBlock Text="Цена:"/>
+                    <wpfTool:DecimalUpDown Minimum="0" Increment="0.01" FormatString="P0"
+                                           Value="{Binding Path=PricePercentage}"/>
+                </DockPanel>
             </StackPanel>
         </GroupBox>
 
-        <GroupBox Header="Управление" Grid.Row="0" Grid.Column="2">
+
+        <GroupBox Header="Площадки" Grid.Row="0" Grid.Column="1">
             <StackPanel>
-                <Button Content="Обновить инвентарь" Name="btnUpdateInventory"/>
-                <Button Content="Начать выставлять" Name="btnBegin"/>
+                <CheckBox Content="CS:GO" Name="chkCSGO" IsChecked="True" IsEnabled="False"/>
+                <CheckBox Content="Dota 2" Name="chkDota2" IsEnabled="False"/>
+                <CheckBox Content="TF2" Name="chkTF2" IsEnabled="False"/>
+                <CheckBox Content="Gifts" Name="chkGifts" IsEnabled="False"/>
             </StackPanel>
         </GroupBox>
         
-        <GroupBox Header="Предметы"  Grid.Row="3" Grid.ColumnSpan="2">
+        <GroupBox Header="Управление" Grid.Row="0" Grid.Column="2">
+            <StackPanel>
+                <Button Content="Обновить инвентарь"
+                        Name="btnUpdateInventory"
+                        Command="{Binding UpdateInventoryCommand}"/>
+                <Button Content="Начать выставлять"
+                        Name="btnBegin"
+                        Command="{Binding BeginCommand}"/>
+            </StackPanel>
+        </GroupBox>
+        
+        <GroupBox Header="Предметы"  Grid.Row="3" Grid.ColumnSpan="3">
             <ListBox Name="lboxInventory"
                      ItemsSource="{Binding InventoryItems}"
                      IsSynchronizedWithCurrentItem="True"/>

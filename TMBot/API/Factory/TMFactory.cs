@@ -31,5 +31,12 @@ namespace TMBot.API.Factory
 
 			apis.Add(t, api);
 		}
+
+		public void CreateAPI<TAPI>(string apikey, bool is_debug) where TAPI : ITMAPI
+		{
+			CreateAPI<TAPI>(apikey);
+			var api = GetAPI<TAPI>();
+			api.IsDebug = is_debug;
+		}
 	}
 }

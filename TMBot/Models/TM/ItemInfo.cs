@@ -66,16 +66,16 @@ namespace TMBot.Models.TM
 
 		public class Offer
 		{
-			public string price { get; set; }
-			public string count { get; set; }
-			public string my_count { get; set; }
+			public decimal price { get; set; }
+			public int count { get; set; }
+			public int my_count { get; set; }
 		}
 
 		public class BuyOffer
 		{
-			public string o_price { get; set; }
+			public decimal o_price { get; set; }
 			public string c { get; set; }
-			public string my_count { get; set; }
+			public int my_count { get; set; }
 		}
 	}
 

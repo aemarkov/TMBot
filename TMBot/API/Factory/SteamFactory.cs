@@ -9,6 +9,12 @@ namespace TMBot.API.Factory
 {
 	public class SteamFactory : AbstactAPIFactory<ISteamAPI>
 	{
+		/// <summary>
+		/// Создает реализацию АПИ
+		/// </summary>
+		/// <typeparam name="TAPI">Тип апи</typeparam>
+		/// <param name="userid">ID профиля пользователя стима</param>
+		/// <param name="apikey">API-key для доступа</param>
 		public void CreateAPI<TAPI>(string userid, string apikey) where TAPI : ISteamAPI
 		{
 			Type t = typeof(TAPI);

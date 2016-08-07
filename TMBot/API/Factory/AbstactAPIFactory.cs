@@ -18,6 +18,8 @@ namespace TMBot.API.Factory
 	{
 		private static volatile AbstactAPIFactory<TAPI> instance;
 		private static object sync_root = new object();
+
+		//Список реализаций API
 		protected Dictionary<Type, TAPI> apis;
 
 		protected AbstactAPIFactory()
@@ -25,6 +27,11 @@ namespace TMBot.API.Factory
 			apis = new Dictionary<Type, TAPI>();
 		}
 
+		/// <summary>
+		/// Возвращает экземпляр фабрики
+		/// </summary>
+		/// <typeparam name="TFactory">Тип факбрики</typeparam>
+		/// <returns></returns>
 		public static TFactory GetInstance<TFactory>() where TFactory : AbstactAPIFactory<TAPI>, new()
 		{
 			if (instance == null)
@@ -42,6 +49,7 @@ namespace TMBot.API.Factory
 
 		/// <summary>
 		/// Возвращает реализацию API заданного типа
+		/// (предварительно, уже созданную)
 		/// </summary>
 		/// <typeparam name="T">Тип API</typeparam>
 		/// <returns></returns>

@@ -6,7 +6,29 @@
              xmlns:local="clr-namespace:TMBot.Tabs"
              mc:Ignorable="d" 
              d:DesignHeight="480" d:DesignWidth="640"
-             Background="White">
+             Background="White"
+             xmlns:viewModels="clr-namespace:TMBot.ViewModels.ViewModels">
+
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type viewModels:SteamInventoryItem}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Image Source="{Binding Path=ImageUrl}" Grid.Column="0"
+                       MaxHeight="100"
+                       MaxWidth="100"/>
+                <TextBlock Text="{Binding Path=Name}" Grid.Column="1"/>
+
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+    
     <Grid>
 
         <Grid.RowDefinitions>
@@ -35,7 +57,7 @@
         
         <GroupBox Header="Предметы"  Grid.Row="3" Grid.ColumnSpan="2">
             <ListBox Name="lboxInventory"
-                     ItemsSource="{Binding Inventory}"
+                     ItemsSource="{Binding InventoryItems}"
                      IsSynchronizedWithCurrentItem="True"/>
         </GroupBox>
         

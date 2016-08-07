@@ -9,6 +9,11 @@ namespace TMBot.API.Factory
 {
 	public class TMFactory: AbstactAPIFactory<ITMAPI>
 	{
+		/// <summary>
+		/// Создает реализацию АПИ
+		/// </summary>
+		/// <typeparam name="TAPI">Тип апи</typeparam>
+		/// <param name="apikey">api-key для доступа</param>
 		public void CreateAPI<TAPI>(string apikey) where TAPI : ITMAPI
 		{
 			Type t = typeof(TAPI);

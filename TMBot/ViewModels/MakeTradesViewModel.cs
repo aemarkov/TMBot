@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TMBot.API;
 using TMBot.API.Factory;
@@ -25,7 +26,7 @@ namespace TMBot.ViewModels
 		public ObservableCollection<SteamInventoryItem> InventoryItems { get; private set; }
 
 		//Список предметов, которые надо выставить на продажу
-		private IList<RgInventoryItem> items_to_sell;
+		private readonly IList<RgInventoryItem> _itemsToSell;
 
 		public RelayCommands UpdateInventoryCommand { get; set; }
 		public RelayCommands BeginCommand { get; set; }
@@ -37,12 +38,13 @@ namespace TMBot.ViewModels
 		public MakeTradesViewModel()
 		{
 			InventoryItems = new ObservableCollection<SteamInventoryItem>();
-			items_to_sell = new List<RgInventoryItem>();
+			_itemsToSell = new List<RgInventoryItem>();
 
 			UpdateInventoryCommand = new RelayCommands(x => update_inventory(x));
 			BeginCommand = new RelayCommands(x => begin(x));
 
 			load_inventory_items();
+			Debug.WriteLine("Ffff");
 
 		}
 
@@ -68,32 +70,49 @@ namespace TMBot.ViewModels
 		{
 			Log.d("Получение инвентаря Steam...");
 
-			ISteamAPI steam_api = SteamFactory.GetInstance<SteamFactory>().GetAPI<TSteamAPI>();
-			ITMAPI tm_api = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
+			ISteamAPI steamApi = SteamFactory.GetInstance<SteamFactory>().GetAPI<TSteamAPI>();
+			ITMAPI tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
 
-			var inventory = await steam_api.GetSteamInventoryAsync();
-			IList<Trade> trades = tm_api.GetTrades();
+			var inventory = await steamApi.GetSteamInventoryAsync();
+			IList<Trade> trades = tmApi.GetTrades();
 
 			InventoryItems.Clear();
-			items_to_sell.Clear();
+			_itemsToSell.Clear();
+
 
 			//Составляем список инвентаря
 			foreach (var item in inventory.rgInventory)
 			{
-				var rg_item = item.Value;
-				var description = inventory.rgDescriptions[rg_item.classid + "_" + rg_item.instanceid];
+				var rgItem = item.Value;
+				var description = inventory.rgDescriptions[rgItem.classid + "_" + rgItem.instanceid];
 
-				string image_url = "http://cdn.steamcommunity.com/economy/image/" + description.icon_url;
+				string imageUrl = "http://cdn.steamcommunity.com/economy/image/" + description.icon_url;
 
-				bool is_selling = trades.Any(x => x.i_classid == rg_item.classid && x.i_instanceid == rg_item.instanceid);
-				if (!is_selling)
-					items_to_sell.Add(rg_item);
+				bool isSelling = trades.Any(x => x.i_classid == rgItem.classid && x.ui_real_instance == rgItem.instanceid);
+				if (!isSelling)
+					_itemsToSell.Add(rgItem);
 
-				SteamInventoryItem inventory_item = new SteamInventoryItem() { Name = description.name, ImageUrl = image_url, IsSelling = is_selling };
-				InventoryItems.Add(inventory_item);
+				decimal price;
+				decimal? minPrice = PriceCounter.GetMinSellPrice<TTMAPI>(rgItem.classid, rgItem.instanceid);
+				if (minPrice == null)
+				{
+					//Такого предмета на площадке нет, надо определять по стиму
+					//TODO: определять цену по стиму
+					price = -1;
+					Log.e("Предмет {0}_{1} не найден на площадке", rgItem.classid, rgItem.instanceid);
+				}
+				else
+					price = (int)minPrice;
+
+				SteamInventoryItem inventoryItem = new SteamInventoryItem() {	Name = description.name,
+																				ImageUrl = imageUrl,
+																				IsSelling = isSelling,
+																				ClassID_InstanceID =rgItem.classid+"_"+rgItem.instanceid,
+																				TMPrice=price/100} ;
+				InventoryItems.Add(inventoryItem);
 			}
 
-			Log.d("Загружено {0} предметов, не выставляются: {1}", inventory.rgInventory.Count, items_to_sell.Count);
+			Log.d("Загружено {0} предметов, не выставляются: {1}", inventory.rgInventory.Count, _itemsToSell.Count);
 		}
 
 		#endregion
@@ -103,12 +122,19 @@ namespace TMBot.ViewModels
 		//Начинает выставлять
 		private void begin(object param)
 		{
-			begin_sell_game<CSTMAPI>(items_to_sell);
+			begin_sell_game<CSTMAPI>(_itemsToSell);
 		}
 
 		//Начинает выставлять предметы определенной площадки
 		private void begin_sell_game<TTMAPI>(IList<RgInventoryItem> items_to_sell) where TTMAPI : ITMAPI
 		{
+
+			if(items_to_sell.Count==0)
+			{
+				Log.w("Нет предметов для выставления или все уже выставлены");
+				return;
+			}
+
 			Log.d("Выставляются предметы...");
 
 			var tm_api = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();

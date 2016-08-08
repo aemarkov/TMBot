@@ -14,5 +14,8 @@ namespace TMBot.ViewModels.ViewModels
 		public string Name { get; set; }
 		public string ImageUrl { get; set; }
 		public bool IsSelling { get; set; }
+		public string ClassID_InstanceID { get; set; }
+
+		public decimal TMPrice { get; set; }
 	}
 }

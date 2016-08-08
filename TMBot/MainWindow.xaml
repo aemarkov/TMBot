@@ -45,7 +45,7 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="150"/>
         </Grid.RowDefinitions>
         
         <TabControl DockPanel.Dock="Top" Grid.Row="0">
@@ -60,7 +60,7 @@
         </TabControl>
         <ListBox Name="lbxLog"
                      Grid.Row="1"
-                     Height="100" VerticalAlignment="Bottom"
+                     Height="150" VerticalAlignment="Bottom"
                      ItemsSource="{Binding LogList}"/>
     </Grid>
 </Window>

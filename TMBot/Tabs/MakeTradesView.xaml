@@ -11,37 +11,6 @@
              xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
              >
 
-    <UserControl.Resources>
-        <DataTemplate DataType="{x:Type viewModels:SteamInventoryItem}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-
-                <Image Source="{Binding Path=ImageUrl}" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
-                       MaxHeight="100"
-                       MaxWidth="100"/>
-                <TextBlock Text="{Binding Path=Name}" Grid.Column="1" Grid.Row="0"/>
-                <TextBlock x:Name="txtSelling" Grid.Column="1" Grid.Row="1"
-                           Text="Не выставляется" Foreground="Red"/>
-            </Grid>
-
-            <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Path=IsSelling}"
-                             Value="True">
-                    <Setter Property="Text" TargetName="txtSelling" Value="Выставляется"/>
-                    <Setter Property="Foreground" TargetName="txtSelling" Value="Green"/>
-                </DataTrigger>
-            </DataTemplate.Triggers>
-            
-        </DataTemplate>
-    </UserControl.Resources>
-    
     <Grid>
 
         <Grid.RowDefinitions>
@@ -89,9 +58,48 @@
         </GroupBox>
         
         <GroupBox Header="Предметы"  Grid.Row="3" Grid.ColumnSpan="3">
-            <ListBox Name="lboxInventory"
+            <DataGrid Name="lboxInventory"
                      ItemsSource="{Binding InventoryItems}"
-                     IsSynchronizedWithCurrentItem="True"/>
+                     IsSynchronizedWithCurrentItem="True"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      CanUserReorderColumns="False">
+                <DataGrid.Columns>
+                    
+                    <DataGridTemplateColumn Header="Изображение" IsReadOnly="True" MinWidth="100" MaxWidth="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding ImageUrl}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Название">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Path=Name}"/>
+                                    <TextBlock x:Name="txtSelling" Text="Не выставляется" Foreground="Red"/>
+                                    <TextBlock Text="{Binding Path=ClassID_InstanceID}"/>
+                                </StackPanel>
+                                
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding Path=IsSelling}"
+                                                 Value="True">
+                                        <Setter Property="Text" TargetName="txtSelling" Value="Выставляется"/>
+                                        <Setter Property="Foreground" TargetName="txtSelling" Value="Green"/>
+                                    </DataTrigger>
+                                </DataTemplate.Triggers>
+                                
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTextColumn Header="Цена" IsReadOnly="True" Binding="{Binding Path=TMPrice}"/>
+
+                </DataGrid.Columns>
+            </DataGrid>
         </GroupBox>
         
         

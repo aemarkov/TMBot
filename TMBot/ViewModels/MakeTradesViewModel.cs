@@ -13,6 +13,7 @@ using TMBot.API.TMAPI;
 using TMBot.Models.Steam;
 using TMBot.Models.TM;
 using TMBot.Utilities;
+using TMBot.Utilities.MVVM;
 using TMBot.ViewModels.ViewModels;
 
 namespace TMBot.ViewModels
@@ -23,12 +24,13 @@ namespace TMBot.ViewModels
 	public class MakeTradesViewModel
 	{
 		//Список предметов в инвентаре стим
-		public ObservableCollection<SteamInventoryItem> InventoryItems { get; private set; }
+		public ObservableCollection<InventoryItem> InventoryItems { get; private set; }
 
 		//Список предметов, которые надо выставить на продажу
-		private readonly IList<RgInventoryItem> _itemsToSell;
+		//private readonly IList<RgInventoryItem> _itemsToSell;
 
-		public RelayCommands UpdateInventoryCommand { get; set; }
+		//public RelayCommands UpdateInventoryCommand { get; set; }
+		public IAsyncCommand UpdateInventoryCommand { get; private set; }
 		public RelayCommands BeginCommand { get; set; }
 
 
@@ -37,34 +39,34 @@ namespace TMBot.ViewModels
 
 		public MakeTradesViewModel()
 		{
-			InventoryItems = new ObservableCollection<SteamInventoryItem>();
-			_itemsToSell = new List<RgInventoryItem>();
+			InventoryItems = new ObservableCollection<InventoryItem>();
 
-			UpdateInventoryCommand = new RelayCommands(x => update_inventory(x));
-			BeginCommand = new RelayCommands(x => begin(x));
+			UpdateInventoryCommand = AsyncCommand.Create(update_inventory);
+			BeginCommand = new RelayCommands(begin);
 
-			load_inventory_items();
-			Debug.WriteLine("Ffff");
-
+			//load_inventory_items();
 		}
 
 
 		#region INVENTORY
 
 		//Обновляет инвентарь
-		private void update_inventory(object param)
+		private async Task update_inventory(object param)
 		{
-			load_inventory_items();
+			await load_inventory_items();
 		}
 
 
 		//Загружает инвентарь стима
-		private async void load_inventory_items()
+		private async Task load_inventory_items()
 		{
 			await load_inventory_game<CSSteamAPI, CSTMAPI>();
 		}
 
 		//Загружает инвентарь конкретной игры
+		//Да, я понимаю, что надо было завернуть эту асинхронную операцию в 
+		//INotifyPropertyChanged и биндится прямо к ней, а не
+		//менять свойство из нее
 		private async Task load_inventory_game<TSteamAPI, TTMAPI>() where TSteamAPI : ISteamAPI
 																	 where TTMAPI : ITMAPI
 		{
@@ -74,11 +76,15 @@ namespace TMBot.ViewModels
 			ITMAPI tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
 
 			var inventory = await steamApi.GetSteamInventoryAsync();
+
+			await Task.Delay(3000);
+
 			IList<Trade> trades = tmApi.GetTrades();
 
-			InventoryItems.Clear();
-			_itemsToSell.Clear();
+			//Число предметов, которые уже выставляются
+			int sellingCount = 0;
 
+			InventoryItems.Clear();
 
 			//Составляем список инвентаря
 			foreach (var item in inventory.rgInventory)
@@ -89,30 +95,19 @@ namespace TMBot.ViewModels
 				string imageUrl = "http://cdn.steamcommunity.com/economy/image/" + description.icon_url;
 
 				bool isSelling = trades.Any(x => x.i_classid == rgItem.classid && x.ui_real_instance == rgItem.instanceid);
-				if (!isSelling)
-					_itemsToSell.Add(rgItem);
 
-				decimal price;
-				decimal? minPrice = PriceCounter.GetMinSellPrice<TTMAPI>(rgItem.classid, rgItem.instanceid);
-				if (minPrice == null)
-				{
-					//Такого предмета на площадке нет, надо определять по стиму
-					//TODO: определять цену по стиму
-					price = -1;
-					Log.e("Предмет {0}_{1} не найден на площадке", rgItem.classid, rgItem.instanceid);
-				}
-				else
-					price = (int)minPrice;
+				if (isSelling)
+					sellingCount++;
 
-				SteamInventoryItem inventoryItem = new SteamInventoryItem() {	Name = description.name,
+				InventoryItem inventoryItem = new InventoryItem() {	Name = description.name,
 																				ImageUrl = imageUrl,
 																				IsSelling = isSelling,
-																				ClassID_InstanceID =rgItem.classid+"_"+rgItem.instanceid,
-																				TMPrice=price/100} ;
+																				ClassId = rgItem.classid,
+																				IntanceId = rgItem.instanceid};
 				InventoryItems.Add(inventoryItem);
 			}
 
-			Log.d("Загружено {0} предметов, не выставляются: {1}", inventory.rgInventory.Count, _itemsToSell.Count);
+			Log.d("Загружено {0} предметов, выставляются: {1}", inventory.rgInventory.Count, sellingCount);
 		}
 
 		#endregion
@@ -122,43 +117,35 @@ namespace TMBot.ViewModels
 		//Начинает выставлять
 		private void begin(object param)
 		{
-			begin_sell_game<CSTMAPI>(_itemsToSell);
+			begin_sell_game<CSTMAPI>(InventoryItems);
 		}
 
 		//Начинает выставлять предметы определенной площадки
-		private void begin_sell_game<TTMAPI>(IList<RgInventoryItem> items_to_sell) where TTMAPI : ITMAPI
+		private void begin_sell_game<TTMAPI>(ICollection<InventoryItem> items) where TTMAPI : ITMAPI
 		{
-
-			if(items_to_sell.Count==0)
-			{
-				Log.w("Нет предметов для выставления или все уже выставлены");
-				return;
-			}
-
 			Log.d("Выставляются предметы...");
 
-			var tm_api = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
+			if (items.Count == 0)
+				Log.w("Нет предметов для выставления: в инвентаре нет предметов");
 
-			foreach (var item in items_to_sell)
+			var tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
+			int count = 0;
+
+			foreach (var item in InventoryItems)
 			{
-				//Определяем минимаьную цену такого же предмета на площадке
-				decimal price;
-				decimal? _price = PriceCounter.GetMinSellPrice<TTMAPI>(item.classid, item.instanceid);
-				if (_price == null)
-				{
-					//Такого предмета на площадке нет, надо определять по стиму
-					//TODO: определять цену по стиму
-					price = -1;
-					Log.e("Предмет {0}_{1} не найден на площадке", item.classid, item.instanceid);
-				}
-				else
-					price = (int)_price;
+				if(item.IsSelling)
+					continue;
 
+				decimal price = item.TMPrice;
 				price = (decimal)PricePercentage * price;
-				tm_api.SetNewItem(item.classid, item.instanceid, (int)price);
+				tmApi.SetNewItem(item.ClassId, item.IntanceId, (int)price);
 
-				Log.d("Предмет {0}_{1} выставлен. за цену {2} коп.", item.classid, item.instanceid, price);
+				Log.d("Предмет {0}_{1} выставлен. за цену {2} коп.", item.ClassId, item.IntanceId, price);
+				count++;
 			}
+
+			if(count==0)
+				Log.w("Нет предметов для выставления: все уже выставляются");
 		}
 
 		#endregion

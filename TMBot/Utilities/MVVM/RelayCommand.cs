@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace TMBot.Utilities
+namespace TMBot.Utilities.MVVM
 {
 	/// <summary>
 	/// To register commands in MMVM pattern

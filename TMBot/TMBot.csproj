@@ -97,7 +97,14 @@
     <Compile Include="API\SteamAPI\CSSteamAPI.cs" />
     <Compile Include="API\TMAPI\ITMAPI.cs" />
     <Compile Include="API\TMAPI\CSTMAPI.cs" />
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Utilities\MVVM\AsyncCommand.cs" />
+    <Compile Include="Utilities\MVVM\AsyncCommandBase.cs" />
+    <Compile Include="Utilities\FixedTimeCall.cs" />
+    <Compile Include="Utilities\MVVM\Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="Utilities\MVVM\IAsyncCommand.cs" />
     <Compile Include="Utilities\Log.cs" />
+    <Compile Include="Utilities\MVVM\NotifyTaskCompletion.cs" />
     <Compile Include="Utilities\PriceCounter.cs" />
     <Compile Include="Models\Steam\SteamInventory.cs" />
     <Compile Include="Models\Steam\SteamTrades.cs" />
@@ -116,14 +123,14 @@
     <Compile Include="Tabs\TradesView.xaml.cs">
       <DependentUpon>TradesView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utilities\RelayCommand.cs" />
+    <Compile Include="Utilities\MVVM\RelayCommand.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MakeTradesViewModel.cs" />
     <Compile Include="ViewModels\OrdersViewModel.cs" />
     <Compile Include="ViewModels\TradesViewModel.cs" />
     <Compile Include="ViewModels\ViewModels\LogItem.cs" />
-    <Compile Include="ViewModels\ViewModels\SteamInventoryItem.cs" />
+    <Compile Include="ViewModels\ViewModels\InventoryItem.cs" />
     <Compile Include="Workers\SellWorker.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -21,51 +21,45 @@ namespace TMBot.Utilities
 		/// <param name="classid">параметр предмета</param>
 		/// <param name="instanceid">параметр предмета</param>
 		/// <returns></returns>
-		public static decimal? GetMinSellPrice <TTMAPI>(string classid, string instanceid) where TTMAPI: ITMAPI
+		public static decimal GetMinSellPrice <TTMAPI>(string classid, string instanceid) where TTMAPI: ITMAPI
 		{
-			ITMAPI tm_api = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
+			ITMAPI tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
 
-			ItemInfo item_info = tm_api.GetItemInfo(classid, instanceid);
+			ItemInfo itemInfo = tmApi.GetItemInfo(classid, instanceid);
 
-			if (item_info.offers == null)
-				return null;
-
-			decimal min_price = item_info.offers.First().price;
-			foreach(var offer in item_info.offers)
+			if (itemInfo.offers == null)
 			{
-				decimal price = offer.price;
-				if (price < min_price)
-					min_price = price;
+				//Товара нет на площадке, определяем по стиму
+				//TODO: Проверить по стиму
+				Log.e("Товар {0}_{1} не найден на площадке",classid, instanceid);
+				return -1;
 			}
 
-			return min_price;
+			//TODO: Проверка ошибок api и null
+			return itemInfo.offers.Min(x => x.price);
 		}
 
 		/// <summary>
-		/// Возвращает максимульную цену ордера на площадке
+		/// Возвращает максимальную цену ордера на площадке
 		/// </summary>
 		/// <typeparam name="TTMAPI">Тип API, соответствуюший площадке</typeparam>
 		/// <param name="classid">параметр предмета</param>
 		/// <param name="instanceid">параметр предмета</param>
 		/// <returns></returns>
-		public static decimal? GetMaxOfferPrice<TTMAPI>(string classid, string instanceid) where TTMAPI : ITMAPI
+		public static decimal GetMaxOfferPrice<TTMAPI>(string classid, string instanceid) where TTMAPI : ITMAPI
 		{
-			ITMAPI tm_api = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
+			ITMAPI tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
 
-			ItemInfo item_info = tm_api.GetItemInfo(classid, instanceid);
+			ItemInfo itemInfo = tmApi.GetItemInfo(classid, instanceid);
 
-			if (item_info.offers == null)
-				return null;
-
-			decimal max_price = item_info.buy_offers.First().o_price;
-			foreach (var buy_offer in item_info.buy_offers)
+			if (itemInfo.buy_offers == null)
 			{
-				decimal price = buy_offer.o_price;
-				if (price > max_price)
-					max_price = price;
+				//Товара нет на площадке, определяем по стиму
+				Log.e("Ордер на товар {0}_{1} не найден на площадке", classid, instanceid);
+				return -1;
 			}
 
-			return max_price;
+			return itemInfo.buy_offers.Max(x => x.o_price);
 		}
 
 	}

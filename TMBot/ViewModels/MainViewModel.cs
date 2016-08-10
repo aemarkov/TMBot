@@ -14,10 +14,10 @@ namespace TMBot.ViewModels
 	/// </summary>
 	public class MainViewModel
 	{
-		public HomeViewModel HomePage { get; set; } = new HomeViewModel();
-		public MakeTradesViewModel MakeTradesPage { get; set; } = new MakeTradesViewModel();
-		public TradesViewModel TradesPage { get; set; } = new TradesViewModel();
-		public OrdersViewModel OrdersPage { get; set; } = new OrdersViewModel();
+		public HomeViewModel HomePage { get; set; }
+		public MakeTradesViewModel MakeTradesPage { get; set; }
+		public TradesViewModel TradesPage { get; set; }
+		public OrdersViewModel OrdersPage { get; set; }
 
 		public ObservableCollection<LogItem> LogList { get; set; }
 
@@ -25,6 +25,11 @@ namespace TMBot.ViewModels
 		{
 			LogList = new ObservableCollection<LogItem>();
 			Log.NewLogMessage += Log_NewLogMessage;
+
+			HomePage = new HomeViewModel();
+			MakeTradesPage = new MakeTradesViewModel();
+			TradesPage = new TradesViewModel();
+			OrdersPage = new OrdersViewModel();
 		}
 
 		//Получение сообщения лога

@@ -36,8 +36,8 @@ namespace TMBot.API.SteamAPI
 		{
 			//TOOD: не только CS:GO
 			//TODO: нормальная обработка ошибок запросов
-			var response =  await http_client.GetAsync("http://steamcommunity.com/profiles/"+userid+"/inventory/json/730/2");
-			string content = await response.Content.ReadAsStringAsync();
+			var response =  await http_client.GetAsync("http://steamcommunity.com/profiles/"+userid+"/inventory/json/730/2").ConfigureAwait(false);
+			string content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 			return JsonConvert.DeserializeObject<SteamInventory>(content);
 		}
 
@@ -49,8 +49,8 @@ namespace TMBot.API.SteamAPI
 		{
 			//TODO: можно будет настраивать параметры
 			//TODO: нормальная обработка ошибок запросов
-			var response = await http_client.GetAsync("https://api.steampowered.com/IEconService/GetTradeOffers/v1/?key="+api_key+"&format=json&get_sent_offers=1&get_received_offers=1&get_descriptions=0&active_only=1");
-			string content = await response.Content.ReadAsStringAsync();
+			var response = await http_client.GetAsync("https://api.steampowered.com/IEconService/GetTradeOffers/v1/?key="+api_key+"&format=json&get_sent_offers=1&get_received_offers=1&get_descriptions=0&active_only=1").ConfigureAwait(false);
+			string content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 			return JsonConvert.DeserializeObject<SteamTrades>(content);
 
 		}

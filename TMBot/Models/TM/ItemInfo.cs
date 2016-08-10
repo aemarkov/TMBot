@@ -74,7 +74,7 @@ namespace TMBot.Models.TM
 		public class BuyOffer
 		{
 			public decimal o_price { get; set; }
-			public string c { get; set; }
+			public int c { get; set; }
 			public int my_count { get; set; }
 		}
 	}

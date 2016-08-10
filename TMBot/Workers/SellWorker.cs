@@ -72,41 +72,23 @@ namespace TMBot.Workers
 
 			while (_shouldRun)
 			{
-				Stopwatch sw = new Stopwatch();
-
 				foreach (var item in _trades)
 				{
-					sw.Start();
+					FixedTimeCall.Call(()=> {
 
-					//Находим минимальную цену этого предмета на площадке
-					decimal price;
-					decimal? minPrice = PriceCounter.GetMinSellPrice<TTMAPI>(item.i_classid, item.ui_real_instance);
-					if (minPrice == null)
-					{
-						//TODO: проверить по стиму
-						price = -1;
-					}
-					else
-					{
-						price = (decimal) minPrice;
-					}
+						//Находим минимальную цену этого предмета на площадке
+						decimal minPrice = PriceCounter.GetMinSellPrice<TTMAPI>(item.i_classid, item.ui_real_instance);
 
-					//Уменьшаем ее на одну копейку
-					price -= 1;
+						//Уменьшаем ее на одну копейку
+						minPrice -= 1;
 
-					//TODO: убедиться, что itemid - это точно ui_id
-					tmApi.SetPrice(item.ui_id, (int)price);
+						//TODO: убедиться, что itemid - это точно ui_id
+						tmApi.SetPrice(item.ui_id, (int)minPrice);
 
-					if (!_shouldRun)
-						return;
+						if (!_shouldRun)
+							return;
+					});
 
-					//Ждем до секунды
-					sw.Stop();
-					long waitMs = _loopPeriodMs - sw.ElapsedMilliseconds;
-					if(waitMs > 0)
-						Thread.Sleep((int)waitMs);
-
-					sw.Reset();
 				}
 			}
 		}

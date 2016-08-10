@@ -8,14 +8,15 @@ namespace TMBot.ViewModels.ViewModels
 {
 	/// <summary>
 	/// Удобное представление объекта инвентаря стим
+	/// Комбинация важных параметров RgItem и RgDescription
 	/// </summary>
-	public class SteamInventoryItem
+	public class InventoryItem
 	{
 		public string Name { get; set; }
 		public string ImageUrl { get; set; }
 		public bool IsSelling { get; set; }
-		public string ClassID_InstanceID { get; set; }
-
 		public decimal TMPrice { get; set; }
+		public string ClassId { get; set; }
+		public string IntanceId { get; set; }
 	}
 }

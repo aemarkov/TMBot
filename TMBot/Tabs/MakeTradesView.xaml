@@ -9,8 +9,14 @@
              Background="White"
              xmlns:viewModels="clr-namespace:TMBot.ViewModels.ViewModels"
              xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+             xmlns:converters="clr-namespace:TMBot.Utilities.MVVM.Converters"
              >
 
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+    </UserControl.Resources>
+    
     <Grid>
 
         <Grid.RowDefinitions>
@@ -51,6 +57,13 @@
                 <Button Content="Обновить инвентарь"
                         Name="btnUpdateInventory"
                         Command="{Binding UpdateInventoryCommand}"/>
+
+                <StackPanel Visibility="{Binding UpdateInventoryCommand.Execution, Converter={StaticResource NullToVisibilityConverter}}">
+                    <Label Visibility="{Binding UpdateInventoryCommand.Execution.IsNotCompleted, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        Загрузка
+                    </Label>
+                </StackPanel>
+
                 <Button Content="Начать выставлять"
                         Name="btnBegin"
                         Command="{Binding BeginCommand}"/>
@@ -75,13 +88,17 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header="Название">
+                    <DataGridTemplateColumn Header="Название"  IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel>
                                     <TextBlock Text="{Binding Path=Name}"/>
                                     <TextBlock x:Name="txtSelling" Text="Не выставляется" Foreground="Red"/>
-                                    <TextBlock Text="{Binding Path=ClassID_InstanceID}"/>
+                                    <TextBlock>
+                                        <Run Text="{Binding Path=ClassId}"></Run>
+                                        <Run Text="_"></Run>
+                                        <Run Text="{Binding Path=IntanceId}"></Run>
+                                    </TextBlock>
                                 </StackPanel>
                                 
                                 <DataTemplate.Triggers>

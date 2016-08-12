@@ -28,7 +28,15 @@ namespace TMBot.Utilities.MVVM
 
 		private async Task WatchTaskAsync(Task task)
 		{
-			await Task;
+		    try
+		    {
+                await Task;
+            }
+		    catch (Exception)
+		    {
+		        
+		    }
+			
 
 			var propertyChanged = PropertyChanged;
 			if (propertyChanged == null)

@@ -130,7 +130,7 @@
     <Compile Include="ViewModels\OrdersViewModel.cs" />
     <Compile Include="ViewModels\TradesViewModel.cs" />
     <Compile Include="ViewModels\ViewModels\LogItem.cs" />
-    <Compile Include="ViewModels\ViewModels\InventoryItem.cs" />
+    <Compile Include="ViewModels\ViewModels\Items.cs" />
     <Compile Include="Views\AsyncButton.xaml.cs">
       <DependentUpon>AsyncButton.xaml</DependentUpon>
     </Compile>

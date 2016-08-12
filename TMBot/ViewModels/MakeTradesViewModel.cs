@@ -26,12 +26,8 @@ namespace TMBot.ViewModels
 		//Список предметов в инвентаре стим
 		public ObservableCollection<InventoryItem> InventoryItems { get; private set; }
 
-		//Список предметов, которые надо выставить на продажу
-		//private readonly IList<RgInventoryItem> _itemsToSell;
-
-		//public RelayCommands UpdateInventoryCommand { get; set; }
 		public IAsyncCommand UpdateInventoryCommand { get; private set; }
-		public RelayCommands BeginCommand { get; set; }
+		public IAsyncCommand BeginCommand { get; set; }
 
 
 		// За какой процент цены выставлять
@@ -42,7 +38,7 @@ namespace TMBot.ViewModels
 			InventoryItems = new ObservableCollection<InventoryItem>();
 
 			UpdateInventoryCommand = AsyncCommand.Create(update_inventory);
-			BeginCommand = new RelayCommands(begin);
+			BeginCommand = AsyncCommand.Create(begin);
 
 			//load_inventory_items();
 		}
@@ -53,7 +49,7 @@ namespace TMBot.ViewModels
 		//Обновляет инвентарь
 		private async Task update_inventory(object param)
 		{
-			await load_inventory_items();
+            await load_inventory_items();
 		}
 
 
@@ -94,7 +90,7 @@ namespace TMBot.ViewModels
 
 				string imageUrl = "http://cdn.steamcommunity.com/economy/image/" + description.icon_url;
 
-				bool isSelling = trades.Any(x => x.i_classid == rgItem.classid && x.ui_real_instance == rgItem.instanceid);
+			    bool isSelling = false; //trades.Any(x => x.i_classid == rgItem.classid && x.ui_real_instance == rgItem.instanceid);
 
 				if (isSelling)
 					sellingCount++;
@@ -115,36 +111,40 @@ namespace TMBot.ViewModels
 		#region SELLING
 
 		//Начинает выставлять
-		private void begin(object param)
+		private async Task begin(object param)
 		{
-			begin_sell_game<CSTMAPI>(InventoryItems);
+			await begin_sell_game<CSTMAPI>(InventoryItems);
 		}
 
 		//Начинает выставлять предметы определенной площадки
-		private void begin_sell_game<TTMAPI>(ICollection<InventoryItem> items) where TTMAPI : ITMAPI
+		private async Task begin_sell_game<TTMAPI>(ICollection<InventoryItem> items) where TTMAPI : ITMAPI
 		{
 			Log.d("Выставляются предметы...");
 
 			if (items.Count == 0)
 				Log.w("Нет предметов для выставления: в инвентаре нет предметов");
 
-			var tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
+		   
+		    var tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
 			int count = 0;
 
-			foreach (var item in InventoryItems)
-			{
-				if(item.IsSelling)
-					continue;
+		    
 
-				decimal price = item.TMPrice;
-				price = (decimal)PricePercentage * price;
-				tmApi.SetNewItem(item.ClassId, item.IntanceId, (int)price);
+		        foreach (var item in InventoryItems.Where(item => !item.IsSelling))
+		        {
+		            await FixedTimeCall.Call(() =>
+		            {
+		                decimal price = PriceCounter.GetMinSellPrice<TTMAPI>(item.ClassId, item.IntanceId);
+		                price = (decimal) PricePercentage*price;
+		                tmApi.SetNewItem(item.ClassId, item.IntanceId, (int) price);
+		                Log.d("Предмет {0}_{1} выставлен. за цену {2} коп.", item.ClassId, item.IntanceId, price);
+		                count++;
+		            });
+		        }
+		    
 
-				Log.d("Предмет {0}_{1} выставлен. за цену {2} коп.", item.ClassId, item.IntanceId, price);
-				count++;
-			}
 
-			if(count==0)
+            if (count==0)
 				Log.w("Нет предметов для выставления: все уже выставляются");
 		}
 

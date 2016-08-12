@@ -61,6 +61,7 @@
         <ListBox Name="lbxLog"
                      Grid.Row="1"
                      Height="150" VerticalAlignment="Bottom"
-                     ItemsSource="{Binding LogList}"/>
+                     ItemsSource="{Binding LogList}"
+                     IsSynchronizedWithCurrentItem="True"/>
     </Grid>
 </Window>

@@ -27,7 +27,7 @@ namespace TMBot.Utilities
 
 			ItemInfo itemInfo = tmApi.GetItemInfo(classid, instanceid);
 
-			if (itemInfo.offers == null)
+			if (itemInfo?.offers == null)
 			{
 				//Товара нет на площадке, определяем по стиму
 				//TODO: Проверить по стиму
@@ -52,7 +52,7 @@ namespace TMBot.Utilities
 
 			ItemInfo itemInfo = tmApi.GetItemInfo(classid, instanceid);
 
-			if (itemInfo.buy_offers == null)
+			if (itemInfo?.buy_offers == null)
 			{
 				//Товара нет на площадке, определяем по стиму
 				Log.e("Ордер на товар {0}_{1} не найден на площадке", classid, instanceid);

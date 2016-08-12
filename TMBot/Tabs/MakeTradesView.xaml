@@ -49,8 +49,7 @@
                 <views:AsyncButton Content="Обновить инвентарь"
                        Command="{Binding UpdateInventoryCommand}"/>
 
-                <Button Content="Начать выставлять"
-                        Name="btnBegin"
+                <views:AsyncButton Content="Начать выставлять"
                         Command="{Binding BeginCommand}"/>
             </StackPanel>
         </GroupBox>

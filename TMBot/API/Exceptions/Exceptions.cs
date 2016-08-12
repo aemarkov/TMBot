@@ -15,4 +15,9 @@ namespace TMBot.API.Exceptions
 
 		public APIException(string message) : base(message) { }
 	}
+
+    public class ItemNotFoundException : APIException
+    {
+   
+    }
 }

@@ -21,17 +21,18 @@ namespace TMBot.Utilities
 		/// Вызов метода за определенное время
 		/// </summary>
 		/// <param name="action">Метод</param>
-		public static void Call(Action action)
+		public static async Task  Call(Action action)
 		{
 			Stopwatch sw = new Stopwatch();
 
 			sw.Start();
-			action();
+			await Task.Run(action);
 			sw.Stop();
 
 			long waitMs = _callTimeMillis - sw.ElapsedMilliseconds;
-			if (waitMs > 0)
-				Thread.Sleep((int)waitMs);
+		    if (waitMs > 0)
+		        //Thread.Sleep((int)waitMs);
+		        await Task.Delay((int) waitMs);
 		}
 	}
 }

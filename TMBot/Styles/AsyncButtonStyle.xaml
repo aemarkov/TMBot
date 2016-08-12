@@ -36,7 +36,7 @@
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="26"/>
                             </Grid.ColumnDefinitions>
 
                             <ContentPresenter x:Name="contentPresenter"
@@ -56,9 +56,7 @@
                                 <views:Spinner Grid.Column="1"
                                            Visibility="{Binding Command.Execution.IsNotCompleted, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                             </StackPanel>
-
                             
-
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>

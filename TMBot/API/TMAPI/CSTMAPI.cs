@@ -52,8 +52,8 @@ namespace TMBot.API.TMAPI
 
 			//Если что-то пойдет не так, тут почему-то будут null в полях
 			//TODO: нормальная обработка ошибок запросов
-			if (response.Data == null || response.Data.name	 == null)
-				throw new APIException();
+		    if (response.Data == null || response.Data.name == null)
+		        return null;
 
 			return response.Data;
 		}
@@ -77,8 +77,8 @@ namespace TMBot.API.TMAPI
 			var request = new RestRequest("GetOrders", Method.GET);
 			var response = rest_client.Execute<OrdersList>(request);
 
-			if (response.Data == null)
-				throw new APIException();
+		    if (response.Data == null)
+		        return null;
 
 			return response.Data;
 		}
@@ -92,8 +92,8 @@ namespace TMBot.API.TMAPI
 			var request = new RestRequest("Trades", Method.GET);
 			var response = rest_client.Execute<List<Trade>>(request);
 
-			if (response.Data == null)
-				throw new APIException();
+		    if (response.Data == null)
+		        return null;
 
 			return response.Data;
 		}
@@ -125,8 +125,8 @@ namespace TMBot.API.TMAPI
 			var response = rest_client.Execute<ItemRequestResponse>(request);
 
 			//TODO: нормальная обработка ошибок запросов
-			if (response.Data == null)
-				throw new APIException();
+		    if (response.Data == null)
+		        return null;
 
 			return response.Data;
 		}
@@ -152,8 +152,8 @@ namespace TMBot.API.TMAPI
 			var response = rest_client.Execute<SetPriceResponse>(request);
 
 			//TODO: нормальная обработка ошибок запросов
-			if (response.Data == null)
-				throw new APIException();
+		    if (response.Data == null)
+		        return null;
 
 			return response.Data;
 		}
@@ -187,8 +187,8 @@ namespace TMBot.API.TMAPI
 			var response = rest_client.Execute<SetPriceResponse>(request);
 
 			//TODO: нормальная обработка ошибок запросов
-			if (response.Data == null)
-				throw new APIException();
+		    if (response.Data == null)
+		        return null;
 
 			return response.Data;
 		}
@@ -217,8 +217,8 @@ namespace TMBot.API.TMAPI
 			var response = rest_client.Execute<UpdateOrderResponse>(request);
 
 			//TODO: нормальная обработка ошибок запросов
-			if (response.Data == null)
-				throw new APIException();
+		    if (response.Data == null)
+		        return null;
 
 			return response.Data;
 		}

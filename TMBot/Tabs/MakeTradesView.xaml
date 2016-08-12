@@ -7,16 +7,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="480" d:DesignWidth="640"
              Background="White"
-             xmlns:viewModels="clr-namespace:TMBot.ViewModels.ViewModels"
              xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
-             xmlns:converters="clr-namespace:TMBot.Utilities.MVVM.Converters"
-             >
-
-    <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
-    </UserControl.Resources>
-    
+             xmlns:views="clr-namespace:TMBot.Views">
     <Grid>
 
         <Grid.RowDefinitions>
@@ -54,15 +46,8 @@
         
         <GroupBox Header="Управление" Grid.Row="0" Grid.Column="2">
             <StackPanel>
-                <Button Content="Обновить инвентарь"
-                        Name="btnUpdateInventory"
-                        Command="{Binding UpdateInventoryCommand}"/>
-
-                <StackPanel Visibility="{Binding UpdateInventoryCommand.Execution, Converter={StaticResource NullToVisibilityConverter}}">
-                    <Label Visibility="{Binding UpdateInventoryCommand.Execution.IsNotCompleted, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        Загрузка
-                    </Label>
-                </StackPanel>
+                <views:AsyncButton Content="Обновить инвентарь"
+                       Command="{Binding UpdateInventoryCommand}"/>
 
                 <Button Content="Начать выставлять"
                         Name="btnBegin"
@@ -70,7 +55,7 @@
             </StackPanel>
         </GroupBox>
         
-        <GroupBox Header="Предметы"  Grid.Row="3" Grid.ColumnSpan="3">
+        <GroupBox Header="Предметы"  Grid.Row="1" Grid.ColumnSpan="3">
             <DataGrid Name="lboxInventory"
                      ItemsSource="{Binding InventoryItems}"
                      IsSynchronizedWithCurrentItem="True"

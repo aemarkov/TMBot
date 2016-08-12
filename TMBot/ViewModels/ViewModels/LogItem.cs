@@ -7,8 +7,6 @@ using TMBot.Utilities;
 
 namespace TMBot.ViewModels.ViewModels
 {
-
-
 	public class LogItem
 	{
 		public string Text { get; set; }

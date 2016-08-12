@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace TMBot.Models.TM
+namespace TMBot.API.TMAPI.Models
 {
 	/// <summary>
 	/// Ответ на запрос ключа для подписки на вебсокеты

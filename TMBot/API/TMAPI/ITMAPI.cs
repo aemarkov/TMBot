@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TMBot.Models.TM;
+using TMBot.API.TMAPI.Models;
 
 namespace TMBot.API.TMAPI
 {

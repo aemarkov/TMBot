@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using TMBot.API.Exceptions;
-using TMBot.Models.TM;
+using TMBot.API.TMAPI.Models;
 using TMBot.Utilities;
 
 namespace TMBot.API.TMAPI

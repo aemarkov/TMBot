@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Threading;
 using TMBot.API.Factory;
 using TMBot.API.TMAPI;
-using TMBot.Models.TM;
+using TMBot.API.TMAPI.Models;
 using TMBot.Utilities;
 
 namespace TMBot.Workers
@@ -27,8 +27,6 @@ namespace TMBot.Workers
 
 		//Фоновый поток обновления цен
 		private Thread _workThread;
-
-		private const int _loopPeriodMs = 1000;
 
 		public SellWorker()
 		{

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using TMBot.API.SteamAPI.Models;
 using TMBot.Models.Steam;
 
 namespace TMBot.API.SteamAPI

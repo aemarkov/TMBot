@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using TMBot.API;
 using TMBot.API.Factory;
 using TMBot.API.SteamAPI;
 using TMBot.API.TMAPI;
-using TMBot.Models.Steam;
-using TMBot.Models.TM;
+using TMBot.API.TMAPI.Models;
 using TMBot.Utilities;
 using TMBot.Utilities.MVVM;
 using TMBot.ViewModels.ViewModels;
@@ -24,7 +18,7 @@ namespace TMBot.ViewModels
 	public class MakeTradesViewModel
 	{
 		//Список предметов в инвентаре стим
-		public ObservableCollection<InventoryItem> InventoryItems { get; private set; }
+		public ObservableCollection<InventoryItemViewModel> InventoryItems { get; private set; }
 
 		public IAsyncCommand UpdateInventoryCommand { get; private set; }
 		public IAsyncCommand BeginCommand { get; set; }
@@ -35,7 +29,7 @@ namespace TMBot.ViewModels
 
 		public MakeTradesViewModel()
 		{
-			InventoryItems = new ObservableCollection<InventoryItem>();
+			InventoryItems = new ObservableCollection<InventoryItemViewModel>();
 
 			UpdateInventoryCommand = AsyncCommand.Create(update_inventory);
 			BeginCommand = AsyncCommand.Create(begin);
@@ -90,17 +84,17 @@ namespace TMBot.ViewModels
 
 				string imageUrl = "http://cdn.steamcommunity.com/economy/image/" + description.icon_url;
 
-			    bool isSelling = false; //trades.Any(x => x.i_classid == rgItem.classid && x.ui_real_instance == rgItem.instanceid);
+			    bool isSelling = trades.Any(x => x.i_classid == rgItem.classid && x.ui_real_instance == rgItem.instanceid);
 
 				if (isSelling)
 					sellingCount++;
 
-				InventoryItem inventoryItem = new InventoryItem() {	Name = description.name,
+				InventoryItemViewModel inventoryItemViewModel = new InventoryItemViewModel() {	Name = description.name,
 																				ImageUrl = imageUrl,
 																				IsSelling = isSelling,
 																				ClassId = rgItem.classid,
 																				IntanceId = rgItem.instanceid};
-				InventoryItems.Add(inventoryItem);
+				InventoryItems.Add(inventoryItemViewModel);
 			}
 
 			Log.d("Загружено {0} предметов, выставляются: {1}", inventory.rgInventory.Count, sellingCount);
@@ -117,7 +111,7 @@ namespace TMBot.ViewModels
 		}
 
 		//Начинает выставлять предметы определенной площадки
-		private async Task begin_sell_game<TTMAPI>(ICollection<InventoryItem> items) where TTMAPI : ITMAPI
+		private async Task begin_sell_game<TTMAPI>(ICollection<InventoryItemViewModel> items) where TTMAPI : ITMAPI
 		{
 			Log.d("Выставляются предметы...");
 

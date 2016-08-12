@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TMBot.API.Factory;
 using TMBot.API.TMAPI;
-using TMBot.Models.TM;
+using TMBot.API.TMAPI.Models;
 
 namespace TMBot.Utilities
 {

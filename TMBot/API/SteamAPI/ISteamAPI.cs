@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMBot.API.SteamAPI.Models;
 using TMBot.Models.Steam;
 
 namespace TMBot.API.SteamAPI

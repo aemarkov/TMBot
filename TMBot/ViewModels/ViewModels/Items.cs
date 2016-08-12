@@ -10,7 +10,7 @@ namespace TMBot.ViewModels.ViewModels
 	/// Удобное представление объекта инвентаря стим
 	/// Комбинация важных параметров RgItem и RgDescription
 	/// </summary>
-	public class InventoryItem
+	public class InventoryItemViewModel
 	{
 		public string Name { get; set; }
 		public string ImageUrl { get; set; }
@@ -20,23 +20,13 @@ namespace TMBot.ViewModels.ViewModels
 	}
 
     /// <summary>
-    /// Представление товара при продажах\ордерах
+    /// Представление предмета для покупки/продажия
     /// </summary>
-    public class TradeItem : InventoryItem
+    public class TradeViewModel : InventoryItemViewModel
     {
-        /// <summary>
-        /// Мин/макс цена на площадке
-        /// </summary>
-        public decimal TMPrice { get; set; }
-
-        /// <summary>
-        /// Выставленная ботом цена
-        /// </summary>
-        public decimal MyPrice { get; set; }
-
-        /// <summary>
-        /// Ограничения по цене
-        /// </summary>
-        public decimal PriceLimit { get; set; }
+        public int TMPrice { get; set; }
+        public int MyPrice { get; set; }
+        public int PriceLimit { get; set; }
+        public int? CountLimint { get; set; }
     }
 }

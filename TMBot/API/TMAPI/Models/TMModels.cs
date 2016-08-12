@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TMBot.API.TMAPI.Models
 {
@@ -35,6 +36,8 @@ namespace TMBot.API.TMAPI.Models
 		public string he_name { get; set; }
 		public double ui_price { get; set; }
 		public string i_classid { get; set; }
+
+        [Obsolete]
 		public string i_instanceid { get; set; }
 		public string ui_real_instance { get; set; }
 		public string i_quality { get; set; }

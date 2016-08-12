@@ -22,8 +22,9 @@ namespace TMBot.ViewModels.ViewModels
     /// <summary>
     /// Представление предмета для покупки/продажия
     /// </summary>
-    public class TradeViewModel : InventoryItemViewModel
+    public class TradeItemViewModel : InventoryItemViewModel
     {
+        public string ItemId { get; set; }
         public int TMPrice { get; set; }
         public int MyPrice { get; set; }
         public int PriceLimit { get; set; }

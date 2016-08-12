@@ -20,23 +20,12 @@ namespace TMBot.Utilities.MVVM
 		public NotifyTaskCompletion(Task<TResult> task)
 		{
 			Task = task;
-			if (!task.IsCompleted)
-			{
-				TaskCompletion = WatchTaskAsync(task);
-			}
+		    TaskCompletion = WatchTaskAsync(task);
 		}
 
 		private async Task WatchTaskAsync(Task task)
 		{
-		    try
-		    {
-                await Task;
-            }
-		    catch (Exception)
-		    {
-		        
-		    }
-			
+            await Task;	
 
 			var propertyChanged = PropertyChanged;
 			if (propertyChanged == null)

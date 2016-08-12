@@ -1,0 +1,48 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:TMBot">
+
+    <!-- шаблоны ячеек для отображения предметов
+         - хардкорный биндинг
+         + юзание в одну строку
+    -->
+
+    <!-- картинка предмета -->
+    <Style x:Key="ItemImageCell" TargetType="{x:Type DataGridCell}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Image Source="{Binding ImageUrl}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Название, описание -->
+    <Style x:Key="ItemNameCell" TargetType="{x:Type DataGridCell}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <StackPanel>
+                        <TextBlock Text="{Binding Path=Name}"/>
+                        <TextBlock x:Name="txtSelling" Text="Не выставляется" Foreground="Red"/>
+                        <TextBlock>
+                                        <Run Text="{Binding Path=ClassId}"></Run>
+                                        <Run Text="_"></Run>
+                                        <Run Text="{Binding Path=IntanceId}"></Run>
+                        </TextBlock>
+                    </StackPanel>
+
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Path=IsSelling}"
+                                                 Value="True">
+                            <Setter Property="Text" TargetName="txtSelling" Value="Выставляется"/>
+                            <Setter Property="Foreground" TargetName="txtSelling" Value="Green"/>
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

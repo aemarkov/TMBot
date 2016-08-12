@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using TMBot.API.Exceptions;
 using TMBot.API.Factory;
 using TMBot.API.SteamAPI;
 using TMBot.API.TMAPI;
@@ -67,9 +69,7 @@ namespace TMBot.ViewModels
 
 			var inventory = await steamApi.GetSteamInventoryAsync();
 
-			await Task.Delay(3000);
-
-			IList<Trade> trades = tmApi.GetTrades();
+            IList<Trade> trades = tmApi.GetTrades();
 
 			//Число предметов, которые уже выставляются
 			int sellingCount = 0;
@@ -113,29 +113,36 @@ namespace TMBot.ViewModels
 		//Начинает выставлять предметы определенной площадки
 		private async Task begin_sell_game<TTMAPI>(ICollection<InventoryItemViewModel> items) where TTMAPI : ITMAPI
 		{
-			Log.d("Выставляются предметы...");
+		    if (items == null)
+		    {
+		        Log.w("Предметы в инвентаре не загружены");
+		        return;
+		    }
 
-			if (items.Count == 0)
-				Log.w("Нет предметов для выставления: в инвентаре нет предметов");
+		    Log.d("Выставляются предметы...");
 
-		   
+		    if (items.Count == 0)
+		    {
+		        Log.w("Нет предметов для выставления: в инвентаре нет предметов");
+		        return;
+		    }
+
+
 		    var tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
-			int count = 0;
+            int count = 0;
 
-		    
+            foreach (var item in InventoryItems.Where(item => !item.IsSelling))
+            {
+                await FixedTimeCall.Call(() =>
+                {
+                    decimal price = PriceCounter.GetMinSellPrice<TTMAPI>(item.ClassId, item.IntanceId);
+                    price = (decimal)PricePercentage * price;
+                    tmApi.SetNewItem(item.ClassId, item.IntanceId, (int)price);
+                    Log.d("Предмет {0}_{1} выставлен. за цену {2} коп.", item.ClassId, item.IntanceId, price);
+                    count++;
+                });
+            }
 
-		        foreach (var item in InventoryItems.Where(item => !item.IsSelling))
-		        {
-		            await FixedTimeCall.Call(() =>
-		            {
-		                decimal price = PriceCounter.GetMinSellPrice<TTMAPI>(item.ClassId, item.IntanceId);
-		                price = (decimal) PricePercentage*price;
-		                tmApi.SetNewItem(item.ClassId, item.IntanceId, (int) price);
-		                Log.d("Предмет {0}_{1} выставлен. за цену {2} коп.", item.ClassId, item.IntanceId, price);
-		                count++;
-		            });
-		        }
-		    
 
 
             if (count==0)

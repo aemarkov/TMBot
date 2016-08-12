@@ -62,44 +62,12 @@
                       CanUserAddRows="False"
                       CanUserDeleteRows="False"
                       CanUserReorderColumns="False">
+
                 <DataGrid.Columns>
-                    
-                    <DataGridTemplateColumn Header="Изображение" IsReadOnly="True" MinWidth="100" MaxWidth="100">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Image Source="{Binding ImageUrl}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-
-                    <DataGridTemplateColumn Header="Название"  IsReadOnly="True">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Path=Name}"/>
-                                    <TextBlock x:Name="txtSelling" Text="Не выставляется" Foreground="Red"/>
-                                    <TextBlock>
-                                        <Run Text="{Binding Path=ClassId}"></Run>
-                                        <Run Text="_"></Run>
-                                        <Run Text="{Binding Path=IntanceId}"></Run>
-                                    </TextBlock>
-                                </StackPanel>
-                                
-                                <DataTemplate.Triggers>
-                                    <DataTrigger Binding="{Binding Path=IsSelling}"
-                                                 Value="True">
-                                        <Setter Property="Text" TargetName="txtSelling" Value="Выставляется"/>
-                                        <Setter Property="Foreground" TargetName="txtSelling" Value="Green"/>
-                                    </DataTrigger>
-                                </DataTemplate.Triggers>
-                                
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-
-                    <DataGridTextColumn Header="Цена" IsReadOnly="True" Binding="{Binding Path=TMPrice}"/>
-
+                    <DataGridTemplateColumn Header="Изображение" IsReadOnly="True" MinWidth="100" MaxWidth="100" CellStyle="{StaticResource ItemImageCell}"/>
+                    <DataGridTemplateColumn Header="Название"  IsReadOnly="True" CellStyle="{StaticResource ItemNameCell}"/>
                 </DataGrid.Columns>
+                
             </DataGrid>
         </GroupBox>
         

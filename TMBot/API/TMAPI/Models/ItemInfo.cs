@@ -62,14 +62,14 @@ namespace TMBot.API.TMAPI.Models
 
 		public class Offer
 		{
-			public decimal price { get; set; }
+			public int price { get; set; }
 			public int count { get; set; }
 			public int my_count { get; set; }
 		}
 
 		public class BuyOffer
 		{
-			public decimal o_price { get; set; }
+			public int o_price { get; set; }
 			public int c { get; set; }
 			public int my_count { get; set; }
 		}

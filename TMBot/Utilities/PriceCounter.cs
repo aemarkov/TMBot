@@ -21,7 +21,7 @@ namespace TMBot.Utilities
 		/// <param name="classid">параметр предмета</param>
 		/// <param name="instanceid">параметр предмета</param>
 		/// <returns></returns>
-		public static decimal GetMinSellPrice <TTMAPI>(string classid, string instanceid) where TTMAPI: ITMAPI
+		public static int GetMinSellPrice <TTMAPI>(string classid, string instanceid) where TTMAPI: ITMAPI
 		{
 			ITMAPI tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
 
@@ -46,7 +46,7 @@ namespace TMBot.Utilities
 		/// <param name="classid">параметр предмета</param>
 		/// <param name="instanceid">параметр предмета</param>
 		/// <returns></returns>
-		public static decimal GetMaxOfferPrice<TTMAPI>(string classid, string instanceid) where TTMAPI : ITMAPI
+		public static int GetMaxOfferPrice<TTMAPI>(string classid, string instanceid) where TTMAPI : ITMAPI
 		{
 			ITMAPI tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
 

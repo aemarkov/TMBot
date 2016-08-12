@@ -15,7 +15,7 @@ namespace TMBot.Database
 
         public Item GetById(string classid, string instanceid)
         {
-            return Context.Set<Item>().First(x => x.InstanceId == instanceid && x.ClassId == classid);
+            return Context.Set<Item>().FirstOrDefault(x => x.InstanceId == instanceid && x.ClassId == classid);
         }
     }
 }

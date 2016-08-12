@@ -5,8 +5,58 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TMBot.Tabs"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
-    <StackPanel>
-        <TextBlock Text="Трейды"/>
-    </StackPanel>
+             d:DesignHeight="480" d:DesignWidth="640"
+             Background="White">
+    <Grid>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+       <Grid.ColumnDefinitions>
+           <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        
+        <GroupBox Header="Управление" Grid.Row="0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                
+                <Button Content="Обновить" Grid.Column="0"/>
+                <Button Content="Запустить" Grid.Column="1"/>
+            </Grid>
+        </GroupBox>
+        
+        <TextBlock Grid.Column="1"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Foreground="Red"
+                   FontSize="20">
+            Не работает
+        </TextBlock>
+        
+        <GroupBox Header="Трейды"
+                  Grid.Row="1" Grid.ColumnSpan="3">
+            <DataGrid
+                     ItemsSource="{Binding InventoryItems}"
+                     IsSynchronizedWithCurrentItem="True"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      CanUserReorderColumns="False">
+                
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Изображение" IsReadOnly="True" MinWidth="100" MaxWidth="100" CellStyle="{StaticResource ItemImageCell}"/>
+                    <DataGridTemplateColumn Header="Название"  IsReadOnly="True" CellStyle="{StaticResource ItemNameCell}"/>
+                    <DataGridTextColumn Header="Цена ТМ"/>
+                    <DataGridTextColumn Header="Моя цена"/>
+                </DataGrid.Columns>
+                
+            </DataGrid>
+        </GroupBox>
+    </Grid>
 </UserControl>

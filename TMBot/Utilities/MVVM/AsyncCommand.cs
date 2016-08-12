@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace TMBot.Utilities.MVVM
 {
@@ -10,22 +11,39 @@ namespace TMBot.Utilities.MVVM
 	/// </summary>
 	/// <typeparam name="TResult">Тип возвращаемого значения (Task TResult), void (Task)
 	/// не поддерживается</typeparam>
-	public class AsyncCommand<TResult> : AsyncCommandBase, INotifyPropertyChanged
+	public class AsyncCommand<TResult> : INotifyPropertyChanged, IAsyncCommand
 	{
 		private readonly Func<object, Task<TResult>> _command;
 		private NotifyTaskCompletion<TResult> _execution;
 
-		public AsyncCommand(Func<object, Task<TResult>> command)
-		{
-			_command = command;
-		}
+        public AsyncCommand(Func<object, Task<TResult>> command)
+        {
+            _command = command;
+        }
 
-		public override bool CanExecute(object parameter)
+        public event EventHandler CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
+        }
+
+        protected void RaiseCanExecuteChanged()
+        {
+            CommandManager.InvalidateRequerySuggested();
+        }
+
+        public bool CanExecute(object parameter)
 		{
 			return true;
 		}
 
-		public override Task ExecuteAsync(object parameter)
+
+        public async void Execute(object parameter)
+        {
+            await ExecuteAsync(parameter);
+        }
+
+        public Task ExecuteAsync(object parameter)
 		{
 			Execution = new NotifyTaskCompletion<TResult>(_command(parameter));
 			return Execution.TaskCompletion;

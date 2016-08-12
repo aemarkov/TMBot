@@ -9,6 +9,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/AsyncButtonStyle.xaml"/>
                 <ResourceDictionary Source="Styles/Styles.xaml"/>
+                <ResourceDictionary Source="Styles/ItemsTable.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <!-- converters -->

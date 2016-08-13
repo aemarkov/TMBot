@@ -15,6 +15,7 @@
             <!-- converters -->
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <converters:KopekToRubleConverter x:Key="KopekToRubleConverter"/>
 
         </ResourceDictionary>
 

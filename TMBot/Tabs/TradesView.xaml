@@ -22,18 +22,45 @@
 
         <views:AsyncButton
             Grid.Column ="0" 
-            Content="Запустить"
-            Command="{Binding ToggleCommand}"/>
+            Command="{Binding ToggleCommand}">
+            
+            <views:AsyncButton.Resources>
+                <Style BasedOn="{StaticResource AsyncButton}"  TargetType="{x:Type views:AsyncButton}">
+                    <Setter Property="Content" Value="Запустить"/>
+                    
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SellWorker.IsRunning}" Value="True">
+                            <Setter Property="Content" Value="Остановить"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+
+                </Style>
+            </views:AsyncButton.Resources>
+            
+        </views:AsyncButton>
 
         <StackPanel Grid.Column="1">
             <TextBlock HorizontalAlignment="Center">Статус</TextBlock>
-            <TextBlock 
+            <Label
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
-                   Foreground="Red"
                    FontSize="20">
-                Не работает
-            </TextBlock>
+                <Label.Resources>
+                    <Style  TargetType="{x:Type Label}">
+                        <Setter Property="Foreground" Value="Red"/>
+                        <Setter Property="Content" Value="Не работает"/>
+                        
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SellWorker.IsRunning}"
+                                         Value="True">
+                                <Setter Property="Foreground" Value="Green"/>
+                                <Setter Property="Content" Value="Работает"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                        
+                    </Style>
+                </Label.Resources>
+            </Label>
         </StackPanel>
 
         <Label Grid.Column="2" Content="{Binding SellWorker.Trades}"/>
@@ -51,10 +78,10 @@
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="Изображение" IsReadOnly="True" MinWidth="100" MaxWidth="100" CellStyle="{StaticResource ItemImageCell}"/>
                     <DataGridTemplateColumn Header="Название"  IsReadOnly="True" CellStyle="{StaticResource ItemNameCell}"/>
-                    <DataGridTextColumn Header="Цена ТМ"/>
-                    <DataGridTextColumn Header="Моя цена"/>
+                    <DataGridTextColumn Header="Цена ТМ" Binding="{Binding TMPrice, Converter={StaticResource KopekToRubleConverter}}"/>
+                    <DataGridTextColumn Header="Моя цена" Binding="{Binding MyPrice, Converter={StaticResource KopekToRubleConverter}}"/>
                 </DataGrid.Columns>
-                
+            
             </DataGrid>
         </GroupBox>
     </Grid>

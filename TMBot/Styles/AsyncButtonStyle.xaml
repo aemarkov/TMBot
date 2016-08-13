@@ -4,7 +4,7 @@
                     xmlns:views="clr-namespace:TMBot.Views"
                     xmlns:converters="clr-namespace:TMBot.Utilities.MVVM.Converters">
 
-    <Style TargetType="{x:Type views:AsyncButton}">
+    <Style x:Key="AsyncButton" TargetType="{x:Type views:AsyncButton}">
         
         <Style.Resources>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>

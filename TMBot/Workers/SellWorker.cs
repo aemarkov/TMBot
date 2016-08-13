@@ -14,6 +14,7 @@ using TMBot.API.TMAPI.Models;
 using TMBot.Database;
 using TMBot.Models;
 using TMBot.Utilities;
+using TMBot.Utilities.MVVM;
 using TMBot.ViewModels.ViewModels;
 
 namespace TMBot.Workers
@@ -23,12 +24,11 @@ namespace TMBot.Workers
 	/// предметов в фоне
 	/// </summary>
 	/// <typeparam name="TTMAPI">Класс АПИ площадки</typeparam>
-	public class SellWorker<TTMAPI> where TTMAPI: ITMAPI
+	public class SellWorker<TTMAPI> : PropertyChangedBase where TTMAPI: ITMAPI
 	{
 		//Апи для выполнения запросов
 		private readonly ITMAPI tmApi;
 
-        public ObservableCollection<string> WTF { get; set; }
         //Список продаваемых предметов
         private object _tradesLock = new object();
 	    private ObservableCollection<TradeItemViewModel> _trades;
@@ -43,8 +43,13 @@ namespace TMBot.Workers
 	    }
 
 		//Для управления потоком
-		private volatile bool _shouldRun;
-        public bool IsRunning => _shouldRun;
+		private volatile bool _isRunning;
+
+	    public bool IsRunning
+	    {
+	        get { return _isRunning; }
+            private set { _isRunning = value; NotifyPropertyChanged(); }
+	    }
 
 	    //Фоновый поток обновления цен
 		private Thread _workThread;
@@ -56,11 +61,6 @@ namespace TMBot.Workers
 		{
             _repository = new ItemsRepository();
 			tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
-
-            WTF = new ObservableCollection<string>();
-            WTF.Add("FFFF");
-            WTF.Add("FF4444");
-
             Trades = new ObservableCollection<TradeItemViewModel>();
         }
 
@@ -82,9 +82,13 @@ namespace TMBot.Workers
             foreach(var trade_item in trades)
             {
                 Item db_item = _repository.GetById(trade_item.i_classid, trade_item.ui_real_instance);
-               
+
                 //Заполняем поля
                 var item = Mapper.Map<Trade, TradeItemViewModel>(trade_item);
+
+                //TODO: сделать нормально
+                //Цена почему-то не в копейках, а в рублях double
+                item.MyPrice = (int) (trade_item.ui_price*100);
 
                 if (db_item != null)
                 {
@@ -106,7 +110,7 @@ namespace TMBot.Workers
             }
 
 
-			_shouldRun = true;
+			IsRunning = true;
 			_workThread = new Thread(worker_thread);
 			_workThread.Start();
 			
@@ -117,7 +121,7 @@ namespace TMBot.Workers
 		/// </summary>
 		public void End()
 		{
-			_shouldRun = false;
+			IsRunning = false;
 		}
 
 		//Функция потока
@@ -135,13 +139,13 @@ namespace TMBot.Workers
 			 * Поэтому замерем время, а потом подаждем оставшееся время
 			 */
 
-			while (_shouldRun)
+			while (IsRunning)
 			{
 				foreach (var item in Trades)
 				{
 					await FixedTimeCall.Call(()=>{
                         update_price(item);
-						if (!_shouldRun)
+						if (!IsRunning)
 							return;
 					});
 

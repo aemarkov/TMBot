@@ -19,13 +19,11 @@ namespace TMBot.ViewModels
 
 
 	    public SellWorker<CSTMAPI> SellWorker { get; set; } 
-        public ObservableCollection<string> WTF { get; set; } 
+
+	    public bool WTF => true;
 
         public TradesViewModel()
         {
-            WTF = new ObservableCollection<string>();
-            WTF.Add("FFFF");
-            WTF.Add("FF4444");
 
             ToggleCommand = AsyncCommand.Create(toggle);
             SellWorker = new SellWorker<CSTMAPI>();

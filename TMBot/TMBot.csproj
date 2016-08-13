@@ -134,10 +134,12 @@
     <Compile Include="Utilities\MVVM\AsyncCommand.cs" />
     <Compile Include="Utilities\MVVM\AsyncCommandBase.cs" />
     <Compile Include="Utilities\FixedTimeCall.cs" />
+    <Compile Include="Utilities\MVVM\Converters\KopekToRubleConverter.cs" />
     <Compile Include="Utilities\MVVM\Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Utilities\MVVM\IAsyncCommand.cs" />
     <Compile Include="Utilities\Log.cs" />
     <Compile Include="Utilities\MVVM\NotifyTaskCompletion.cs" />
+    <Compile Include="Utilities\MVVM\PropertyChangedBase.cs" />
     <Compile Include="Utilities\PriceCounter.cs" />
     <Compile Include="API\SteamAPI\Models\SteamInventory.cs" />
     <Compile Include="API\SteamAPI\Models\SteamTrades.cs" />
@@ -237,6 +239,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

@@ -1,8 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Data;
 using AutoMapper;
 using TMBot.API.Factory;
 using TMBot.API.TMAPI;
@@ -24,22 +28,41 @@ namespace TMBot.Workers
 		//Апи для выполнения запросов
 		private readonly ITMAPI tmApi;
 
-		//Список продаваемых предметов
-		private IList<TradeItemViewModel> _trades;
+        public ObservableCollection<string> WTF { get; set; }
+        //Список продаваемых предметов
+        private object _tradesLock = new object();
+	    private ObservableCollection<TradeItemViewModel> _trades;
+	    public ObservableCollection<TradeItemViewModel> Trades
+	    {
+	        get { return _trades; }
+	        private set
+	        {
+                _trades = value;
+                BindingOperations.EnableCollectionSynchronization(_trades, _tradesLock);
+            }
+	    }
 
 		//Для управления потоком
 		private volatile bool _shouldRun;
+        public bool IsRunning => _shouldRun;
 
-		//Фоновый поток обновления цен
+	    //Фоновый поток обновления цен
 		private Thread _workThread;
 
-	    private ItemsRepository _repository;
+
+	    public ItemsRepository _repository { get; set; }
 
 		public SellWorker()
 		{
             _repository = new ItemsRepository();
 			tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
-		}
+
+            WTF = new ObservableCollection<string>();
+            WTF.Add("FFFF");
+            WTF.Add("FF4444");
+
+            Trades = new ObservableCollection<TradeItemViewModel>();
+        }
 
 		/// <summary>
 		/// Запуск обновления цен
@@ -53,20 +76,19 @@ namespace TMBot.Workers
              * настройки мин, макс цены
              */
 
-			var trades = tmApi.GetTrades();
-            _trades = new List<TradeItemViewModel>();
+            Trades.Clear();
+            var trades = tmApi.GetTrades();
 
             foreach(var trade_item in trades)
             {
                 Item db_item = _repository.GetById(trade_item.i_classid, trade_item.ui_real_instance);
                
                 //Заполняем поля
-                var mapper = MapperHelpers.MapTradeToTradeItem();
-                var item = mapper.Map<Trade, TradeItemViewModel>(trade_item);
+                var item = Mapper.Map<Trade, TradeItemViewModel>(trade_item);
 
                 if (db_item != null)
                 {
-                    mapper.Map<Item, TradeItemViewModel>(db_item, item);
+                    Mapper.Map<Item, TradeItemViewModel>(db_item, item);
                 }
                 else
                 {
@@ -80,7 +102,7 @@ namespace TMBot.Workers
                     _repository.Create(db_item);
                 }
 
-                _trades.Add(item);
+                Trades.Add(item); 
             }
 
 
@@ -99,7 +121,7 @@ namespace TMBot.Workers
 		}
 
 		//Функция потока
-		private void worker_thread()
+		private async void worker_thread()
 		{
 			/* Необходимо выполнять не более 3х запросов в секунду.
 			 * Запрос - ItemRequest
@@ -115,9 +137,9 @@ namespace TMBot.Workers
 
 			while (_shouldRun)
 			{
-				foreach (var item in _trades)
+				foreach (var item in Trades)
 				{
-					FixedTimeCall.Call(()=>{
+					await FixedTimeCall.Call(()=>{
                         update_price(item);
 						if (!_shouldRun)
 							return;
@@ -126,7 +148,8 @@ namespace TMBot.Workers
 				}
 			}
 		}
-
+    
+        //Обновляет цену предмета
 	    private void update_price(TradeItemViewModel item)
 	    {
             //Находим минимальную цену этого предмета на площадке

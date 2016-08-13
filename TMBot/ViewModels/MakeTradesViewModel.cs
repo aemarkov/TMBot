@@ -23,7 +23,7 @@ namespace TMBot.ViewModels
 		public ObservableCollection<InventoryItemViewModel> InventoryItems { get; private set; }
 
 		public IAsyncCommand UpdateInventoryCommand { get; private set; }
-		public IAsyncCommand BeginCommand { get; set; }
+		public IAsyncCommand BeginCommand { get; private set; }
 
 
 		// За какой процент цены выставлять

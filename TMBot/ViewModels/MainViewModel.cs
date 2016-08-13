@@ -16,13 +16,15 @@ namespace TMBot.ViewModels
 	/// </summary>
 	public class MainViewModel
 	{
+        //Вкладки
 		public HomeViewModel HomePage { get; set; }
 		public MakeTradesViewModel MakeTradesPage { get; set; }
 		public TradesViewModel TradesPage { get; set; }
 		public OrdersViewModel OrdersPage { get; set; }
 
-        private ObservableCollection<LogItem> _logList;
 
+        //Лог
+        private ObservableCollection<LogItem> _logList;
 	    private readonly object _logListLock = new object();
 	    public ObservableCollection<LogItem> LogList
 	    {
@@ -38,6 +40,9 @@ namespace TMBot.ViewModels
 		{
 			LogList = new ObservableCollection<LogItem>();
 			Log.NewLogMessage += Log_NewLogMessage;
+
+            //Mapper
+            MapperHelpers.InitializeMapper();
 
 			HomePage = new HomeViewModel();
 			MakeTradesPage = new MakeTradesViewModel();

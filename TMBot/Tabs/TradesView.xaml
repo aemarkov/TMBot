@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TMBot.Tabs"
+             xmlns:views="clr-namespace:TMBot.Views"
              mc:Ignorable="d" 
              d:DesignHeight="480" d:DesignWidth="640"
              Background="White">
@@ -18,31 +19,29 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        
-        <GroupBox Header="Управление" Grid.Row="0">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                
-                <Button Content="Обновить" Grid.Column="0"/>
-                <Button Content="Запустить" Grid.Column="1"/>
-            </Grid>
-        </GroupBox>
-        
-        <TextBlock Grid.Column="1"
+
+        <views:AsyncButton
+            Grid.Column ="0" 
+            Content="Запустить"
+            Command="{Binding ToggleCommand}"/>
+
+        <StackPanel Grid.Column="1">
+            <TextBlock HorizontalAlignment="Center">Статус</TextBlock>
+            <TextBlock 
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    Foreground="Red"
                    FontSize="20">
-            Не работает
-        </TextBlock>
+                Не работает
+            </TextBlock>
+        </StackPanel>
+
+        <Label Grid.Column="2" Content="{Binding SellWorker.Trades}"/>
         
         <GroupBox Header="Трейды"
                   Grid.Row="1" Grid.ColumnSpan="3">
             <DataGrid
-                     ItemsSource="{Binding InventoryItems}"
+                     ItemsSource="{Binding SellWorker.Trades}"
                      IsSynchronizedWithCurrentItem="True"
                       AutoGenerateColumns="False"
                       CanUserAddRows="False"

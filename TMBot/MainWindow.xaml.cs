@@ -17,6 +17,7 @@ using RestSharp;
 using RestSharp.Authenticators;
 using TMBot.API;
 using System.Net.Http;
+using MahApps.Metro.Controls;
 using Newtonsoft.Json;
 using TMBot.Models.Steam;
 using TMBot.API.SteamAPI;
@@ -29,7 +30,7 @@ namespace TMBot
 	/// <summary>
 	/// Логика взаимодействия для MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window
+	public partial class MainWindow
 	{
 		public MainViewModel ViewModel { get; set; }
 

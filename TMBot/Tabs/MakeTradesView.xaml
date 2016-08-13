@@ -51,6 +51,7 @@
 
                 <views:AsyncButton Content="Начать выставлять"
                         Command="{Binding BeginCommand}"/>
+                <Button Content="WTF"/>
             </StackPanel>
         </GroupBox>
         

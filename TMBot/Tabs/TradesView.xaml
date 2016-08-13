@@ -25,7 +25,7 @@
             Command="{Binding ToggleCommand}">
             
             <views:AsyncButton.Resources>
-                <Style BasedOn="{StaticResource AsyncButton}"  TargetType="{x:Type views:AsyncButton}">
+                <Style TargetType="{x:Type views:AsyncButton}" BasedOn="{StaticResource {x:Type views:AsyncButton}}">
                     <Setter Property="Content" Value="Запустить"/>
                     
                     <Style.Triggers>

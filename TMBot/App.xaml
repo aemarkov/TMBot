@@ -7,9 +7,22 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+
+                <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <!-- Accent and AppTheme setting -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+
+                <ResourceDictionary Source="Styles/Metro.xaml"/>
                 <ResourceDictionary Source="Styles/AsyncButtonStyle.xaml"/>
                 <ResourceDictionary Source="Styles/Styles.xaml"/>
                 <ResourceDictionary Source="Styles/ItemsTable.xaml"/>
+
             </ResourceDictionary.MergedDictionaries>
 
             <!-- converters -->
@@ -18,6 +31,5 @@
             <converters:KopekToRubleConverter x:Key="KopekToRubleConverter"/>
 
         </ResourceDictionary>
-
     </Application.Resources>
 </Application>

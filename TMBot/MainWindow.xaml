@@ -1,4 +1,5 @@
-﻿<Window x:Class="TMBot.MainWindow"
+﻿<Window  x:Class="TMBot.MainWindow"
+         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -9,7 +10,10 @@
         Title="MainWindow" 
         Height="350" Width="525"
         xmlns:viewModel="clr-namespace:TMBot.ViewModels"
-        xmlns:viewModel_viewModel="clr-namespace:TMBot.ViewModels.ViewModels">
+        xmlns:viewModel_viewModel="clr-namespace:TMBot.ViewModels.ViewModels"
+                       
+        >
+    
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewModel:HomeViewModel}">
             <tabs:HomeView/>
@@ -58,10 +62,12 @@
             <TabItem Content="{Binding Path=OrdersPage}"
                      Header="Покупка"/>
         </TabControl>
-        <ListBox Name="lbxLog"
-                     Grid.Row="1"
-                     Height="150" VerticalAlignment="Bottom"
+        
+        <GroupBox Grid.Row="1" Header="Лог">
+            <ListBox Height="150" VerticalAlignment="Bottom"
                      ItemsSource="{Binding LogList}"
                      IsSynchronizedWithCurrentItem="True"/>
+                         
+        </GroupBox>
     </Grid>
 </Window>

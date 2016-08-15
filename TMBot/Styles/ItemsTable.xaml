@@ -12,7 +12,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Image Source="{Binding ImageUrl}"/>
+                    <Image Source="{Binding ImageUrl, Mode=OneWay}"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -24,17 +24,17 @@
             <Setter.Value>
                 <ControlTemplate>
                     <StackPanel>
-                        <TextBlock Text="{Binding Path=Name}"/>
+                        <TextBlock Text="{Binding Path=Name, Mode=OneWay}" TextWrapping="Wrap"/>
                         <TextBlock x:Name="txtSelling" Text="Не выставляется" Foreground="Red"/>
-                        <TextBlock>
-                                        <Run Text="{Binding Path=ClassId}"></Run>
-                                        <Run Text="_"></Run>
-                                        <Run Text="{Binding Path=IntanceId}"></Run>
-                        </TextBlock>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Path=ClassId}"/>
+                            <TextBlock Text="_"/>
+                            <TextBlock Text="{Binding Path=ClassId}"/>
+                        </StackPanel>
                     </StackPanel>
 
                     <ControlTemplate.Triggers>
-                        <DataTrigger Binding="{Binding Path=IsSelling}"
+                        <DataTrigger Binding="{Binding Path=IsSelling, Mode=OneWay}"
                                                  Value="True">
                             <Setter Property="Text" TargetName="txtSelling" Value="Выставляется"/>
                             <Setter Property="Foreground" TargetName="txtSelling" Value="Green"/>

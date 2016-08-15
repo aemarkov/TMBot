@@ -135,8 +135,18 @@ namespace TMBot.ViewModels
             {
                 await FixedTimeCall.Call(() =>
                 {
-                    decimal price = PriceCounter.GetMinSellPrice<TTMAPI>(item.ClassId, item.IntanceId);
-                    price = (decimal)PricePercentage * price;
+                    int price;
+                    int? _price = PriceCounter.GetMinSellPrice<TTMAPI>(item.ClassId, item.IntanceId);
+                    
+                    //Товар не найден, поиск на площадке стима
+                    if (_price == null)
+                        price = PriceCounter.GetSteamMinSellPrice(item.ClassId, item.IntanceId);
+                    else
+                        price = (int) _price;
+
+                    
+
+                    price = (int)(PricePercentage * price);
                     tmApi.SetNewItem(item.ClassId, item.IntanceId, (int)price);
                     Log.d("Предмет {0}_{1} выставлен. за цену {2} коп.", item.ClassId, item.IntanceId, price);
                     count++;

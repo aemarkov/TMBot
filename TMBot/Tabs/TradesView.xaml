@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TMBot.Tabs"
              xmlns:views="clr-namespace:TMBot.Views"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
              d:DesignHeight="480" d:DesignWidth="640"
              Background="White">
@@ -39,7 +40,7 @@
             
         </views:AsyncButton>
 
-        <StackPanel Grid.Column="1">
+        <StackPanel Grid.Row="0" Grid.Column="1">
             <TextBlock HorizontalAlignment="Center">Статус</TextBlock>
             <Label
                    HorizontalAlignment="Center"
@@ -62,24 +63,34 @@
                 </Label.Resources>
             </Label>
         </StackPanel>
-
-        <Label Grid.Column="2" Content="{Binding SellWorker.Trades}"/>
         
+        <StackPanel Grid.Row="0" Grid.Column="2">
+            <TextBlock TextWrapping="Wrap">
+                Не поднимать цену, если следующая цена отличается меньше, чем на
+            </TextBlock>
+            <xctk:DecimalUpDown Minimum="0" Increment="0.01" FormatString="P0"
+                                           Value="{Binding Path=OffsetPercentage}"/>
+        </StackPanel>
+        
+        
+            
         <GroupBox Header="Трейды"
-                  Grid.Row="1" Grid.ColumnSpan="3">
+                  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
             <DataGrid
                      ItemsSource="{Binding SellWorker.Trades}"
                      IsSynchronizedWithCurrentItem="True"
                       AutoGenerateColumns="False"
                       CanUserAddRows="False"
                       CanUserDeleteRows="False"
-                      CanUserReorderColumns="False">
+                      CanUserReorderColumns="False"
+                      SelectedIndex="{Binding SellWorker.LastUpdateItemIndex}">
                 
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="Изображение" IsReadOnly="True" MinWidth="100" MaxWidth="100" CellStyle="{StaticResource ItemImageCell}"/>
                     <DataGridTemplateColumn Header="Название"  IsReadOnly="True" CellStyle="{StaticResource ItemNameCell}"/>
-                    <DataGridTextColumn Header="Цена ТМ" Binding="{Binding TMPrice, Converter={StaticResource KopekToRubleConverter}}"/>
-                    <DataGridTextColumn Header="Моя цена" Binding="{Binding MyPrice, Converter={StaticResource KopekToRubleConverter}}"/>
+                    <DataGridTextColumn Header="Цена ТМ" IsReadOnly="True" Binding="{Binding TMPrice, Converter={StaticResource KopekToRubleConverter}}"/>
+                    <DataGridTextColumn Header="Моя цена" IsReadOnly="True" Binding="{Binding MyPrice, Converter={StaticResource KopekToRubleConverter}}"/>
+                    <DataGridTextColumn Header="Минимальная цена"  Binding="{Binding PriceLimit, Converter={StaticResource KopekToRubleConverter}}"/>
                 </DataGrid.Columns>
             
             </DataGrid>

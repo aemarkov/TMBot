@@ -33,7 +33,7 @@ namespace TMBot.ViewModels
         private async Task toggle(object param)
         {
             if(!SellWorker.IsRunning)
-                SellWorker.Begin();
+                await Task.Run(()=>SellWorker.Begin());
             else
                 SellWorker.End();
         }

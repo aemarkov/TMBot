@@ -17,7 +17,8 @@ namespace TMBot.Utilities.MVVM.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            int kop =  (int)(decimal.Parse((string) value, NumberStyles.Currency)*100);
+            return kop;
         }
     }
 }

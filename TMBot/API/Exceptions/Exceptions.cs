@@ -18,6 +18,15 @@ namespace TMBot.API.Exceptions
 
     public class ItemNotFoundException : APIException
     {
-   
+    }
+
+    public class BadKeyException : APIException
+    {
+        
+    }
+
+    public class BadMethodException : APIException
+    {
+        
     }
 }

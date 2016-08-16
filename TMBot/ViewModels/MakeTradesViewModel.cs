@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using TMBot.API.Exceptions;
 using TMBot.API.Factory;
 using TMBot.API.SteamAPI;
@@ -62,43 +63,63 @@ namespace TMBot.ViewModels
 		private async Task load_inventory_game<TSteamAPI, TTMAPI>() where TSteamAPI : ISteamAPI
 																	 where TTMAPI : ITMAPI
 		{
-			Log.d("Получение инвентаря Steam...");
+		    try
+		    {
 
-			ISteamAPI steamApi = SteamFactory.GetInstance<SteamFactory>().GetAPI<TSteamAPI>();
-			ITMAPI tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
+		        Log.d("Получение инвентаря Steam...");
 
-			var inventory = await steamApi.GetSteamInventoryAsync();
+		        ISteamAPI steamApi = SteamFactory.GetInstance<SteamFactory>().GetAPI<TSteamAPI>();
+		        ITMAPI tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
 
-            IList<Trade> trades = tmApi.GetTrades();
+		        var inventory = await steamApi.GetSteamInventoryAsync();
 
-			//Число предметов, которые уже выставляются
-			int sellingCount = 0;
+		        IList<Trade> trades = tmApi.GetTrades();
+		        if (trades == null)
+		            throw new Exception();
 
-			InventoryItems.Clear();
+		        //Число предметов, которые уже выставляются
+		        int sellingCount = 0;
 
-			//Составляем список инвентаря
-			foreach (var item in inventory.rgInventory)
-			{
-				var rgItem = item.Value;
-				var description = inventory.rgDescriptions[rgItem.classid + "_" + rgItem.instanceid];
+		        InventoryItems.Clear();
 
-				string imageUrl = "http://cdn.steamcommunity.com/economy/image/" + description.icon_url;
+		        //Составляем список инвентаря
+		        foreach (var item in inventory.rgInventory)
+		        {
+		            var rgItem = item.Value;
+		            var description = inventory.rgDescriptions[rgItem.classid + "_" + rgItem.instanceid];
 
-			    bool isSelling = trades.Any(x => x.i_classid == rgItem.classid && x.ui_real_instance == rgItem.instanceid);
+		            string imageUrl = "http://cdn.steamcommunity.com/economy/image/" + description.icon_url;
 
-				if (isSelling)
-					sellingCount++;
+		            bool isSelling = trades.Any(x => x.i_classid == rgItem.classid && x.ui_real_instance == rgItem.instanceid);
 
-				InventoryItemViewModel inventoryItemViewModel = new InventoryItemViewModel() {	Name = description.name,
-																				ImageUrl = imageUrl,
-																				IsSelling = isSelling,
-																				ClassId = rgItem.classid,
-																				IntanceId = rgItem.instanceid};
-				InventoryItems.Add(inventoryItemViewModel);
-			}
+		            if (isSelling)
+		                sellingCount++;
 
-			Log.d("Загружено {0} предметов, выставляются: {1}", inventory.rgInventory.Count, sellingCount);
-		}
+		            InventoryItemViewModel inventoryItemViewModel = new InventoryItemViewModel()
+		            {
+		                Name = description.name,
+		                ImageUrl = imageUrl,
+		                IsSelling = isSelling,
+		                ClassId = rgItem.classid,
+		                IntanceId = rgItem.instanceid
+		            };
+		            InventoryItems.Add(inventoryItemViewModel);
+		        }
+
+		        Log.d("Загружено {0} предметов, выставляются: {1}", inventory.rgInventory.Count, sellingCount);
+		    }
+		    catch (BadKeyException)
+		    {
+
+		        MessageBox.Show("Не удалось загрузить инвентарь: неверный API-key", "Не удалось загрузить инвентарь",
+		            MessageBoxButton.OK, MessageBoxImage.Warning);
+		    }
+		    catch (Exception)
+		    {
+                MessageBox.Show("Не удалось загрузить инвентарь: неизвестная ошибка", "Не удалось загрузить инвентарь",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
 
 		#endregion
 

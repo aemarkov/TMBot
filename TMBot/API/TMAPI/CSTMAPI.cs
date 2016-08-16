@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using TMBot.API.Exceptions;
 using TMBot.API.TMAPI.Models;
 using TMBot.Utilities;
@@ -32,11 +33,38 @@ namespace TMBot.API.TMAPI
 		{
 			rest_client = new RestClient();
 			rest_client.BaseUrl = new Uri("https://csgo.tm/api");
-			rest_client.Authenticator = new KeyAuthenticator("key", "Yg0skGdNIVST7811G6zGF8XDY29165T");
+			rest_client.Authenticator = new KeyAuthenticator("key", key);
 
 			IsDebug = false;
 		}
 
+        //Проверяет ошибки, возвращаемые АПИ
+	    private void check_errors(string content)
+	    {
+	        JToken token = JToken.Parse(content);
+            if(token.Type==JTokenType.Array)
+                return;
+
+	        var error = token["error"];
+	        if (error != null)
+	        {
+	            if ((string) error == "Bad KEY")
+	            {
+	                Log.e("API error: bad key");
+	                throw new BadKeyException();
+	            }
+                else if ((string) error == "bad method")
+                {
+                    Log.e("API error: bad method");
+                    throw  new BadMethodException();
+                }
+	            else
+	            {
+                    Log.e("Unknown API error");
+	                throw new APIException();
+	            }
+	        }
+	    }
 
 		/// <summary>
 		/// Возвращает информацию о всех продажах
@@ -50,9 +78,11 @@ namespace TMBot.API.TMAPI
 			request.AddParameter("ru_or_en", "ru", ParameterType.UrlSegment);
 			var response = rest_client.Execute<ItemInfo>(request);
 
+            check_errors(response.Content);
+
 			//Если что-то пойдет не так, тут почему-то будут null в полях
 			//TODO: нормальная обработка ошибок запросов
-		    if (response.Data == null || response.Data.name == null)
+		    if (response.Data?.name == null)
 		        return null;
 
 			return response.Data;
@@ -77,10 +107,9 @@ namespace TMBot.API.TMAPI
 			var request = new RestRequest("GetOrders", Method.GET);
 			var response = rest_client.Execute<OrdersList>(request);
 
-		    if (response.Data == null)
-		        return null;
+            check_errors(response.Content);
 
-			return response.Data;
+            return response.Data;
 		}
 
 		/// <summary>
@@ -92,10 +121,9 @@ namespace TMBot.API.TMAPI
 			var request = new RestRequest("Trades", Method.GET);
 			var response = rest_client.Execute<List<Trade>>(request);
 
-		    if (response.Data == null)
-		        return null;
+            check_errors(response.Content);
 
-			return response.Data;
+		    return response.Data;
 		}
 
 		/// <summary>
@@ -124,11 +152,10 @@ namespace TMBot.API.TMAPI
 
 			var response = rest_client.Execute<ItemRequestResponse>(request);
 
-			//TODO: нормальная обработка ошибок запросов
-		    if (response.Data == null)
-		        return null;
+            //TODO: нормальная обработка ошибок запросов
+            check_errors(response.Content);
 
-			return response.Data;
+            return response.Data;
 		}
 
 		/// <summary>
@@ -151,11 +178,10 @@ namespace TMBot.API.TMAPI
 
 			var response = rest_client.Execute<SetPriceResponse>(request);
 
-			//TODO: нормальная обработка ошибок запросов
-		    if (response.Data == null)
-		        return null;
+            check_errors(response.Content);
+            //TODO: нормальная обработка ошибок запросов
 
-			return response.Data;
+            return response.Data;
 		}
 
 		/// <summary>
@@ -186,11 +212,10 @@ namespace TMBot.API.TMAPI
 
 			var response = rest_client.Execute<SetPriceResponse>(request);
 
-			//TODO: нормальная обработка ошибок запросов
-		    if (response.Data == null)
-		        return null;
+            check_errors(response.Content);
+            //TODO: нормальная обработка ошибок запросов
 
-			return response.Data;
+            return response.Data;
 		}
 
 		/// <summary>
@@ -216,11 +241,10 @@ namespace TMBot.API.TMAPI
 
 			var response = rest_client.Execute<UpdateOrderResponse>(request);
 
-			//TODO: нормальная обработка ошибок запросов
-		    if (response.Data == null)
-		        return null;
+            check_errors(response.Content);
+            //TODO: нормальная обработка ошибок запросов
 
-			return response.Data;
+            return response.Data;
 		}
 	}
 }

@@ -6,9 +6,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using AutoMapper;
+using TMBot.API.Exceptions;
 using TMBot.API.Factory;
 using TMBot.API.TMAPI;
 using TMBot.API.TMAPI.Models;
@@ -105,47 +107,60 @@ namespace TMBot.Workers
              * настройки мин, макс цены
              */
 
-            var repository = new ItemsRepository();
-            Trades.Clear();
-
-            var trades = tmApi.GetTrades();
-
-            foreach (var trade_item in trades)
+            try
             {
-                Item db_item = repository.GetById(trade_item.i_classid, trade_item.ui_real_instance);
+                var repository = new ItemsRepository();
+                Trades.Clear();
 
-                //Заполняем поля
-                var item = Mapper.Map<Trade, TradeItemViewModel>(trade_item);
+                var trades = tmApi.GetTrades();
 
-                //TODO: сделать нормально
-                //Цена почему-то не в копейках, а в рублях double
-                item.MyPrice = (int)(trade_item.ui_price * 100);
-
-                if (db_item != null)
+                foreach (var trade_item in trades)
                 {
-                    Mapper.Map<Item, TradeItemViewModel>(db_item, item);
-                }
-                else
-                {
-                    //Такого предмета нет в БД, создадим новый
-                    db_item = new Item()
+                    Item db_item = repository.GetById(trade_item.i_classid, trade_item.ui_real_instance);
+
+                    //Заполняем поля
+                    var item = Mapper.Map<Trade, TradeItemViewModel>(trade_item);
+
+                    //TODO: сделать нормально
+                    //Цена почему-то не в копейках, а в рублях double
+                    item.MyPrice = (int) (trade_item.ui_price*100);
+
+                    if (db_item != null)
                     {
-                        ClassId = item.ClassId,
-                        InstanceId = item.IntanceId
-                    };
+                        Mapper.Map<Item, TradeItemViewModel>(db_item, item);
+                    }
+                    else
+                    {
+                        //Такого предмета нет в БД, создадим новый
+                        db_item = new Item()
+                        {
+                            ClassId = item.ClassId,
+                            InstanceId = item.IntanceId
+                        };
 
-                    repository.Create(db_item);
+                        repository.Create(db_item);
+                    }
+
+                    item.PropertyChanged += Item_PropertyChanged;
+                    Trades.Add(item);
                 }
 
-                item.PropertyChanged += Item_PropertyChanged;
-                Trades.Add(item);
+
+                IsRunning = true;
+                _workThread = new Thread(worker_thread);
+                _workThread.Start();
+
             }
-
-
-            IsRunning = true;
-            _workThread = new Thread(worker_thread);
-            _workThread.Start();
-
+            catch (BadKeyException)
+            {
+                MessageBox.Show("Не удалось начать продажу: неверный API-key", "Не удалось начать продажу",
+                      MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Не удалось начать продажу: неизвестная ошибка", "Не удалось начать продажу",
+                      MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         /// <summary>
@@ -207,50 +222,59 @@ namespace TMBot.Workers
         //Обновляет цену предмета
 	    private void update_price(TradeItemViewModel item)
 	    {
-            //Находим минимальную цену этого предмета на площадке
-            int? _minPrice = PriceCounter.GetMinSellPrice<TTMAPI>(item.ClassId, item.IntanceId);
-	        int minPrice;
-
-	        if (_minPrice == null)
+	        try
 	        {
-	            //Товар не найден на площадке, значит единственный  - наш товар
-                //Значит мы ничего не делаем
-	            return;
-	        }
-	        else
-	            minPrice = (int) _minPrice;
+                //Находим минимальную цену этого предмета на площадке
+                int? _minPrice = PriceCounter.GetMinSellPrice<TTMAPI>(item.ClassId, item.IntanceId);
+	            int minPrice;
 
-            //Уменьшаем ее на одну копейку
-            item.TMPrice = minPrice;
-            int new_my_price;
+	            if (_minPrice == null)
+	            {
+	                //Товар не найден на площадке, значит единственный  - наш товар
+                    //Значит мы ничего не делаем
+	                return;
+	            }
+	            else
+	                minPrice = (int) _minPrice;
 
-            /* Если минимальная цена меньше текущей - делаем нашу меньше минимальной на 
-             * 1 коп.
-             * 
-             * Если минимальная - наша, то увеличиваем цену (до минимальной - 1коп) только
-             * если разница больше 10%
-             */
-	        if (minPrice < item.MyPrice || ((minPrice - item.MyPrice)/(float) item.MyPrice > OffsetPercentage))
-	        {
-	            new_my_price = minPrice - 1;
-	        }
-	        else
-	        {
-	            //Цену менять не надо
-                return;
-	        }
+                //Уменьшаем ее на одну копейку
+                item.TMPrice = minPrice;
+                int new_my_price;
 
-	        if (new_my_price < item.PriceLimit)
-                new_my_price = item.PriceLimit;
+                /* Если минимальная цена меньше текущей - делаем нашу меньше минимальной на 
+                 * 1 коп.
+                 * 
+                 * Если минимальная - наша, то увеличиваем цену (до минимальной - 1коп) только
+                 * если разница больше 10%
+                 */
+	            if (minPrice < item.MyPrice || ((minPrice - item.MyPrice)/(float) item.MyPrice > OffsetPercentage))
+	            {
+	                new_my_price = minPrice - 1;
+	            }
+	            else
+	            {
+	                //Цену менять не надо
+                    return;
+	            }
 
-            //Обновляем цену предмета
-            //TODO: убедиться, что itemid - это точно ui_id
-            tmApi.SetPrice(item.ItemId, (int)new_my_price);
+	            if (new_my_price < item.PriceLimit)
+                    new_my_price = item.PriceLimit;
 
-            //Обновляем модель
-	        item.MyPrice = new_my_price;
-	        item.TMPrice = minPrice;
+                //Обновляем цену предмета
+                //TODO: убедиться, что itemid - это точно ui_id
+                tmApi.SetPrice(item.ItemId, (int)new_my_price);
 
-	    }
+                //Обновляем модель
+	            item.MyPrice = new_my_price;
+	            item.TMPrice = minPrice;
+
+            }
+            catch (Exception)
+            {
+
+                Log.e("Произошла ошибка при обновлении цены предмета {0}_{1}",item.ClassId,item.IntanceId);
+            }
+
+        }
     }
 }

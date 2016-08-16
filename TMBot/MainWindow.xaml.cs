@@ -38,7 +38,7 @@ namespace TMBot
 		{
 
 			TMFactory tm_factory = AbstactAPIFactory<ITMAPI>.GetInstance<TMFactory>();
-			tm_factory.CreateAPI<CSTMAPI>("Yg0skGdNIVST7811G6zGF8XDY29165T", true);
+			tm_factory.CreateAPI<CSTMAPI>("69SiW4t4ja7BBdihH2UCjb31x275b14", true);
 
 			SteamFactory s_factory = AbstactAPIFactory<ISteamAPI>.GetInstance<SteamFactory>();
 			s_factory.CreateAPI<CSSteamAPI>("76561198289262955", "868AC98202BC8C4912E3864E26881E1C");
@@ -50,6 +50,7 @@ namespace TMBot
 		    //var client = new RestClient();
 		    //client.BaseUrl = new Uri("https://csgo.tm/api");
 		    //client.Authenticator = new KeyAuthenticator("key", "Yg0skGdNIVST7811G6zGF8XDY29165T");
+		    
 
 		    //var request = new RestRequest("GetWSAuth", Method.GET);
 		    //var websock = client.Execute<WebSocketAuth>(request);

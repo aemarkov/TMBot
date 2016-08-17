@@ -12,6 +12,7 @@ using System.Windows.Media;
 using AutoMapper;
 using TMBot.API.Exceptions;
 using TMBot.API.Factory;
+using TMBot.API.SteamAPI;
 using TMBot.API.TMAPI;
 using TMBot.API.TMAPI.Models;
 using TMBot.Database;
@@ -27,10 +28,11 @@ namespace TMBot.Workers
 	/// предметов в фоне
 	/// </summary>
 	/// <typeparam name="TTMAPI">Класс АПИ площадки</typeparam>
-	public class SellWorker<TTMAPI> : PropertyChangedBase where TTMAPI: ITMAPI
+	public class SellWorker<TTMAPI,TSteamAPI> : PropertyChangedBase where TTMAPI: ITMAPI where TSteamAPI: ISteamAPI
 	{
 		//Апи для выполнения запросов
 		private readonly ITMAPI tmApi;
+	    private readonly ISteamAPI steamApi;
 
         //Список продаваемых предметов
         #region Trades
@@ -66,12 +68,12 @@ namespace TMBot.Workers
         /// Текущий выделенный элемент списка
         /// </summary>
         #region LastUpdateItemIndex
-        public int LastUpdateItemIndex
+        public TradeItemViewModel LastUpdateItem
 	    {
-            get { return _lastUpdatedItemIndex; }
-            set { _lastUpdatedItemIndex = value; NotifyPropertyChanged(); }
+            get { return _lastUpdatedItem; }
+            set { _lastUpdatedItem = value; NotifyPropertyChanged(); }
 	    }
-	    private int _lastUpdatedItemIndex;
+	    private TradeItemViewModel _lastUpdatedItem;
         #endregion
 
 
@@ -92,6 +94,7 @@ namespace TMBot.Workers
 		{
             //_repository = new ItemsRepository();
 			tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
+		    steamApi = SteamFactory.GetInstance<SteamFactory>().GetAPI<TSteamAPI>();
             Trades = new ObservableCollection<TradeItemViewModel>();
         }
 
@@ -141,6 +144,7 @@ namespace TMBot.Workers
                         repository.Create(db_item);
                     }
 
+                    item.ImageUrl = steamApi.GetImageUrl(item.ClassId);
                     item.PropertyChanged += Item_PropertyChanged;
                     Trades.Add(item);
                 }
@@ -202,15 +206,13 @@ namespace TMBot.Workers
 
 			while (IsRunning)
 			{
-			    int current_item = 0;
 				foreach (var item in Trades)
 				{
 					await FixedTimeCall.Call(()=>{
                         update_price(item);
 					});
 
-				    LastUpdateItemIndex = current_item+1;
-				    current_item++;
+				    LastUpdateItem = item;
 
                     if (!IsRunning)
                         return;

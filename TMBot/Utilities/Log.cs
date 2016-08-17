@@ -37,7 +37,7 @@ namespace TMBot.Utilities
 
 		public static void w(string format, params object[] args)
 		{
-			Debug.WriteLine("ERROR: " + format, args);
+			Debug.WriteLine("WARNING: " + format, args);
 			string text = String.Format(format, args);
 			NewLogMessage?.Invoke(text, Level.WARNING);
 		}

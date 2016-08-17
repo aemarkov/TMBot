@@ -24,5 +24,12 @@ namespace TMBot.API.SteamAPI
 		/// </summary>
 		/// <returns></returns>
 		Task<SteamTrades> GetSteamTradesAsync();
+
+        /// <summary>
+        /// Возвращает ссылку на изображение предмета
+        /// </summary>
+        /// <param name="classid">Тип предмета</param>
+        /// <returns></returns>
+	    string GetImageUrl(string classid);
 	}
 }

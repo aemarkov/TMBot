@@ -82,8 +82,7 @@
                       AutoGenerateColumns="False"
                       CanUserAddRows="False"
                       CanUserDeleteRows="False"
-                      CanUserReorderColumns="False"
-                      SelectedIndex="{Binding SellWorker.LastUpdateItemIndex}">
+                      CanUserReorderColumns="False">
                 
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="Изображение" IsReadOnly="True" MinWidth="100" MaxWidth="100" CellStyle="{StaticResource ItemImageCell}"/>

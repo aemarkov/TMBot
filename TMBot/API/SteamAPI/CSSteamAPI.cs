@@ -16,6 +16,7 @@ namespace TMBot.API.SteamAPI
 		string userid;
 		string api_key;
 		HttpClient http_client;
+        private static int cs_go_id = 730;
 
 		/// <summary>
 		/// Создает новый объект для запросов к апи стима
@@ -37,7 +38,7 @@ namespace TMBot.API.SteamAPI
 		{
 			//TOOD: не только CS:GO
 			//TODO: нормальная обработка ошибок запросов
-			var response =  await http_client.GetAsync("http://steamcommunity.com/profiles/"+userid+"/inventory/json/730/2").ConfigureAwait(false);
+			var response =  await http_client.GetAsync("http://steamcommunity.com/profiles/"+userid+$"/inventory/json/{cs_go_id}/2").ConfigureAwait(false);
 			string content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 			return JsonConvert.DeserializeObject<SteamInventory>(content);
 		}
@@ -55,5 +56,10 @@ namespace TMBot.API.SteamAPI
 			return JsonConvert.DeserializeObject<SteamTrades>(content);
 
 		}
-	}
+
+        public string GetImageUrl(string class_id)
+        {
+            return $"https://steamcommunity-a.akamaihd.net/economy/image/class/{cs_go_id}/{class_id}/150fx125f";
+        }
+    }
 }

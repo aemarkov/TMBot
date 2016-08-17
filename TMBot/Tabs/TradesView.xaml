@@ -77,7 +77,7 @@
         <GroupBox Header="Трейды"
                   Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
             <DataGrid
-                     ItemsSource="{Binding SellWorker.Trades}"
+                     ItemsSource="{Binding SellWorker.Items}"
                      IsSynchronizedWithCurrentItem="True"
                       AutoGenerateColumns="False"
                       CanUserAddRows="False"

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using TMBot.Annotations;
+using TMBot.Database;
 using TMBot.Utilities;
 using TMBot.Utilities.MVVM;
 using TMBot.ViewModels.ViewModels;
@@ -46,7 +48,54 @@ namespace TMBot.ViewModels.ViewModels
         public string ItemId { get { return _itemId; } set { _itemId = value; NotifyPropertyChanged(); } }
         public int TMPrice { get { return _tmPrice; } set { _tmPrice = value; NotifyPropertyChanged(); } }
         public int MyPrice { get { return _myPrice; } set { _myPrice = value; NotifyPropertyChanged(); } }
-        public int PriceLimit { get { return _priceLimit; } set { _priceLimit = value; NotifyPropertyChanged(); } }
-        public int? CountLimint { get { return _countLimit; } set { _countLimit = value; NotifyPropertyChanged(); } }
+
+        /// <summary>
+        /// Ограничение по цене
+        /// </summary>
+        public int PriceLimit
+        {
+            get { return _priceLimit; }
+            set
+            {
+                if (PriceLimit == value) return;
+
+                _priceLimit = value;
+                NotifyPropertyChanged();
+
+                _save();
+            }
+        }
+
+        public int? CountLimit
+        {
+            get { return _countLimit; }
+            set
+            {
+                if(CountLimit == value) return;
+
+                _countLimit = value;
+                NotifyPropertyChanged();
+
+                _save();
+            }
+        }
+
+        //Сохраняет изменения этой модели в репозитории
+        /* Не знаю, насколько это вообще кошерно - обновлять
+         * модель из модели вида, потому что неизвестно, в общем случае,
+         * из чего сделана эта модель вида, может она не имеет отношения
+         * к Item */
+        private void _save()
+        {
+            var repository = new ItemsRepository();
+            var dto_model = repository.GetById(ClassId, IntanceId);
+
+            if(dto_model==null)
+                return;
+
+            dto_model.PriceLimit = PriceLimit;
+            dto_model.CountLimit = CountLimit;
+            repository.Update(dto_model);
+        }
     }
 }

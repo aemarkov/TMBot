@@ -3,7 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:TMBot"
              StartupUri="MainWindow.xaml"
-             xmlns:converters="clr-namespace:TMBot.Utilities.MVVM.Converters">
+             xmlns:converters="clr-namespace:TMBot.Utilities.MVVM.Converters"
+             xmlns:validation="clr-namespace:TMBot.Utilities.MVVM.Validation"
+             xmlns:system="clr-namespace:System;assembly=mscorlib">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -29,6 +31,9 @@
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
             <converters:KopekToRubleConverter x:Key="KopekToRubleConverter"/>
+            <converters:CountConverter x:Key="CountConverter"/>
+            <validation:DecimalValidationRule x:Key="DecimalValidator"/>
+            <validation:IntValidationRule x:Key="IntValidator"/>
 
         </ResourceDictionary>
     </Application.Resources>

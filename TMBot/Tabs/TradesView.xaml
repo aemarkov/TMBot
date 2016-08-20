@@ -6,93 +6,119 @@
              xmlns:local="clr-namespace:TMBot.Tabs"
              xmlns:views="clr-namespace:TMBot.Views"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:validation="clr-namespace:TMBot.Utilities.MVVM.Validation"
              mc:Ignorable="d" 
              d:DesignHeight="480" d:DesignWidth="640"
              Background="White">
-    <Grid>
-        
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-       <Grid.ColumnDefinitions>
-           <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
+    
+    <DockPanel>
 
-        <views:AsyncButton
+        <Grid DockPanel.Dock="Top" Margin="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <views:AsyncButton
             Grid.Column ="0" 
             Command="{Binding ToggleCommand}">
-            
-            <views:AsyncButton.Resources>
-                <Style TargetType="{x:Type views:AsyncButton}" BasedOn="{StaticResource {x:Type views:AsyncButton}}">
-                    <Setter Property="Content" Value="Запустить"/>
-                    
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding SellWorker.IsRunning}" Value="True">
-                            <Setter Property="Content" Value="Остановить"/>
-                        </DataTrigger>
-                    </Style.Triggers>
 
-                </Style>
-            </views:AsyncButton.Resources>
-            
-        </views:AsyncButton>
+                <views:AsyncButton.Resources>
+                    <Style TargetType="{x:Type views:AsyncButton}" BasedOn="{StaticResource {x:Type views:AsyncButton}}">
+                        <Setter Property="Content" Value="Запустить"/>
 
-        <StackPanel Grid.Row="0" Grid.Column="1">
-            <TextBlock HorizontalAlignment="Center">Статус</TextBlock>
-            <Label
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SellWorker.IsRunning}" Value="True">
+                                <Setter Property="Content" Value="Остановить"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+
+                    </Style>
+                </views:AsyncButton.Resources>
+
+            </views:AsyncButton>
+
+            <StackPanel Grid.Row="0" Grid.Column="1">
+                <TextBlock HorizontalAlignment="Center">Статус</TextBlock>
+                <Label
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    FontSize="20">
-                <Label.Resources>
-                    <Style  TargetType="{x:Type Label}">
-                        <Setter Property="Foreground" Value="Red"/>
-                        <Setter Property="Content" Value="Не работает"/>
-                        
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding SellWorker.IsRunning}"
+                    <Label.Resources>
+                        <Style  TargetType="{x:Type Label}">
+                            <Setter Property="Foreground" Value="Red"/>
+                            <Setter Property="Content" Value="Не работает"/>
+
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SellWorker.IsRunning}"
                                          Value="True">
-                                <Setter Property="Foreground" Value="Green"/>
-                                <Setter Property="Content" Value="Работает"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                        
-                    </Style>
-                </Label.Resources>
-            </Label>
-        </StackPanel>
-        
-        <StackPanel Grid.Row="0" Grid.Column="2">
-            <TextBlock TextWrapping="Wrap">
-                Не поднимать цену, если следующая цена отличается меньше, чем на
-            </TextBlock>
-            <xctk:DecimalUpDown Minimum="0" Increment="0.01" FormatString="P0"
+                                    <Setter Property="Foreground" Value="Green"/>
+                                    <Setter Property="Content" Value="Работает"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+
+                        </Style>
+                    </Label.Resources>
+                </Label>
+            </StackPanel>
+
+            <StackPanel Grid.Row="0" Grid.Column="2">
+                <TextBlock TextWrapping="Wrap">
+                    Максимальная разница
+                </TextBlock>
+                <xctk:DecimalUpDown Minimum="0" Increment="0.01" FormatString="P0"
                                            Value="{Binding Path=OffsetPercentage}"/>
-        </StackPanel>
-        
-        
-            
+            </StackPanel>
+
+        </Grid>
+
         <GroupBox Header="Трейды"
-                  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
+                  DockPanel.Dock="Bottom">
             <DataGrid
-                     ItemsSource="{Binding SellWorker.Items}"
+                     ItemsSource="{Binding Worker.Items}"
                      IsSynchronizedWithCurrentItem="True"
                       AutoGenerateColumns="False"
                       CanUserAddRows="False"
                       CanUserDeleteRows="False"
                       CanUserReorderColumns="False">
-                
+
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="Изображение" IsReadOnly="True" MinWidth="100" MaxWidth="100" CellStyle="{StaticResource ItemImageCell}"/>
                     <DataGridTemplateColumn Header="Название"  IsReadOnly="True" CellStyle="{StaticResource ItemNameCell}"/>
                     <DataGridTextColumn Header="Цена ТМ" IsReadOnly="True" Binding="{Binding TMPrice, Converter={StaticResource KopekToRubleConverter}}"/>
                     <DataGridTextColumn Header="Моя цена" IsReadOnly="True" Binding="{Binding MyPrice, Converter={StaticResource KopekToRubleConverter}}"/>
-                    <DataGridTextColumn Header="Минимальная цена"  Binding="{Binding PriceLimit, Converter={StaticResource KopekToRubleConverter}}"/>
+                    <!--<DataGridTextColumn Header="Минимальная цена" 
+                                        Binding="{Binding PriceLimit, Converter={StaticResource KopekToRubleConverter}, ValidationRules={StaticResource DecimalValidator}}"/>-->
+                    <DataGridTextColumn Header="Максимальная цена">
+                        <DataGridTextColumn.Binding>
+                            <Binding Path="PriceLimit" Converter="{StaticResource KopekToRubleConverter}">
+                                <Binding.ValidationRules>
+                                    <validation:DecimalValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </DataGridTextColumn.Binding>
+                    </DataGridTextColumn>
+                    
+                    <!--<DataGridTextColumn Header="Максимальное количество"
+                                        Binding="{Binding CountLimit, Converter={StaticResource CountConverter}}"/>-->
+
+                    <DataGridTextColumn Header="Максимальное количество">
+                        <DataGridTextColumn.Binding>
+                            <Binding Path="CountLimit" Converter="{StaticResource CountConverter}">
+                                <Binding.ValidationRules>
+                                    <validation:IntValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </DataGridTextColumn.Binding>
+                    </DataGridTextColumn>
+
                 </DataGrid.Columns>
-            
+
             </DataGrid>
         </GroupBox>
-    </Grid>
+    </DockPanel>
 </UserControl>

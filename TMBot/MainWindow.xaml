@@ -8,10 +8,10 @@
         xmlns:tabs="clr-namespace:TMBot.Tabs"
         mc:Ignorable="d"
         Title="MainWindow" 
-        Height="350" Width="525"
+        Height="600" Width="800"
         xmlns:viewModel="clr-namespace:TMBot.ViewModels"
         xmlns:viewModel_viewModel="clr-namespace:TMBot.ViewModels.ViewModels"
-                       
+                        
         >
     
     <Window.Resources>

@@ -152,7 +152,6 @@ namespace TMBot.Workers
                     }
 
                     item.ImageUrl = steamApi.GetImageUrl(item.ClassId);
-                    item.PropertyChanged += Item_PropertyChanged;
                     Items.Add(item);
                 }
 
@@ -161,11 +160,11 @@ namespace TMBot.Workers
                 _workThread.Start();
 
             }
-            catch (BadKeyException)
+            catch (BadKeyException exp)
             {
                 ShowErrorMessage("неверный API-key");
             }
-            catch (Exception)
+            catch (Exception exp)
             {
                 ShowErrorMessage("неизвестная ошибка");
             }
@@ -177,20 +176,6 @@ namespace TMBot.Workers
         public void End()
         {
             IsRunning = false;
-        }
-
-        //Сохранение значений из таблицы в БД
-        private void Item_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            var item = (TradeItemViewModel)sender;
-            if (e.PropertyName == "CountLimint" || e.PropertyName == "PriceLimit")
-            {
-                var repository = new ItemsRepository();
-                var dto_item = repository.GetById(item.ClassId, item.IntanceId);
-                dto_item.CountLimit = item.CountLimint;
-                dto_item.PriceLimit = item.PriceLimit;
-                repository.Update(dto_item);
-            }
         }
 
         //Функция потока обновления цены

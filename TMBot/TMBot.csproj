@@ -142,12 +142,14 @@
     <Compile Include="Utilities\MVVM\AsyncCommand.cs" />
     <Compile Include="Utilities\MVVM\AsyncCommandBase.cs" />
     <Compile Include="Utilities\FixedTimeCall.cs" />
+    <Compile Include="Utilities\MVVM\Converters\CountConverter.cs" />
     <Compile Include="Utilities\MVVM\Converters\KopekToRubleConverter.cs" />
     <Compile Include="Utilities\MVVM\Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Utilities\MVVM\IAsyncCommand.cs" />
     <Compile Include="Utilities\Log.cs" />
     <Compile Include="Utilities\MVVM\NotifyTaskCompletion.cs" />
     <Compile Include="Utilities\MVVM\PropertyChangedBase.cs" />
+    <Compile Include="Utilities\MVVM\Validation\StringValidationRule.cs" />
     <Compile Include="Utilities\PriceCounter.cs" />
     <Compile Include="API\SteamAPI\Models\SteamInventory.cs" />
     <Compile Include="API\SteamAPI\Models\SteamTrades.cs" />
@@ -167,6 +169,7 @@
       <DependentUpon>TradesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utilities\MVVM\RelayCommand.cs" />
+    <Compile Include="ViewModels\BaseWorkerViewModel.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MakeTradesViewModel.cs" />

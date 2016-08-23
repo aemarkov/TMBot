@@ -43,6 +43,12 @@ namespace TMBot.Workers
              * только если разница больше заданных %
              */
 
+            if (item.PriceLimit == 0)
+            {
+                myNewPrice = item.MyPrice;
+                return false;
+            }
+
             if (tm_price > item.MyPrice || ((item.MyPrice - tm_price) /(float) item.MyPrice > OffsetPercentage))
                 myNewPrice = tm_price + 1;
             else

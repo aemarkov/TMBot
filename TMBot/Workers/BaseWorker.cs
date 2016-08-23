@@ -164,6 +164,10 @@ namespace TMBot.Workers
             {
                 ShowErrorMessage("неверный API-key");
             }
+            catch (APIException exp)
+            {
+                ShowErrorMessage(Environment.NewLine+exp.Message);
+            }
             catch (Exception exp)
             {
                 ShowErrorMessage("неизвестная ошибка");
@@ -241,10 +245,10 @@ namespace TMBot.Workers
                 item.MyPrice = my_new_price;
                 item.TMPrice = tm_price;
             }
-            catch (Exception)
+            catch (Exception exp)
             {
 
-                Log.e("Произошла ошибка при обновлении цены предмета {0}_{1}", item.ClassId, item.IntanceId);
+                Log.e("Произошла ошибка при обновлении цены предмета {0}_{1}: {2}", item.ClassId, item.IntanceId, exp.Message);
             }
         }
 

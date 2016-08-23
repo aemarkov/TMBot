@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TMBot.API.Exceptions;
 using TMBot.API.TMAPI.Models;
@@ -40,9 +41,20 @@ namespace TMBot.API.TMAPI
 
         //Проверяет ошибки, возвращаемые АПИ
 	    private void check_errors(string content)
-	    {
-	        JToken token = JToken.Parse(content);
-            if(token.Type==JTokenType.Array)
+        { 
+	        JToken token;
+	        try
+	        {
+	            token = JToken.Parse(content);
+	        }
+	        catch (JsonException exp)
+	        {
+	            Log.e($"API not in JSON: {content}");
+                throw new APIException(content);
+	        }
+
+
+	        if(token.Type==JTokenType.Array)
                 return;
 
 	        var error = token["error"];
@@ -61,7 +73,7 @@ namespace TMBot.API.TMAPI
 	            else
 	            {
                     Log.e("Unknown API error");
-	                throw new APIException();
+	                throw new APIException((string)error);
 	            }
 	        }
 	    }
@@ -135,7 +147,7 @@ namespace TMBot.API.TMAPI
 		{
 			if(IsDebug)
 			{
-				Log.w("ItemRequest({0},{1})",in_out, botid);
+				//Log.w("ItemRequest({0}, {1})",in_out, botid);
 				return null;
 			}
 
@@ -168,7 +180,7 @@ namespace TMBot.API.TMAPI
 		{
 			if (IsDebug)
 			{
-				Log.w("SetNewItem({0},{1})", classid_instanceid, price);
+				//Log.w("SetNewItem({0}, {1})", classid_instanceid, price);
 				return null;
 			}
 
@@ -202,7 +214,7 @@ namespace TMBot.API.TMAPI
 		{
 			if (IsDebug)
 			{
-				Log.w("SetPrice({0},{1})", itemid, price);
+				//Log.w("SetPrice({0}, {1})", itemid, price);
 				return null;
 			}
 
@@ -230,7 +242,7 @@ namespace TMBot.API.TMAPI
 		{
 			if (IsDebug)
 			{
-				Log.w("UpdateOrder({0},{1},{2})", classid, instanceid, price);
+				//Log.w("UpdateOrder({0}, {1}, {2})", classid, instanceid, price);
 				return null;
 			}
 

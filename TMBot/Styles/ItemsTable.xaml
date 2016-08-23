@@ -29,7 +29,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding Path=ClassId}"/>
                             <TextBlock Text="_"/>
-                            <TextBlock Text="{Binding Path=ClassId}"/>
+                            <TextBlock Text="{Binding Path=IntanceId}"/>
                         </StackPanel>
                     </StackPanel>
 

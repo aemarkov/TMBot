@@ -36,7 +36,28 @@ namespace TMBot.Workers
 
         protected override bool GetItemNewPrice(TradeItemViewModel item, int tm_price, ref int myNewPrice)
         {
-            myNewPrice = tm_price + 1;
+            /* Если максимальная цена больше текущей, то увеличиваем на 1 коп
+             * нашу цену. 
+             * 
+             * Если максимальная - наша, то уменьшаем цену (до макс+1 коп)
+             * только если разница больше заданных %
+             */
+
+            if (tm_price > item.MyPrice || ((item.MyPrice - tm_price) /(float) item.MyPrice > OffsetPercentage))
+                myNewPrice = tm_price + 1;
+            else
+            {
+                myNewPrice = item.MyPrice;
+
+                if (myNewPrice > item.PriceLimit)
+                    myNewPrice = item.PriceLimit;
+
+                return false;
+            }
+
+            if (myNewPrice > item.PriceLimit)
+                myNewPrice = item.PriceLimit;
+
             return true;
         }
 

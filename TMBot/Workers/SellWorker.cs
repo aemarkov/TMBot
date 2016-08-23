@@ -61,9 +61,9 @@ namespace TMBot.Workers
                  * 1 коп.
                  * 
                  * Если минимальная - наша, то увеличиваем цену (до минимальной - 1коп) только
-                 * если разница больше 10%
+                 * если разница больше заданных %
                  */
-            if (tm_price < item.MyPrice || ((tm_price - item.MyPrice) / (float)item.MyPrice > OffsetPercentage))
+            if (tm_price < item.MyPrice || ((tm_price - item.MyPrice) / (float)tm_price > OffsetPercentage))
             {
                 myNewPrice = tm_price - 1;
             }
@@ -71,6 +71,10 @@ namespace TMBot.Workers
             {
                 //Цену менять не надо
                 myNewPrice = item.MyPrice;
+
+                if (myNewPrice < item.PriceLimit)
+                    myNewPrice = item.PriceLimit;
+
                 return false;
             }
 

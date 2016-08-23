@@ -89,7 +89,7 @@ namespace TMBot.Workers
             }
         }
 
-        private float _offsetPercentage;
+        private float _offsetPercentage=0;
 
         #endregion
 

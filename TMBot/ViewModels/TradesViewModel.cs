@@ -1,4 +1,5 @@
-﻿using TMBot.API.SteamAPI;
+﻿using System.Windows;
+using TMBot.API.SteamAPI;
 using TMBot.API.TMAPI;
 using TMBot.API.TMAPI.Models;
 using TMBot.Workers;
@@ -16,6 +17,9 @@ namespace TMBot.ViewModels
             Worker = new SellWorker<CSTMAPI,CSSteamAPI>();
         }
 
-      
-    }
+
+	    public override bool HasCountLimit => false;
+	    public override string PriceLimitName => "Минимальная цена";
+        public Visibility Vis => Visibility.Collapsed;
+	}
 }

@@ -14,6 +14,9 @@ namespace TMBot.ViewModels
         public IAsyncCommand ToggleCommand { get; set; }
         public  BaseWorker<CSTMAPI, CSSteamAPI, TItem> Worker { get; set; }
 
+        public abstract bool HasCountLimit { get; }
+        public abstract string PriceLimitName { get; }
+
         protected BaseWorkerViewModel()
         {
             ToggleCommand = AsyncCommand.Create(toggle);

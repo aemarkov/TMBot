@@ -32,7 +32,7 @@
                         <Setter Property="Content" Value="Запустить"/>
 
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SellWorker.IsRunning}" Value="True">
+                            <DataTrigger Binding="{Binding Worker.IsRunning}" Value="True">
                                 <Setter Property="Content" Value="Остановить"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -54,7 +54,7 @@
                             <Setter Property="Content" Value="Не работает"/>
 
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding SellWorker.IsRunning}"
+                                <DataTrigger Binding="{Binding Worker.IsRunning}"
                                          Value="True">
                                     <Setter Property="Foreground" Value="Green"/>
                                     <Setter Property="Content" Value="Работает"/>
@@ -71,7 +71,7 @@
                     Максимальная разница
                 </TextBlock>
                 <xctk:DecimalUpDown Minimum="0" Increment="0.01" FormatString="P0"
-                                           Value="{Binding Path=OffsetPercentage}"/>
+                                           Value="{Binding Worker.OffsetPercentage}"/>
             </StackPanel>
 
         </Grid>
@@ -84,7 +84,8 @@
                       AutoGenerateColumns="False"
                       CanUserAddRows="False"
                       CanUserDeleteRows="False"
-                      CanUserReorderColumns="False">
+                      CanUserReorderColumns="False"
+                      DataContext="{Binding }">
 
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="Изображение" IsReadOnly="True" MinWidth="100" MaxWidth="100" CellStyle="{StaticResource ItemImageCell}"/>
@@ -93,7 +94,12 @@
                     <DataGridTextColumn Header="Моя цена" IsReadOnly="True" Binding="{Binding MyPrice, Converter={StaticResource KopekToRubleConverter}}"/>
                     <!--<DataGridTextColumn Header="Минимальная цена" 
                                         Binding="{Binding PriceLimit, Converter={StaticResource KopekToRubleConverter}, ValidationRules={StaticResource DecimalValidator}}"/>-->
-                    <DataGridTextColumn Header="Максимальная цена">
+                    <DataGridTextColumn>
+                        <DataGridTextColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DataContext.PriceLimitName, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                            </DataTemplate>
+                        </DataGridTextColumn.HeaderTemplate>
                         <DataGridTextColumn.Binding>
                             <Binding Path="PriceLimit" Converter="{StaticResource KopekToRubleConverter}">
                                 <Binding.ValidationRules>
@@ -106,7 +112,9 @@
                     <!--<DataGridTextColumn Header="Максимальное количество"
                                         Binding="{Binding CountLimit, Converter={StaticResource CountConverter}}"/>-->
 
-                    <DataGridTextColumn Header="Максимальное количество">
+                    <DataGridTextColumn Header="Максимальное количество"
+                                        Visibility="{Binding DataContext.Vis, RelativeSource={RelativeSource AncestorType=DataGrid}}">
+
                         <DataGridTextColumn.Binding>
                             <Binding Path="CountLimit" Converter="{StaticResource CountConverter}">
                                 <Binding.ValidationRules>

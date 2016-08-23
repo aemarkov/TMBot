@@ -14,7 +14,8 @@ namespace TMBot.Utilities
         {
             Mapper.Initialize(cfg =>
             {
-               MapTradeToTradeItemViewModel(cfg);
+                MapTradeToTradeItemViewModel(cfg);
+                MapOrderToTradeItemViewModel(cfg);
                 cfg.CreateMap<Item, TradeItemViewModel>();
             });
         }
@@ -28,6 +29,16 @@ namespace TMBot.Utilities
             map.ForMember(d => d.ClassId, o => o.MapFrom(s => s.i_classid));
             map.ForMember(d => d.Name, o => o.MapFrom(s => s.i_name));
             map.ForMember(d => d.MyPrice, o => o.MapFrom(s => s.ui_price));
+        }
+
+        private static void MapOrderToTradeItemViewModel(IMapperConfigurationExpression cfg)
+        {
+            var map = cfg.CreateMap<Order, TradeItemViewModel>();
+            //map.ForMember(d=>d.ItemId, o=>o.MapFrom(s=>s.))
+            map.ForMember(d => d.IntanceId, o => o.MapFrom(s => s.i_instanceid));
+            map.ForMember(d => d.ClassId, o => o.MapFrom(s => s.i_classid));
+            map.ForMember(d => d.Name, o => o.MapFrom(s => s.i_market_name));
+            map.ForMember(d => d.MyPrice, o => o.MapFrom(s => s.o_price));
         }
     }
 }

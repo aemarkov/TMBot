@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 
-namespace TMBot.Utilities.MVVM
+namespace TMBot.Utilities.MVVM.AsyncCommand
 {
 	/// <summary>
 	/// Особая асинхронная магия для того, чтобы делать

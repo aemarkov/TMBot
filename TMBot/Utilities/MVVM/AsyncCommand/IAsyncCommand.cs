@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace TMBot.Utilities.MVVM
+namespace TMBot.Utilities.MVVM.AsyncCommand
 {
 	/// <summary>
 	/// Аснихронный интерфейс ICommand

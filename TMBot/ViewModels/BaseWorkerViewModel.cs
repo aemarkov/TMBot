@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using TMBot.API.SteamAPI;
 using TMBot.API.TMAPI;
-using TMBot.Utilities.MVVM;
+using TMBot.Utilities.MVVM.AsyncCommand;
 using TMBot.Workers;
 
 namespace TMBot.ViewModels

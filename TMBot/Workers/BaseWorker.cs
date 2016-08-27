@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using AutoMapper;
@@ -201,10 +202,7 @@ namespace TMBot.Workers
             {
                 foreach (var item in Items)
                 {
-                    await FixedTimeCall.Call(() => {
-                        update_price(item);
-                    });
-
+                    update_price(item);
                     LastUpdateItem = item;
 
                     if (!IsRunning)
@@ -231,6 +229,8 @@ namespace TMBot.Workers
                 else
                     tm_price = (int)_tm_price;
 
+                item.TMPrice = tm_price;
+
 
                 //Изменяем цену
                 int my_new_price=item.MyPrice;
@@ -243,7 +243,6 @@ namespace TMBot.Workers
 
                 //Обновляем модель
                 item.MyPrice = my_new_price;
-                item.TMPrice = tm_price;
             }
             catch (Exception exp)
             {

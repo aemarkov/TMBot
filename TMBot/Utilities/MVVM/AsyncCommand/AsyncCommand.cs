@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace TMBot.Utilities.MVVM
+namespace TMBot.Utilities.MVVM.AsyncCommand
 {
 	/// <summary>
 	/// Бомж-версия Relay Command но с поддержкой асинхронности

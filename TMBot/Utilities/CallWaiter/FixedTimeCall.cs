@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace TMBot.Utilities
+namespace TMBot.Utilities.CallWaiter
 {
 	/// <summary>
 	/// Этот класс используется, чтобы метод вызывался не быстрее определенного времени

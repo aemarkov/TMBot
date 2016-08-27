@@ -5,23 +5,30 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TMBot.API.Exceptions;
 using TMBot.API.TMAPI.Models;
 using TMBot.Utilities;
+using TMBot.Utilities.CallWaiter;
 
 namespace TMBot.API.TMAPI
 {
 	/// <summary>
 	/// Класс для выполнения запросов к 
 	/// API market.csgo.tm
+	/// 
+	/// Существует ограничение - не более 3х запросов в секунду,
+	/// поэтому если следующий запрос придет быстрее, чем через 1/3 секунды,
+	/// он будет ожидать
 	/// </summary>
 	public class CSTMAPI : ITMAPI
 	{
 
-		RestClient rest_client;
+        private RestClient rest_client;
+	    private MinimumCallInterval callInterval;
 
 		//Не выполнять по-настоящему 
 		public bool IsDebug { get; set; }
@@ -37,6 +44,9 @@ namespace TMBot.API.TMAPI
 			rest_client.Authenticator = new KeyAuthenticator("key", key);
 
 			IsDebug = false;
+
+
+            callInterval = new MinimumCallInterval(333);
 		}
 
         //Проверяет ошибки, возвращаемые АПИ
@@ -83,21 +93,26 @@ namespace TMBot.API.TMAPI
 		/// и покупках предмета
 		/// </summary>
 		/// <returns></returns>
-		public ItemInfo GetItemInfo(string classid_instanceid)
+		public  ItemInfo GetItemInfo(string classid_instanceid)
 		{
-			var request = new RestRequest("ItemInfo/{classid_instanceid}/{ru_or_en}", Method.GET);
-			request.AddParameter("classid_instanceid", classid_instanceid, ParameterType.UrlSegment);
-			request.AddParameter("ru_or_en", "ru", ParameterType.UrlSegment);
-			var response = rest_client.Execute<ItemInfo>(request);
+		    using (new CallHelper(callInterval))
+		    {
 
-            check_errors(response.Content);
+		        var request = new RestRequest("ItemInfo/{classid_instanceid}/{ru_or_en}", Method.GET);
+		        request.AddParameter("classid_instanceid", classid_instanceid, ParameterType.UrlSegment);
+		        request.AddParameter("ru_or_en", "ru", ParameterType.UrlSegment);
+		        var response = rest_client.Execute<ItemInfo>(request);
 
-			//Если что-то пойдет не так, тут почему-то будут null в полях
-			//TODO: нормальная обработка ошибок запросов
-		    if (response.Data?.name == null)
-		        return null;
+		        check_errors(response.Content);
 
-			return response.Data;
+		        //Если что-то пойдет не так, тут почему-то будут null в полях
+		        //TODO: нормальная обработка ошибок запросов
+		        if (response.Data?.name == null)
+		            return null;
+
+                return response.Data;
+            }
+
 		}
 
 		/// <summary>
@@ -105,37 +120,44 @@ namespace TMBot.API.TMAPI
 		/// и покупках предмета
 		/// </summary>
 		/// <returns></returns>
-		public ItemInfo GetItemInfo(string classid, string instanceid)
+		public  ItemInfo GetItemInfo(string classid, string instanceid)
 		{
-			return GetItemInfo(classid + "_" + instanceid);
+               return GetItemInfo(classid + "_" + instanceid);
 		}
 
 		/// <summary>
 		/// Получить список своих трейдов (продаж)
 		/// </summary>
 		/// <returns></returns>
-		public OrdersList GetOrders()
+		public  OrdersList GetOrders()
 		{
-			var request = new RestRequest("GetOrders", Method.GET);
-			var response = rest_client.Execute<OrdersList>(request);
+		    using (new CallHelper(callInterval))
+		    {
 
-            check_errors(response.Content);
+		        var request = new RestRequest("GetOrders", Method.GET);
+		        var response = rest_client.Execute<OrdersList>(request);
 
-            return response.Data;
+		        check_errors(response.Content);
+
+		        return response.Data;
+		    }
 		}
 
 		/// <summary>
 		/// Выставить на продожу новый предмет
 		/// </summary>
 		/// <param name="price">цена в КОП
-		public IList<Trade> GetTrades()
+		public  IList<Trade> GetTrades()
 		{
-			var request = new RestRequest("Trades", Method.GET);
-			var response = rest_client.Execute<List<Trade>>(request);
+		    using (new CallHelper(callInterval))
+		    {
+		        var request = new RestRequest("Trades", Method.GET);
+		        var response = rest_client.Execute<List<Trade>>(request);
 
-            check_errors(response.Content);
+		        check_errors(response.Content);
 
-		    return response.Data;
+		        return response.Data;
+		    }
 		}
 
 		/// <summary>
@@ -143,31 +165,35 @@ namespace TMBot.API.TMAPI
 		/// </summary>
 		/// <param name="price">цена в КОПЕЙКАХ</param>
 		/// <returns></returns>
-		public ItemRequestResponse ItemRequest(ItemRequestDirection in_out, string botid)
+		public  ItemRequestResponse ItemRequest(ItemRequestDirection in_out, string botid)
 		{
-			if(IsDebug)
-			{
-				//Log.w("ItemRequest({0}, {1})",in_out, botid);
-				return null;
-			}
+		    using (new CallHelper(callInterval))
+		    {
 
-			var request = new RestRequest("Trades/{in_out}/{botid}", Method.GET);
+		        if (IsDebug)
+		        {
+		            //Log.w("ItemRequest({0}, {1})",in_out, botid);
+		            return null;
+		        }
 
-			string direction;
-			if (in_out == ItemRequestDirection.IN)
-				direction = "in";
-			else
-				direction = "out";
+		        var request = new RestRequest("Trades/{in_out}/{botid}", Method.GET);
 
-			request.AddParameter("in_out", direction, ParameterType.UrlSegment);
-			request.AddParameter("botid", botid, ParameterType.UrlSegment);
+		        string direction;
+		        if (in_out == ItemRequestDirection.IN)
+		            direction = "in";
+		        else
+		            direction = "out";
 
-			var response = rest_client.Execute<ItemRequestResponse>(request);
+		        request.AddParameter("in_out", direction, ParameterType.UrlSegment);
+		        request.AddParameter("botid", botid, ParameterType.UrlSegment);
 
-            //TODO: нормальная обработка ошибок запросов
-            check_errors(response.Content);
+		        var response = rest_client.Execute<ItemRequestResponse>(request);
 
-            return response.Data;
+		        //TODO: нормальная обработка ошибок запросов
+		        check_errors(response.Content);
+
+		        return response.Data;
+		    }
 		}
 
 		/// <summary>
@@ -176,33 +202,37 @@ namespace TMBot.API.TMAPI
 		/// <param name="itemid">Уникальный номер вещи (получатеся после выполнения SetNewItem)</param>
 		/// <param name="price">Цена в КОПЕЙКАХ, 0 - чтобы снять</param>
 		/// <returns></returns>
-		public SetPriceResponse SetNewItem(string classid_instanceid, int price)
+		public  SetPriceResponse SetNewItem(string classid_instanceid, int price)
 		{
-			if (IsDebug)
-			{
-				//Log.w("SetNewItem({0}, {1})", classid_instanceid, price);
-				return null;
-			}
+		    using (new CallHelper(callInterval))
+		    {
 
-			var request = new RestRequest("SetPrice/new_{classid_instanceid}/{price}", Method.GET);
-			request.AddParameter("classid_instanceid", classid_instanceid, ParameterType.UrlSegment);
-			request.AddParameter("price", price, ParameterType.UrlSegment);
+		        if (IsDebug)
+		        {
+		            //Log.w("SetNewItem({0}, {1})", classid_instanceid, price);
+		            return null;
+		        }
 
-			var response = rest_client.Execute<SetPriceResponse>(request);
+		        var request = new RestRequest("SetPrice/new_{classid_instanceid}/{price}", Method.GET);
+		        request.AddParameter("classid_instanceid", classid_instanceid, ParameterType.UrlSegment);
+		        request.AddParameter("price", price, ParameterType.UrlSegment);
 
-            check_errors(response.Content);
-            //TODO: нормальная обработка ошибок запросов
+		        var response = rest_client.Execute<SetPriceResponse>(request);
 
-            return response.Data;
+		        check_errors(response.Content);
+		        //TODO: нормальная обработка ошибок запросов
+
+		        return response.Data;
+		    }
 		}
 
 		/// <summary>
 		/// Получить список своих ордеров (покупок)
 		/// </summary>
 		/// <returns></returns>
-		public SetPriceResponse SetNewItem(string classid, string instanceid, int price)
+		public  SetPriceResponse SetNewItem(string classid, string instanceid, int price)
 		{
-			return SetNewItem(classid + "_" + instanceid, price);
+            return SetNewItem(classid + "_" + instanceid, price);
 		}
 
 		/// <summary>
@@ -210,24 +240,28 @@ namespace TMBot.API.TMAPI
 		/// </summary>
 		/// <param name="price">Цена в КОПЕЙКАХ, 0 - снять ордер</param>
 		/// <returns></returns>
-		public SetPriceResponse SetPrice(string itemid, int price)
+		public  SetPriceResponse SetPrice(string itemid, int price)
 		{
-			if (IsDebug)
-			{
-				//Log.w("SetPrice({0}, {1})", itemid, price);
-				return null;
-			}
+		    using (new CallHelper(callInterval))
+		    {
 
-			var request = new RestRequest("SetPrice/{itemid}/{price}", Method.GET);
-			request.AddParameter("itemid", itemid, ParameterType.UrlSegment);
-			request.AddParameter("price", price, ParameterType.UrlSegment);
+		        if (IsDebug)
+		        {
+		            //Log.w("SetPrice({0}, {1})", itemid, price);
+		            return null;
+		        }
 
-			var response = rest_client.Execute<SetPriceResponse>(request);
+		        var request = new RestRequest("SetPrice/{itemid}/{price}", Method.GET);
+		        request.AddParameter("itemid", itemid, ParameterType.UrlSegment);
+		        request.AddParameter("price", price, ParameterType.UrlSegment);
 
-            check_errors(response.Content);
-            //TODO: нормальная обработка ошибок запросов
+		        var response = rest_client.Execute<SetPriceResponse>(request);
 
-            return response.Data;
+		        check_errors(response.Content);
+		        //TODO: нормальная обработка ошибок запросов
+
+		        return response.Data;
+		    }
 		}
 
 		/// <summary>
@@ -238,25 +272,29 @@ namespace TMBot.API.TMAPI
 		/// <param name="in_out">Получение или передача. In - передача, Out - получение/param>
 		/// <param name="botid">ID бота, можно получить в результате Trades либо в событиях сокета</param>
 		/// <returns></returns>
-		public UpdateOrderResponse UpdateOrder(string classid, string instanceid, int price)
+		public  UpdateOrderResponse UpdateOrder(string classid, string instanceid, int price)
 		{
-			if (IsDebug)
-			{
-				//Log.w("UpdateOrder({0}, {1}, {2})", classid, instanceid, price);
-				return null;
-			}
+		    using (new CallHelper(callInterval))
+		    {
 
-			var request = new RestRequest("SetPrice/{classid}/{instanceid}/{price}", Method.GET);
-			request.AddParameter("classid", classid, ParameterType.UrlSegment);
-			request.AddParameter("instanceid", instanceid, ParameterType.UrlSegment);
-			request.AddParameter("price", price, ParameterType.UrlSegment);
+		        if (IsDebug)
+		        {
+		            //Log.w("UpdateOrder({0}, {1}, {2})", classid, instanceid, price);
+		            return null;
+		        }
 
-			var response = rest_client.Execute<UpdateOrderResponse>(request);
+		        var request = new RestRequest("SetPrice/{classid}/{instanceid}/{price}", Method.GET);
+		        request.AddParameter("classid", classid, ParameterType.UrlSegment);
+		        request.AddParameter("instanceid", instanceid, ParameterType.UrlSegment);
+		        request.AddParameter("price", price, ParameterType.UrlSegment);
 
-            check_errors(response.Content);
-            //TODO: нормальная обработка ошибок запросов
+		        var response = rest_client.Execute<UpdateOrderResponse>(request);
 
-            return response.Data;
+		        check_errors(response.Content);
+		        //TODO: нормальная обработка ошибок запросов
+
+		        return response.Data;
+		    }
 		}
 	}
 }

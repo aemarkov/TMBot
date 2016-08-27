@@ -10,7 +10,8 @@ using TMBot.API.SteamAPI;
 using TMBot.API.TMAPI;
 using TMBot.API.TMAPI.Models;
 using TMBot.Utilities;
-using TMBot.Utilities.MVVM;
+using TMBot.Utilities.CallWaiter;
+using TMBot.Utilities.MVVM.AsyncCommand;
 using TMBot.ViewModels.ViewModels;
 
 namespace TMBot.ViewModels
@@ -154,8 +155,7 @@ namespace TMBot.ViewModels
 
             foreach (var item in InventoryItems.Where(item => !item.IsSelling))
             {
-                await FixedTimeCall.Call(() =>
-                {
+                
                     int price;
                     int? _price = PriceCounter.GetMinSellPrice<TTMAPI>(item.ClassId, item.IntanceId);
                     
@@ -171,7 +171,7 @@ namespace TMBot.ViewModels
                     tmApi.SetNewItem(item.ClassId, item.IntanceId, (int)price);
                     Log.d("Предмет {0}_{1} выставлен. за цену {2} коп.", item.ClassId, item.IntanceId, price);
                     count++;
-                });
+                
             }
 
 

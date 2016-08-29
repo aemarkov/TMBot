@@ -11,9 +11,14 @@
         Height="600" Width="800"
         xmlns:viewModel="clr-namespace:TMBot.ViewModels"
         xmlns:viewModel_viewModel="clr-namespace:TMBot.ViewModels.ViewModels"
-                        
-        >
-    
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding WindowClosingCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewModel:HomeViewModel}">
             <tabs:HomeView/>

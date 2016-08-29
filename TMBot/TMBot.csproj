@@ -188,11 +188,12 @@
     <Compile Include="Views\Spinner.xaml.cs">
       <DependentUpon>Spinner.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Workers\BaseItemWorker.cs" />
-    <Compile Include="Workers\BaseWorker.cs" />
+    <Compile Include="Workers\Abstract\BaseItemWorker.cs" />
+    <Compile Include="Workers\Abstract\BaseWorker.cs" />
     <Compile Include="Workers\OrderWorker.cs" />
     <Compile Include="Workers\SellWorker.cs" />
-    <Compile Include="Workers\WebSocketWorker.cs" />
+    <Compile Include="Workers\WebSocket\ITMWebSocketObserver.cs" />
+    <Compile Include="Workers\WebSocket\WebSocketWorker.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

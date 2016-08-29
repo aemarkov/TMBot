@@ -10,7 +10,7 @@ using TMBot.ViewModels.ViewModels;
 
 namespace TMBot.Workers
 {
-    public class OrderWorker<TTMAPI, TSteamAPI> : BaseWorker<TTMAPI, TSteamAPI, Order> where TTMAPI : ITMAPI where TSteamAPI : ISteamAPI
+    public class OrderWorker<TTMAPI, TSteamAPI> : BaseItemWorker<TTMAPI, TSteamAPI, Order> where TTMAPI : ITMAPI where TSteamAPI : ISteamAPI
     {
         protected override void ShowErrorMessage(string error_reason)
         {

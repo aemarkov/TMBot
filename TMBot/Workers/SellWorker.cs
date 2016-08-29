@@ -28,7 +28,7 @@ namespace TMBot.Workers
 	/// предметов в фоне
 	/// </summary>
 	/// <typeparam name="TTMAPI">Класс АПИ площадки</typeparam>
-	public class SellWorker<TTMAPI,TSteamAPI> : BaseWorker<TTMAPI, TSteamAPI, Trade> where TTMAPI : ITMAPI where TSteamAPI : ISteamAPI
+	public class SellWorker<TTMAPI,TSteamAPI> : BaseItemWorker<TTMAPI, TSteamAPI, Trade> where TTMAPI : ITMAPI where TSteamAPI : ISteamAPI
     {
         //Показывает сообщение об ошибке
 	    protected override void ShowErrorMessage(string error_reason)

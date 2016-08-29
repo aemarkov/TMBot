@@ -12,7 +12,7 @@ namespace TMBot.ViewModels
     public abstract class BaseWorkerViewModel<TItem>
     {
         public IAsyncCommand ToggleCommand { get; set; }
-        public  BaseWorker<CSTMAPI, CSSteamAPI, TItem> Worker { get; set; }
+        public  BaseItemWorker<CSTMAPI, CSSteamAPI, TItem> Worker { get; set; }
 
         public abstract bool HasCountLimit { get; }
         public abstract string PriceLimitName { get; }

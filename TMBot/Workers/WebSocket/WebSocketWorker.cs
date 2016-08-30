@@ -44,7 +44,7 @@ namespace TMBot.Workers.WebSocket
         /// <summary>
         /// Запуск потока
         /// </summary>
-        public override void Begin()
+        public override void Start()
         {
             var connectToken = new CancellationTokenSource().Token;
             _webSocket.ConnectAsync(new Uri(_url), connectToken).Wait();
@@ -61,7 +61,12 @@ namespace TMBot.Workers.WebSocket
         public void Subscribe(String eventName, ITMWebSocketObserver observer)
         {
             if (!_observers.ContainsKey(eventName))
+            {
                 _observers.Add(eventName, new List<ITMWebSocketObserver>());
+
+                //Подписка на канал
+                SendText(eventName);
+            }
 
 
             _observers[eventName].Add(observer);
@@ -82,13 +87,41 @@ namespace TMBot.Workers.WebSocket
         /// <param name="observer"></param>
         public void Unsubscribe(ITMWebSocketObserver observer)
         {
+            IList<ITMWebSocketObserver> listWithObserver = null;
+            string eventName = null;
+
             foreach (var obsList in _observers)
             {
                 obsList.Value.Remove(observer);
+                listWithObserver = obsList.Value;
+                eventName = obsList.Key;
+                break;
+            }
+
+            if(listWithObserver==null || eventName==null)
+                return;
+
+            if (listWithObserver.Count == 0)
+            {
+                _observers.Remove(eventName);
+                //Отписаться от канала????
             }
         }
 
-        public override void End()
+        /// <summary>
+        /// Отправляет текст серверу
+        /// </summary>
+        /// <param name="text"></param>
+        public CancellationTokenSource SendText(string text)
+        {
+            var token = new CancellationTokenSource();
+            var array = new ArraySegment<Byte>(Encoding.ASCII.GetBytes(text));
+            _webSocket.SendAsync(array, WebSocketMessageType.Text, true, token.Token);
+
+            return token;
+        }
+
+        public override void Stop()
         {
             IsRunning = false;
             _receiveToken.Cancel();
@@ -154,6 +187,7 @@ namespace TMBot.Workers.WebSocket
                 foreach (var observer in _observers[eventName])
                     observer.HandleEvebt(data);
         }
+
 
     }
 }

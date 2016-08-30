@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
+using TMBot.API.TMWebSockAPI;
 using TMBot.Utilities;
 using TMBot.Utilities.MVVM;
 using TMBot.ViewModels.ViewModels;
@@ -61,16 +62,18 @@ namespace TMBot.ViewModels
 			TradesPage = new TradesViewModel();
 			OrdersPage = new OrdersViewModel();
 
-            //Потоки
+            //Веб-сокеты
             WebSocketWorker = new WebSocketWorker("wss://wsn.dota2.net/wsn/");
-            WebSocketWorker.Begin();
-		}
+            WebSocketWorker.Start();
+
+            WebSocketWorker.Subscribe("itemout_new_go", new ItemBoughtEvent());
+            //WebSocketWorker.Subscribe("additem_go", new ItemSoldEvent());              //??
+            WebSocketWorker.Subscribe("itemstatus_go", new ItemTransferedEvent());
+        }
 
 		//Получение сообщения лога
 		private void Log_NewLogMessage(string text, Log.Level level)
 		{
-            
-
              LogList.Add(new LogItem() { Text = text, Level = level });
 		}
 
@@ -82,7 +85,10 @@ namespace TMBot.ViewModels
 
 	    public void Dispose()
 	    {
-	        WebSocketWorker.End();
+	        WebSocketWorker.Stop();
+
+            TradesPage.Dispose();
+            OrdersPage.Dispose();
 
 	    }
 	}

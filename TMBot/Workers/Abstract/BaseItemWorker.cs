@@ -92,7 +92,7 @@ namespace TMBot.Workers
         /// <summary>
         /// Запуск обновления цен
         /// </summary>
-        public override void Begin()
+        public override void Start()
         {
             /* Получаем списко трейдов/ордеров и список 
             * всех предметов из БД.

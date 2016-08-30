@@ -25,12 +25,12 @@ namespace TMBot.Workers
         /// <summary>
         /// Запуск потока
         /// </summary>
-        public abstract void Begin();
+        public abstract void Start();
 
         /// <summary>
         /// Остановка потока
         /// </summary>
-        public virtual void End()
+        public virtual void Stop()
         {
             IsRunning = false;
         }

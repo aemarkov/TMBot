@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using TMBot.API.SteamAPI;
 using TMBot.API.TMAPI;
 using TMBot.Utilities.MVVM.AsyncCommand;
@@ -9,7 +10,7 @@ namespace TMBot.ViewModels
     /// <summary>
     /// Базовая модель вида для продаж и покупок
     /// </summary>
-    public abstract class BaseWorkerViewModel<TItem>
+    public abstract class BaseWorkerViewModel<TItem> : IDisposable
     {
         public IAsyncCommand ToggleCommand { get; set; }
         public  BaseItemWorker<CSTMAPI, CSSteamAPI, TItem> Worker { get; set; }
@@ -26,9 +27,14 @@ namespace TMBot.ViewModels
         private async Task toggle(object param)
         {
             if (!Worker.IsRunning)
-                await Task.Run(() => Worker.Begin());
+                await Task.Run(() => Worker.Start());
             else
-                Worker.End();
+                Worker.Stop();
+        }
+
+        public void Dispose()
+        {
+            Worker.Stop();
         }
     }
 }

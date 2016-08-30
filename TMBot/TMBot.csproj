@@ -135,6 +135,8 @@
     <Compile Include="API\TMWebSockAPI\ItemBoughtEvent.cs" />
     <Compile Include="API\TMWebSockAPI\ItemSoldEvent.cs" />
     <Compile Include="API\TMWebSockAPI\ItemTransferedEvent.cs" />
+    <Compile Include="API\TMWebSockAPI\Models\ItemNew.cs" />
+    <Compile Include="API\TMWebSockAPI\Models\ItemStatus.cs" />
     <Compile Include="Database\AbstractRepository.cs" />
     <Compile Include="Database\DatabaseContext.cs" />
     <Compile Include="Database\Exceptions.cs" />

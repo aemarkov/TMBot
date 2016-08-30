@@ -1,4 +1,6 @@
-﻿using TMBot.Workers.WebSocket;
+﻿using Newtonsoft.Json;
+using TMBot.API.TMWebSockAPI.Models;
+using TMBot.Workers.WebSocket;
 
 namespace TMBot.API.TMWebSockAPI
 {
@@ -19,7 +21,7 @@ namespace TMBot.API.TMWebSockAPI
     {
         public void HandleEvebt(string data)
         {
-            throw new System.NotImplementedException();
+            ItemStatus status = JsonConvert.DeserializeObject<ItemStatus>(data);
         }
     }
 }

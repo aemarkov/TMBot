@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using TMBot.API.TMWebSockAPI.Models;
 using TMBot.Workers.WebSocket;
 
 namespace TMBot.API.TMWebSockAPI
@@ -24,7 +26,7 @@ namespace TMBot.API.TMWebSockAPI
     {
         public void HandleEvebt(string data)
         {
-            throw new NotImplementedException();
+            var itemNew = JsonConvert.DeserializeObject<ItemNew>(data);
         }
     }
 }

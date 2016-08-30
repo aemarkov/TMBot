@@ -62,22 +62,22 @@ namespace TMBot.Workers
         private TradeItemViewModel _lastUpdatedItem;
         #endregion
 
-        // Разница в процентах между нашей ценой и следующей,
-        // меньше которой цена не меняется
-        #region OffsetPercentage
+        /// Максимальная разница между нашей и следующей ценой, при
+        /// который наша цена не меняется
+        #region PriceThreshold
 
-        public float OffsetPercentage
+        public float PriceThreshold
         {
 
-            get { return _offsetPercentage; }
+            get { return _priceThreshold; }
             set
             {
-                _offsetPercentage = value;
+                _priceThreshold = value;
                 NotifyPropertyChanged();
             }
         }
 
-        private float _offsetPercentage=0;
+        private float _priceThreshold=0;
 
         #endregion
 

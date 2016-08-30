@@ -172,9 +172,6 @@
     <Compile Include="Tabs\MakeTradesView.xaml.cs">
       <DependentUpon>MakeTradesView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Tabs\OrdersView.xaml.cs">
-      <DependentUpon>OrdersView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Tabs\TradesView.xaml.cs">
       <DependentUpon>TradesView.xaml</DependentUpon>
     </Compile>
@@ -240,10 +237,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Tabs\MakeTradesView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Tabs\OrdersView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

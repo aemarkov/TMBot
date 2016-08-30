@@ -17,6 +17,7 @@ using TMBot.API.TMAPI;
 using TMBot.API.TMAPI.Models;
 using TMBot.Database;
 using TMBot.Models;
+using TMBot.Settings;
 using TMBot.Utilities;
 using TMBot.Utilities.MVVM;
 using TMBot.ViewModels.ViewModels;
@@ -30,8 +31,17 @@ namespace TMBot.Workers
 	/// <typeparam name="TTMAPI">Класс АПИ площадки</typeparam>
 	public class SellWorker<TTMAPI,TSteamAPI> : BaseItemWorker<TTMAPI, TSteamAPI, Trade> where TTMAPI : ITMAPI where TSteamAPI : ISteamAPI
     {
+
+	    public SellWorker():base()
+	    {
+            //Загрузка порога цены
+	        var settings = SettingsManager.LoadSettings();
+	        PriceThreshold = settings.TradeMaxThreshold;
+	    } 
+
+
         //Показывает сообщение об ошибке
-	    protected override void ShowErrorMessage(string error_reason)
+        protected override void ShowErrorMessage(string error_reason)
 	    {
 	        MessageBox.Show($"Не удалось начать продажу: {error_reason}", "Не удалось начать продажу", MessageBoxButton.OK,
 	            MessageBoxImage.Warning);
@@ -63,7 +73,7 @@ namespace TMBot.Workers
                  * Если минимальная - наша, то увеличиваем цену (до минимальной - 1коп) только
                  * если разница больше заданных %
                  */
-            if (tm_price < item.MyPrice || ((tm_price - item.MyPrice) / (float)tm_price > OffsetPercentage))
+            if (tm_price < item.MyPrice || ((tm_price - item.MyPrice) / (float)tm_price > PriceThreshold))
             {
                 myNewPrice = tm_price - 1;
             }
@@ -89,5 +99,19 @@ namespace TMBot.Workers
             return PriceCounter.GetMinSellPrice<TTMAPI>(item.ClassId, item.IntanceId);
         }
 
+        //Остановка
+        /* Немного говнокод. У меня Stop
+         * вызывается из ViewModel при уничтожении (закрытии окна)
+         * но не факт, что это всегда так может быть.
+         * 
+         * На самом деле говнокод в том, что настройка находится
+         * в воркере и к ней прибинжено окно */
+	    public override void Stop()
+	    {
+	        base.Stop();
+	        var settings = SettingsManager.LoadSettings();
+	        settings.TradeMaxThreshold = PriceThreshold;
+            SettingsManager.SaveSettings(settings);
+	    }
     }
 }

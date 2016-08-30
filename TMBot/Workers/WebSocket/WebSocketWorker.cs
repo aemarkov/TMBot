@@ -124,7 +124,7 @@ namespace TMBot.Workers.WebSocket
         public override void Stop()
         {
             IsRunning = false;
-            _receiveToken.Cancel();
+            _receiveToken?.Cancel();
 
         }
 

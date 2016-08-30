@@ -37,14 +37,6 @@ namespace TMBot
 		public MainWindow()
 		{
 
-			TMFactory tm_factory = AbstactAPIFactory<ITMAPI>.GetInstance<TMFactory>();
-            //tm_factory.CreateAPI<CSTMAPI>("69SiW4t4ja7BBdihH2UCjb31x275b14", true);
-            tm_factory.CreateAPI<CSTMAPI>("BAsMgHzPpM31Tdkf4KeFiX0Ntjg6E46", true);
-
-            SteamFactory s_factory = AbstactAPIFactory<ISteamAPI>.GetInstance<SteamFactory>();
-            //s_factory.CreateAPI<CSSteamAPI>("76561198289262955", "868AC98202BC8C4912E3864E26881E1C");
-            s_factory.CreateAPI<CSSteamAPI>("76561198031028693", "1644002B410BCCC13E4B3C11A12F82EF");
-
             ViewModel = new MainViewModel();
 			InitializeComponent();
 			DataContext = ViewModel;

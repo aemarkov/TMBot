@@ -7,7 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
+using TMBot.API.Factory;
+using TMBot.API.SteamAPI;
+using TMBot.API.TMAPI;
 using TMBot.API.TMWebSockAPI;
+using TMBot.Settings;
 using TMBot.Utilities;
 using TMBot.Utilities.MVVM;
 using TMBot.ViewModels.ViewModels;
@@ -50,7 +54,17 @@ namespace TMBot.ViewModels
 
 		public MainViewModel()
 		{
-			LogList = new ObservableCollection<LogItem>();
+            //API
+            TMFactory tm_factory = AbstactAPIFactory<ITMAPI>.GetInstance<TMFactory>();
+            //tm_factory.CreateAPI<CSTMAPI>("69SiW4t4ja7BBdihH2UCjb31x275b14", true);
+            tm_factory.CreateAPI<CSTMAPI>("BAsMgHzPpM31Tdkf4KeFiX0Ntjg6E46", true);
+
+            SteamFactory s_factory = AbstactAPIFactory<ISteamAPI>.GetInstance<SteamFactory>();
+            //s_factory.CreateAPI<CSSteamAPI>("76561198289262955", "868AC98202BC8C4912E3864E26881E1C");
+            s_factory.CreateAPI<CSSteamAPI>("76561198031028693", "1644002B410BCCC13E4B3C11A12F82EF");
+
+            //Лог
+            LogList = new ObservableCollection<LogItem>();
 			Log.NewLogMessage += Log_NewLogMessage;
 
             //Mapper
@@ -69,7 +83,7 @@ namespace TMBot.ViewModels
             WebSocketWorker.Subscribe("itemout_new_go", new ItemBoughtEvent());
             //WebSocketWorker.Subscribe("additem_go", new ItemSoldEvent());              //??
             WebSocketWorker.Subscribe("itemstatus_go", new ItemTransferedEvent());
-        }
+		}
 
 		//Получение сообщения лога
 		private void Log_NewLogMessage(string text, Log.Level level)

@@ -143,6 +143,9 @@
     <Compile Include="Models\Item.cs" />
     <Compile Include="Database\ItemsRepository.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Settings\NeedReloadAttribute.cs" />
+    <Compile Include="Settings\Settings.cs" />
+    <Compile Include="Settings\SettingsManager.cs" />
     <Compile Include="Utilities\CallWaiter\CallHelper.cs" />
     <Compile Include="Utilities\CallWaiter\MinimumCallInterval.cs" />
     <Compile Include="Utilities\MapperHelpers.cs" />

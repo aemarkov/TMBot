@@ -2,12 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:TMBot"
                     xmlns:views="clr-namespace:TMBot.Views">
+    
     <!-- Общие настройки стилей -->
-
     <Thickness x:Key="ControlMargin">5</Thickness>
     
     <Style TargetType="{x:Type views:DataGridView}" BasedOn="{StaticResource {x:Type DataGrid}}">
-        
     </Style>
     
 </ResourceDictionary>

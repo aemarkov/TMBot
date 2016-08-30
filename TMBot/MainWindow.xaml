@@ -1,4 +1,4 @@
-﻿<Window  x:Class="TMBot.MainWindow"
+﻿     <Window  x:Class="TMBot.MainWindow"
          xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -53,11 +53,35 @@
     <Grid ShowGridLines="False">
 
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="150"/>
         </Grid.RowDefinitions>
         
-        <TabControl DockPanel.Dock="Top" Grid.Row="0">
+        <Menu>
+            <MenuItem Header="Файл">
+                <MenuItem Header="Тут ничего нет">
+                    <MenuItem Header="Я же сказал - тут ничего нет">
+                        <MenuItem Header="Ну зачем?">
+                        </MenuItem>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Тут тоже ничего нет">
+                </MenuItem>
+                <MenuItem Header="Выход">
+                    <MenuItem Header="Нажми на крестик, так сложно?">
+                    </MenuItem>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Опции">
+                <MenuItem Header="Настройки" Command="{Binding SettingsCommand}">
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="О программе">
+            </MenuItem>
+        </Menu>
+        
+        <TabControl DockPanel.Dock="Top" Grid.Row="1">
             <TabItem Content="{Binding Path=HomePage}"
                      Header="Главная"/>
             <TabItem Content="{Binding Path=MakeTradesPage}"
@@ -68,7 +92,7 @@
                      Header="Покупка"/>
         </TabControl>
         
-        <GroupBox Grid.Row="1" Header="Лог">
+        <GroupBox Grid.Row="2" Header="Лог">
             <ListBox Height="150" VerticalAlignment="Bottom"
                      ItemsSource="{Binding LogList}"
                      IsSynchronizedWithCurrentItem="True"/>

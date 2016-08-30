@@ -1,0 +1,62 @@
+﻿<Window x:Class="TMBot.Windows.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TMBot.Windows"
+        mc:Ignorable="d"
+        Title="Настройки" Height="310" Width="400"
+        ResizeMode="NoResize">
+    <StackPanel>
+        <GroupBox Header="Настройки TM">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">
+                    Api-key
+                </TextBlock>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Settings.TMApiKey}"/>
+                
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header="Настройки Steam">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">
+                    Api-key
+                </TextBlock>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Settings.SteamApiKey}"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">
+                    Profile ID
+                </TextBlock>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Settings.SteamProfileId}"/>
+            </Grid>
+        </GroupBox>
+
+        <TextBlock TextWrapping="Wrap" Margin="5" Foreground="Orange">
+            Для применения некоторых настроек потребуется перезапуск программы
+        </TextBlock>
+        
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+            <Button Content="Сохранить" Command="{Binding SaveCommand}"/>
+            <Button Content="Отмена" Command="{Binding CancelCommand}"/>
+        </StackPanel>
+        
+    </StackPanel>
+</Window>

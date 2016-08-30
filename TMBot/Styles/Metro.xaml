@@ -23,6 +23,10 @@
     <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
         <Setter Property="Margin" Value="2"/>
     </Style>
+    
+    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="Margin" Value="2"/>
+    </Style>
 
 
 </ResourceDictionary>

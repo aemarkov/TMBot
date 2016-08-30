@@ -15,6 +15,7 @@ using TMBot.Settings;
 using TMBot.Utilities;
 using TMBot.Utilities.MVVM;
 using TMBot.ViewModels.ViewModels;
+using TMBot.Windows;
 using TMBot.Workers.WebSocket;
 
 namespace TMBot.ViewModels
@@ -27,6 +28,11 @@ namespace TMBot.ViewModels
 	    public ICommand WindowClosingCommand
 	    {
 	        get { return new RelayCommands(closing);}
+	    }
+
+	    public ICommand SettingsCommand
+	    {
+            get { return new RelayCommands(showSettings);}
 	    }
 
         //Вкладки
@@ -55,13 +61,13 @@ namespace TMBot.ViewModels
 		public MainViewModel()
 		{
             //API
+		    var settings = SettingsManager.LoadSettings();
+
             TMFactory tm_factory = AbstactAPIFactory<ITMAPI>.GetInstance<TMFactory>();
-            //tm_factory.CreateAPI<CSTMAPI>("69SiW4t4ja7BBdihH2UCjb31x275b14", true);
-            tm_factory.CreateAPI<CSTMAPI>("BAsMgHzPpM31Tdkf4KeFiX0Ntjg6E46", true);
+            tm_factory.CreateAPI<CSTMAPI>(settings.TMApiKey, true);
 
             SteamFactory s_factory = AbstactAPIFactory<ISteamAPI>.GetInstance<SteamFactory>();
-            //s_factory.CreateAPI<CSSteamAPI>("76561198289262955", "868AC98202BC8C4912E3864E26881E1C");
-            s_factory.CreateAPI<CSSteamAPI>("76561198031028693", "1644002B410BCCC13E4B3C11A12F82EF");
+            s_factory.CreateAPI<CSSteamAPI>(settings.SteamProfileId, settings.SteamApiKey);
 
             //Лог
             LogList = new ObservableCollection<LogItem>();
@@ -104,6 +110,13 @@ namespace TMBot.ViewModels
             TradesPage.Dispose();
             OrdersPage.Dispose();
 
+	    }
+
+        //Настройки
+	    void showSettings(object param)
+	    {
+	        var settings = new SettingsWindow();
+	        settings.ShowDialog();
 	    }
 	}
 }

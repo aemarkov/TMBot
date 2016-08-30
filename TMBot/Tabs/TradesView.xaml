@@ -71,7 +71,7 @@
                     Максимальная разница
                 </TextBlock>
                 <xctk:DecimalUpDown Minimum="0" Increment="0.01" FormatString="P0"
-                                           Value="{Binding Worker.OffsetPercentage}"/>
+                                           Value="{Binding Worker.PriceThreshold}"/>
             </StackPanel>
 
         </Grid>

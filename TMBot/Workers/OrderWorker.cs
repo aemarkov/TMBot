@@ -5,6 +5,7 @@ using TMBot.API.TMAPI;
 using TMBot.API.TMAPI.Models;
 using TMBot.Database;
 using TMBot.Models;
+using TMBot.Settings;
 using TMBot.Utilities;
 using TMBot.ViewModels.ViewModels;
 
@@ -12,6 +13,13 @@ namespace TMBot.Workers
 {
     public class OrderWorker<TTMAPI, TSteamAPI> : BaseItemWorker<TTMAPI, TSteamAPI, Order> where TTMAPI : ITMAPI where TSteamAPI : ISteamAPI
     {
+        public OrderWorker():base()
+	    {
+            var settings = SettingsManager.LoadSettings();
+            PriceThreshold = settings.OrderMinThreshold;
+        }
+
+
         protected override void ShowErrorMessage(string error_reason)
         {
             MessageBox.Show($"Не удалось начать покупки: {error_reason}", "Не удалось начать покупки", MessageBoxButton.OK,
@@ -49,7 +57,7 @@ namespace TMBot.Workers
                 return false;
             }
 
-            if (tm_price > item.MyPrice || ((item.MyPrice - tm_price) /(float) item.MyPrice > OffsetPercentage))
+            if (tm_price > item.MyPrice || ((item.MyPrice - tm_price) /(float) item.MyPrice > PriceThreshold))
                 myNewPrice = tm_price + 1;
             else
             {
@@ -70,6 +78,15 @@ namespace TMBot.Workers
         protected override int? GetItemTMPrice(TradeItemViewModel item)
         {
             return PriceCounter.GetMaxOfferPrice<TTMAPI>(item.ClassId, item.IntanceId);
+        }
+
+        //Остановка
+        public override void Stop()
+        {
+            base.Stop();
+            var settings = SettingsManager.LoadSettings();
+            settings.OrderMinThreshold = PriceThreshold;
+            SettingsManager.SaveSettings(settings);
         }
     }
 }

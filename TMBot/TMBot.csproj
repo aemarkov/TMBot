@@ -143,6 +143,9 @@
     <Compile Include="Models\Item.cs" />
     <Compile Include="Database\ItemsRepository.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Settings\NeedReloadAttribute.cs" />
+    <Compile Include="Settings\Settings.cs" />
+    <Compile Include="Settings\SettingsManager.cs" />
     <Compile Include="Utilities\CallWaiter\CallHelper.cs" />
     <Compile Include="Utilities\CallWaiter\MinimumCallInterval.cs" />
     <Compile Include="Utilities\MapperHelpers.cs" />
@@ -169,9 +172,6 @@
     <Compile Include="Tabs\MakeTradesView.xaml.cs">
       <DependentUpon>MakeTradesView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Tabs\OrdersView.xaml.cs">
-      <DependentUpon>OrdersView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Tabs\TradesView.xaml.cs">
       <DependentUpon>TradesView.xaml</DependentUpon>
     </Compile>
@@ -181,6 +181,7 @@
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MakeTradesViewModel.cs" />
     <Compile Include="ViewModels\OrdersViewModel.cs" />
+    <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\TradesViewModel.cs" />
     <Compile Include="ViewModels\ViewModels\LogItem.cs" />
     <Compile Include="ViewModels\ViewModels\Items.cs" />
@@ -192,6 +193,9 @@
     </Compile>
     <Compile Include="Views\Spinner.xaml.cs">
       <DependentUpon>Spinner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\SettingsWindow.xaml.cs">
+      <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Workers\Abstract\BaseItemWorker.cs" />
     <Compile Include="Workers\Abstract\BaseWorker.cs" />
@@ -236,10 +240,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Tabs\OrdersView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Tabs\TradesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -257,6 +257,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Spinner.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\SettingsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

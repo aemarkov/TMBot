@@ -7,10 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
+using TMBot.API.Factory;
+using TMBot.API.SteamAPI;
+using TMBot.API.TMAPI;
 using TMBot.API.TMWebSockAPI;
+using TMBot.Settings;
 using TMBot.Utilities;
 using TMBot.Utilities.MVVM;
 using TMBot.ViewModels.ViewModels;
+using TMBot.Windows;
 using TMBot.Workers.WebSocket;
 
 namespace TMBot.ViewModels
@@ -23,6 +28,11 @@ namespace TMBot.ViewModels
 	    public ICommand WindowClosingCommand
 	    {
 	        get { return new RelayCommands(closing);}
+	    }
+
+	    public ICommand SettingsCommand
+	    {
+            get { return new RelayCommands(showSettings);}
 	    }
 
         //Вкладки
@@ -50,7 +60,17 @@ namespace TMBot.ViewModels
 
 		public MainViewModel()
 		{
-			LogList = new ObservableCollection<LogItem>();
+            //API
+		    var settings = SettingsManager.LoadSettings();
+
+            TMFactory tm_factory = AbstactAPIFactory<ITMAPI>.GetInstance<TMFactory>();
+            tm_factory.CreateAPI<CSTMAPI>(settings.TMApiKey, true);
+
+            SteamFactory s_factory = AbstactAPIFactory<ISteamAPI>.GetInstance<SteamFactory>();
+            s_factory.CreateAPI<CSSteamAPI>(settings.SteamProfileId, settings.SteamApiKey);
+
+            //Лог
+            LogList = new ObservableCollection<LogItem>();
 			Log.NewLogMessage += Log_NewLogMessage;
 
             //Mapper
@@ -69,7 +89,7 @@ namespace TMBot.ViewModels
             WebSocketWorker.Subscribe("itemout_new_go", new ItemBoughtEvent());
             //WebSocketWorker.Subscribe("additem_go", new ItemSoldEvent());              //??
             WebSocketWorker.Subscribe("itemstatus_go", new ItemTransferedEvent());
-        }
+		}
 
 		//Получение сообщения лога
 		private void Log_NewLogMessage(string text, Log.Level level)
@@ -90,6 +110,13 @@ namespace TMBot.ViewModels
             TradesPage.Dispose();
             OrdersPage.Dispose();
 
+	    }
+
+        //Настройки
+	    void showSettings(object param)
+	    {
+	        var settings = new SettingsWindow();
+	        settings.ShowDialog();
 	    }
 	}
 }

@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using System.Windows.Documents;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using TMBot.API.Factory;
+using TMBot.API.TMAPI;
+using TMBot.API.TMAPI.Models;
 using TMBot.Utilities;
 
 namespace TMBot.Workers.WebSocket
@@ -48,6 +51,11 @@ namespace TMBot.Workers.WebSocket
         {
             var connectToken = new CancellationTokenSource().Token;
             _webSocket.ConnectAsync(new Uri(_url), connectToken).Wait();
+
+            //Теперь надо получить ключ подписки на веб-сокеты и отправить его
+            var tmapi =  TMFactory.GetInstance<TMFactory>().GetAPI<CSTMAPI>();
+            WebSocketAuth auth =  tmapi.GetWSAuth();
+            SendText(auth.wsAuth);
 
             RunThread();
         }

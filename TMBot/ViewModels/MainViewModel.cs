@@ -86,9 +86,8 @@ namespace TMBot.ViewModels
             WebSocketWorker = new WebSocketWorker("wss://wsn.dota2.net/wsn/");
             WebSocketWorker.Start();
 
-            WebSocketWorker.Subscribe("itemout_new_go", new ItemBoughtEvent());
-            //WebSocketWorker.Subscribe("additem_go", new ItemSoldEvent());              //??
-            WebSocketWorker.Subscribe("itemstatus_go", new ItemTransferedEvent());
+            WebSocketWorker.Subscribe("itemout_new_go", new ItemNewGoEvent());
+            WebSocketWorker.Subscribe("itemstatus_go", new ItemStatusGoEvent());
 		}
 
 		//Получение сообщения лога

@@ -103,5 +103,12 @@ namespace TMBot.API.TMAPI
 		
 		ItemRequestResponse ItemRequest(ItemRequestDirection in_out, string botid);
 
+        /// <summary>
+        /// Запрос авторизации для веб-сокетов
+        /// </summary>
+        /// <returns></returns>
+	    WebSocketAuth GetWSAuth();
+
+
 	}
 }

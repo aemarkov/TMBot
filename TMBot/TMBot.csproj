@@ -132,11 +132,10 @@
     <Compile Include="API\SteamAPI\CSSteamAPI.cs" />
     <Compile Include="API\TMAPI\ITMAPI.cs" />
     <Compile Include="API\TMAPI\CSTMAPI.cs" />
-    <Compile Include="API\TMWebSockAPI\ItemBoughtEvent.cs" />
-    <Compile Include="API\TMWebSockAPI\ItemSoldEvent.cs" />
-    <Compile Include="API\TMWebSockAPI\ItemTransferedEvent.cs" />
-    <Compile Include="API\TMWebSockAPI\Models\ItemNew.cs" />
-    <Compile Include="API\TMWebSockAPI\Models\ItemStatus.cs" />
+    <Compile Include="API\TMWebSockAPI\ItemNewGoEvent.cs" />
+    <Compile Include="API\TMWebSockAPI\ItemStatusGoEvent.cs" />
+    <Compile Include="API\TMWebSockAPI\Models\ItemNewGoResponse.cs" />
+    <Compile Include="API\TMWebSockAPI\Models\ItemStatusGoResponse.cs" />
     <Compile Include="Database\AbstractRepository.cs" />
     <Compile Include="Database\DatabaseContext.cs" />
     <Compile Include="Database\Exceptions.cs" />
@@ -290,6 +289,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="README.MD" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

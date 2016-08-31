@@ -98,7 +98,7 @@ namespace TMBot.ViewModels
 
 		            InventoryItemViewModel inventoryItemViewModel = new InventoryItemViewModel()
 		            {
-		                Name = description.name,
+		                Name = description.market_name,
 		                ImageUrl = imageUrl,
 		                IsSelling = isSelling,
 		                ClassId = rgItem.classid,

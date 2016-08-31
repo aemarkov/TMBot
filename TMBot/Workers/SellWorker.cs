@@ -83,7 +83,10 @@ namespace TMBot.Workers
                 myNewPrice = item.MyPrice;
 
                 if (myNewPrice < item.PriceLimit)
+                {
                     myNewPrice = item.PriceLimit;
+                    return true;
+                }
 
                 return false;
             }

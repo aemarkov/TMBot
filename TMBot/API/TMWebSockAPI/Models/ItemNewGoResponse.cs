@@ -3,7 +3,7 @@
     /// <summary>
     /// Ответ при событии покупки у нас предмета
     /// </summary>
-    public class ItemNew
+    public class ItemNewGoResponse
     {
         public string ui_id { get; set; }
         public string i_name { get; set; }

@@ -196,7 +196,8 @@ namespace TMBot.API.TMAPI
 		    }
 		}
 
-		/// <summary>
+
+	    /// <summary>
 		/// Изменить/удалить трейд
 		/// </summary>
 		/// <param name="itemid">Уникальный номер вещи (получатеся после выполнения SetNewItem)</param>
@@ -296,5 +297,23 @@ namespace TMBot.API.TMAPI
 		        return response.Data;
 		    }
 		}
-	}
+
+
+        /// <summary>
+        /// Запрос авторизации для веб-сокетов
+        /// </summary>
+        /// <returns></returns>
+        public WebSocketAuth GetWSAuth()
+        {
+            using (new CallHelper(callInterval))
+            {
+                var request = new RestRequest("GetWSAuth", Method.GET);
+                var response = rest_client.Execute<WebSocketAuth>(request);
+
+                check_errors(response.Content);
+
+                return response.Data;
+            }
+        }
+    }
 }

@@ -104,20 +104,7 @@ namespace TMBot.API.TMAPI.Models
 		public bool success { get; set; }
 	}
 
-	/// <summary>
-	/// Ответ на itemstatus_go (уведомление о покупке)
-	/// </summary>
-	public class ItemStatusGoResponse
-	{
-		public string id { get; set; }
-		public int status { get; set; }
-
-		/// <summary>
-		/// ID бота, с которым мы должны совершить ItemRequest
-		/// </summary>
-		public string bid { get; set; }
-		public int left { get; set; }
-	}
+	
 
 	/// <summary>
 	/// Резултат PingPong

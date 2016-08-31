@@ -53,34 +53,28 @@ namespace TMBot.Workers
 
             if (item.PriceLimit == 0)
             {
+                //Если ограничение по максимальной цене - 0, то не меняем цену на предмет
                 myNewPrice = item.MyPrice;
                 return false;
             }
 
-            if (tm_price > item.MyPrice || ((item.MyPrice - tm_price) /(float) item.MyPrice > PriceThreshold))
-                myNewPrice = tm_price + 1;
-            else
+            if ((tm_price > item.MyPrice) || (item.MyPrice > item.PriceLimit) || ((item.MyPrice - tm_price)/(float) item.MyPrice > PriceThreshold))
             {
-                myNewPrice = item.MyPrice;
-
-                if (myNewPrice > item.PriceLimit)
-                {
-                    myNewPrice = item.PriceLimit;
-                    return true;
-                }
-
-                return false;
+                myNewPrice = tm_price + 1;
+                return true;
             }
-
-            if (myNewPrice > item.PriceLimit)
-                myNewPrice = item.PriceLimit;
-
-            return true;
+            
+            myNewPrice = item.MyPrice;
+            return false;
         }
 
         protected override int? GetItemTMPrice(TradeItemViewModel item)
         {
-            return PriceCounter.GetMaxOfferPrice<TTMAPI>(item.ClassId, item.IntanceId);
+            //Если ограничение по макс. цене 0 - то даже не ищем такие предметы
+            if (item.PriceLimit == 0)
+                return null;
+
+            return PriceCounter.GetMaxOfferPrice<TTMAPI>(item.ClassId, item.IntanceId, item.PriceLimit);
         }
 
         //Остановка

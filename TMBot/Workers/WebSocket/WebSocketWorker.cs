@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Documents;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -47,17 +48,38 @@ namespace TMBot.Workers.WebSocket
         /// <summary>
         /// Запуск потока
         /// </summary>
-        public override void Start()
+        public async override void Start()
         {
-            var connectToken = new CancellationTokenSource().Token;
-            _webSocket.ConnectAsync(new Uri(_url), connectToken).Wait();
+            var connectToken = new CancellationTokenSource();
+            connectToken.CancelAfter(TimeSpan.FromMilliseconds(1000));
 
-            //Теперь надо получить ключ подписки на веб-сокеты и отправить его
-            var tmapi =  TMFactory.GetInstance<TMFactory>().GetAPI<CSTMAPI>();
-            WebSocketAuth auth =  tmapi.GetWSAuth();
-            SendText(auth.wsAuth);
+            try
+            {
+                await _webSocket.ConnectAsync(new Uri(_url), connectToken.Token);
 
-            RunThread();
+                //Теперь надо получить ключ подписки на веб-сокеты и отправить его
+                var tmapi = TMFactory.GetInstance<TMFactory>().GetAPI<CSTMAPI>();
+                WebSocketAuth auth = tmapi.GetWSAuth();
+                await SendText(auth.wsAuth);
+
+                RunThread();
+            }
+            catch (TaskCanceledException)
+            {
+                MessageBox.Show(
+                    "Не удалось подключиться к веб-сокетам. Возможно, это вызвано неполадками на сайте ТМ.\nРабота программы без веб-сокетов невозможна, проверьте подключение к Интернету или поробуйте позже.",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                Application.Current.Shutdown();
+            }
+            catch (WebSocketException exp)
+            {
+                MessageBox.Show(
+                       $"Не удалось подключиться к веб-сокетам: {exp.Message}. Возможно, это вызвано неполадками на сайте ТМ.\nРабота программы без веб-сокетов невозможна, проверьте подключение к Интернету или поробуйте позже.",
+                       "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                Application.Current.Shutdown();
+            }
         }
 
 
@@ -120,11 +142,11 @@ namespace TMBot.Workers.WebSocket
         /// Отправляет текст серверу
         /// </summary>
         /// <param name="text"></param>
-        public CancellationTokenSource SendText(string text)
+        public async Task<CancellationTokenSource> SendText(string text)
         {
             var token = new CancellationTokenSource();
             var array = new ArraySegment<Byte>(Encoding.ASCII.GetBytes(text));
-            _webSocket.SendAsync(array, WebSocketMessageType.Text, true, token.Token);
+            await _webSocket.SendAsync(array, WebSocketMessageType.Text, true, token.Token);
 
             return token;
         }

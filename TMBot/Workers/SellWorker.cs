@@ -68,38 +68,25 @@ namespace TMBot.Workers
         protected override bool GetItemNewPrice(TradeItemViewModel item, int tm_price, ref int myNewPrice)
         {
             /* Если минимальная цена меньше текущей - делаем нашу меньше минимальной на 
-                 * 1 коп.
-                 * 
-                 * Если минимальная - наша, то увеличиваем цену (до минимальной - 1коп) только
-                 * если разница больше заданных %
-                 */
-            if (tm_price < item.MyPrice || ((tm_price - item.MyPrice) / (float)tm_price > PriceThreshold))
+             * 1 коп.
+             * 
+             * Если минимальная - наша, то увеличиваем цену (до минимальной - 1коп) только
+             * если разница больше заданных %
+             */
+            if ((tm_price < item.MyPrice) || (item.MyPrice < item.PriceLimit) || ((tm_price - item.MyPrice) / (float)tm_price > PriceThreshold))
             {
                 myNewPrice = tm_price - 1;
-            }
-            else
-            {
-                //Цену менять не надо
-                myNewPrice = item.MyPrice;
-
-                if (myNewPrice < item.PriceLimit)
-                {
-                    myNewPrice = item.PriceLimit;
-                    return true;
-                }
-
-                return false;
+                return true;
             }
 
-            if (myNewPrice < item.PriceLimit)
-                myNewPrice = item.PriceLimit;
-
-            return true;
+            //Цену менять не надо
+            myNewPrice = item.MyPrice;
+            return false;
         }
 
         protected override int? GetItemTMPrice(TradeItemViewModel item)
         {
-            return PriceCounter.GetMinSellPrice<TTMAPI>(item.ClassId, item.IntanceId);
+            return PriceCounter.GetMinSellPrice<TTMAPI>(item.ClassId, item.IntanceId, item.PriceLimit);
         }
 
         //Остановка

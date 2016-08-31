@@ -1,4 +1,5 @@
-﻿using TMBot.Workers.WebSocket;
+﻿using TMBot.Utilities;
+using TMBot.Workers.WebSocket;
 
 namespace TMBot.API.TMWebSockAPI
 {
@@ -14,7 +15,8 @@ namespace TMBot.API.TMWebSockAPI
     {
         public void HandleEvebt(string data)
         {
-            throw new System.NotImplementedException();
+            //throw new System.NotImplementedException();
+            Log.d("ItemStatusGo");
         }
     }
 }

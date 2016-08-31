@@ -84,7 +84,7 @@ namespace TMBot.Utilities
 
             //Находим ордеры, чья стоимость меньше ограничения и которые выставлены НЕ МНОЙ
             var orders = itemInfo.buy_offers.Where(x => x.my_count == 0 && x.o_price <= maxPrice).ToList();
-            if (orders.Count!=0)
+            if (orders.Count==0)
             {
                 Log.w($"Ордеры товара {classid}_{instanceid} с ценой меньше {maxPrice} не найдены");
                 return null;

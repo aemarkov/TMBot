@@ -198,9 +198,8 @@ namespace TMBot.Workers
                     //Значит мы ничего не делаем
                     return;
                 }
-                else
-                    tm_price = (int)_tm_price;
 
+                tm_price = (int)_tm_price;
                 item.TMPrice = tm_price;
 
 

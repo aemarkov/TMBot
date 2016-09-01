@@ -107,18 +107,18 @@ namespace TMBot.Utilities
 	    }
 
 
-        public static int GetSteamMinSellPrice(string classid, string instanceid)
+        public static int? GetSteamMinSellPrice(string classid, string instanceid)
 	    {
             //TODO: Проверить по стиму
             Log.e("Steam price search not implemented");
-	        return -1;
+	        return null;
 	    }
 
 
-        public static int GetSteamMaxOfferPrice(string classid, string instanceid)
+        public static int? GetSteamMaxOfferPrice(string classid, string instanceid)
         {
             Log.e("Steam price search not implemented");
-            return -1;
+            return null;
         }
     }
 }

@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Documents;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using TMBot.API.Exceptions;
 using TMBot.API.Factory;
 using TMBot.API.TMAPI;
 using TMBot.API.TMAPI.Models;
@@ -66,22 +67,28 @@ namespace TMBot.Workers.WebSocket
             }
             catch (TaskCanceledException)
             {
-                MessageBox.Show(
-                    "Не удалось подключиться к веб-сокетам. Возможно, это вызвано неполадками на сайте ТМ.\nРабота программы без веб-сокетов невозможна, проверьте подключение к Интернету или поробуйте позже.",
-                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-
-                Application.Current.Shutdown();
+                showErrorMessage("время ожидания истекло");
             }
             catch (WebSocketException exp)
             {
-                MessageBox.Show(
-                       $"Не удалось подключиться к веб-сокетам: {exp.Message}. Возможно, это вызвано неполадками на сайте ТМ.\nРабота программы без веб-сокетов невозможна, проверьте подключение к Интернету или поробуйте позже.",
-                       "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-
-                Application.Current.Shutdown();
+                showErrorMessage(exp.Message);
+            }
+            catch (APIException exp)
+            {
+                showErrorMessage("не удалось получить ключ подписки на веб сокеты: "+exp.Message);
             }
         }
 
+        //Показывает сообщение об ошибке
+        private void showErrorMessage(string reason)
+        {
+            if (MessageBox.Show(
+                $"Не удалось подключиться к вебсокетам: {reason}. Вебсокеты обеспечивают лучшую работу программы. Продолжить работу программы без вебсокетов?",
+                "Ошибка", MessageBoxButton.YesNo, MessageBoxImage.Error) == MessageBoxResult.No)
+            {
+                Application.Current.Shutdown();
+            }
+        }
 
         /// <summary>
         /// Добавляет наблюдателя для конкретного события

@@ -23,9 +23,14 @@
 
         <GroupBox Header="Настройки сбора цен" Grid.Row="0" Grid.Column="0">
             <StackPanel>
-                <RadioButton Name="rbSteam" Content="Цена из Steam" IsEnabled="False"/>
-                <RadioButton Name="rbMinimumPrice" Content="Минимальная цена на площадке TM" IsChecked="True"/>
-                <RadioButton Name="rbMaxOrder" Content="Самый дорогой ордер на покупку" IsEnabled="False"/>
+                <TextBlock TextWrapping="Wrap">
+                    Выставлять за % от минимальной цены
+                    на ТМ.
+                </TextBlock>
+                <TextBlock TextWrapping="Wrap">
+                    Выставлять по цене из Steam, если на найдено на
+                    площадке
+                </TextBlock>
                 <DockPanel>
                     <TextBlock Text="Цена:"/>
                     <wpfTool:DecimalUpDown Minimum="0" Increment="0.01" FormatString="P0"
@@ -51,7 +56,6 @@
 
                 <views:AsyncButton Content="Начать выставлять"
                         Command="{Binding BeginCommand}"/>
-                <Button Content="WTF"/>
             </StackPanel>
         </GroupBox>
         

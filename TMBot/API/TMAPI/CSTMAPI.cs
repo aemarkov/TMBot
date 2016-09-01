@@ -315,5 +315,22 @@ namespace TMBot.API.TMAPI
                 return response.Data;
             }
         }
+
+	    /// <summary>
+	    /// Пинг, нужо вызывать раз в 3 минуты, чтобы быть онлайн
+	    /// </summary>
+	    /// <returns></returns>
+	    public PingPongResponse PingPong()
+	    {
+	        using (new CallHelper(callInterval))
+	        {
+	            var request = new RestRequest("PingPong", Method.GET);
+	            var response = rest_client.Execute<PingPongResponse>(request);
+
+                check_errors(response.Content);
+
+	            return response.Data;
+	        }
+	    }
     }
 }

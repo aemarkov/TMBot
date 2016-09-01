@@ -109,6 +109,12 @@ namespace TMBot.API.TMAPI
         /// <returns></returns>
 	    WebSocketAuth GetWSAuth();
 
+        /// <summary>
+        /// Пинг, нужо вызывать раз в 3 минуты, чтобы быть онлайн
+        /// </summary>
+        /// <returns></returns>
+	    PingPongResponse PingPong();
+
 
 	}
 }

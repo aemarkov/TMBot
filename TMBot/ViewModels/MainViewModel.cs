@@ -16,6 +16,7 @@ using TMBot.Utilities;
 using TMBot.Utilities.MVVM;
 using TMBot.ViewModels.ViewModels;
 using TMBot.Windows;
+using TMBot.Workers;
 using TMBot.Workers.WebSocket;
 
 namespace TMBot.ViewModels
@@ -44,6 +45,9 @@ namespace TMBot.ViewModels
 
         //Слушание сокетов
 	    public WebSocketWorker WebSocketWorker;
+
+        //Пинг
+	    public PingWorker PingWorker;
 
         //Лог
         private ObservableCollection<LogItem> _logList;
@@ -88,6 +92,10 @@ namespace TMBot.ViewModels
 
             WebSocketWorker.Subscribe("itemout_new_go", new ItemNewGoEvent());
             WebSocketWorker.Subscribe("itemstatus_go", new ItemStatusGoEvent());
+
+            //Пинг
+            PingWorker = new PingWorker();
+            PingWorker.Start();
 		}
 
 		//Получение сообщения лога
@@ -105,6 +113,7 @@ namespace TMBot.ViewModels
 	    public void Dispose()
 	    {
 	        WebSocketWorker.Stop();
+            PingWorker.Stop();
 
             TradesPage.Dispose();
             OrdersPage.Dispose();

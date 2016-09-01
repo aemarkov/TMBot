@@ -139,6 +139,8 @@
     <Compile Include="Database\AbstractRepository.cs" />
     <Compile Include="Database\DatabaseContext.cs" />
     <Compile Include="Database\Exceptions.cs" />
+    <Compile Include="Data\SteamTradeContainer.cs" />
+    <Compile Include="Data\SteamTradeList.cs" />
     <Compile Include="Models\Item.cs" />
     <Compile Include="Database\ItemsRepository.cs" />
     <Compile Include="Properties\Annotations.cs" />

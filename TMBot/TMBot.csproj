@@ -202,6 +202,7 @@
     <Compile Include="Workers\Abstract\BaseWorker.cs" />
     <Compile Include="Workers\OrderWorker.cs" />
     <Compile Include="Workers\SellWorker.cs" />
+    <Compile Include="Workers\SteamWorker.cs" />
     <Compile Include="Workers\WebSocket\ITMWebSocketObserver.cs" />
     <Compile Include="Workers\PingWorker.cs" />
     <Compile Include="Workers\WebSocket\WebSocketWorker.cs" />

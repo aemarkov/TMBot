@@ -13,13 +13,13 @@ namespace TMBot.Data
     public static class SteamTradeContainer
     {
         /// <summary>
-        /// Предложение на получение предмета
+        /// Созданные ботом ТМ предложения обмена
         /// </summary>
-        public static SteamTradeList InTrades { get; }=new SteamTradeList();
+        public static SteamTradeList Trades { get; }=new SteamTradeList();
 
         /// <summary>
         /// Предложение на передачу предмета
         /// </summary>
-        public static SteamTradeList OutTrades { get; } = new SteamTradeList();
+        //public static SteamTradeList OutTrades { get; } = new SteamTradeList();
     }
 }

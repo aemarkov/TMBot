@@ -1,4 +1,5 @@
-﻿using TMBot.Utilities;
+﻿using System.Threading.Tasks;
+using TMBot.Utilities;
 using TMBot.Workers.WebSocket;
 
 namespace TMBot.API.TMWebSockAPI
@@ -13,7 +14,7 @@ namespace TMBot.API.TMWebSockAPI
     /// </summary>
     public class ItemStatusGoEvent : ITMWebSocketObserver
     {
-        public void HandleEvebt(string data)
+        public async Task HandleEvent(string data)
         {
             //throw new System.NotImplementedException();
             Log.d("ItemStatusGo");

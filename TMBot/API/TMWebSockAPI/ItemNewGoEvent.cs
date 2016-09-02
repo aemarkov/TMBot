@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TMBot.API.Factory;
 using TMBot.API.TMAPI;
@@ -24,7 +25,7 @@ namespace TMBot.API.TMWebSockAPI
             api = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
         }
 
-        public void HandleEvebt(string data)
+        public async Task HandleEvent(string data)
         {
             Log.d("ItemNewGo");
 
@@ -34,7 +35,10 @@ namespace TMBot.API.TMWebSockAPI
             {
                 //Делаем ItemRequest, чтобы бот ТМ инициировал обмен в Стим
                 string botid = "1";
-                var itemrequest = api.ItemRequest(ItemRequestDirection.IN, botid);
+
+                //Выполняем асинхронно, чтобы как можно скорее возвратиться в вызывающий метод
+                //и он продолжил следить за сокетами
+                var itemrequest = await Task.Run(() => api.ItemRequest(ItemRequestDirection.IN, botid));
 
                 if (itemrequest==null || !itemrequest.success)
                 {
@@ -44,7 +48,7 @@ namespace TMBot.API.TMWebSockAPI
                 Log.d($"Выполнен запрос на обмен, бот: {itemrequest.nick}, сообщение: {itemrequest.secret}");
 
                 //Необходимо поместить ID бота и сообщение в список, который будет использоваться при поиске трейдов в стиме
-                SteamTradeContainer.OutTrades.PushTrade(itemrequest);
+                SteamTradeContainer.Trades.PushTrade(itemrequest);
 
                 //Необходимо пометить это трейд, чтобы он не продавался
 

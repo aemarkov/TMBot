@@ -90,7 +90,7 @@ namespace TMBot.API.TMAPI.Models
 		public bool success { get; set; }
 		public string trade { get; set; }
 		public string nick { get; set; }
-		public string botid { get; set; }
+		public int botid { get; set; }
 		public string profile { get; set; }
 		public string secret { get; set; }
 		public List<string> items { get; set; }

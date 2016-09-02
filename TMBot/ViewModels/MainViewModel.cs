@@ -49,6 +49,9 @@ namespace TMBot.ViewModels
         //Пинг
 	    public PingWorker PingWorker;
 
+        //Подтверждение стима
+	    public SteamWorker SteamWorker;
+
         //Лог
         private ObservableCollection<LogItem> _logList;
 	    private readonly object _logListLock = new object();
@@ -73,6 +76,9 @@ namespace TMBot.ViewModels
             SteamFactory s_factory = AbstactAPIFactory<ISteamAPI>.GetInstance<SteamFactory>();
             s_factory.CreateAPI<CSSteamAPI>(settings.SteamProfileId, settings.SteamApiKey);
 
+		    ITMAPI csTmapi = TMFactory.GetInstance<TMFactory>().GetAPI<CSTMAPI>();
+		    ISteamAPI csSteamApi = SteamFactory.GetInstance<SteamFactory>().GetAPI<CSSteamAPI>();
+
             //Лог
             LogList = new ObservableCollection<LogItem>();
 			Log.NewLogMessage += Log_NewLogMessage;
@@ -96,6 +102,10 @@ namespace TMBot.ViewModels
             //Пинг
             PingWorker = new PingWorker();
             PingWorker.Start();
+
+            //steam
+            SteamWorker = new SteamWorker(csSteamApi);
+            SteamWorker.Start();
 		}
 
 		//Получение сообщения лога
@@ -114,6 +124,7 @@ namespace TMBot.ViewModels
 	    {
 	        WebSocketWorker.Stop();
             PingWorker.Stop();
+	        SteamWorker.Stop();
 
             TradesPage.Dispose();
             OrdersPage.Dispose();

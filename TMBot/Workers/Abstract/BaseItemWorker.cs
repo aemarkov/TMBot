@@ -209,7 +209,6 @@ namespace TMBot.Workers
                     return;
 
                 //Обновляем цену предмета
-                //TODO: убедиться, что itemid - это точно ui_id
                 tmApi.SetPrice(item.ItemId, (int)my_new_price);
 
                 //Обновляем модель

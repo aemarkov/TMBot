@@ -38,7 +38,7 @@ namespace TMBot.Data
             lock (_lock)
             {
                 _trades.AddLast(itemRequest);
-                //Monitor.Pulse(_lock);
+                Monitor.Pulse(_lock);
             }
         }
 
@@ -47,16 +47,18 @@ namespace TMBot.Data
         /// его из списка и возвращает
         /// </summary>
         /// <param name="botid">ID учетной записи бота</param>
-        /// <param name="nick">Ник бота</param>
         /// <param name="secret">Секретная фраза</param>
         /// <returns>Информацию о запрсое, null если по заданным данным предложения не найдено</returns>
-        public ItemRequestResponse PopTrade(string botid, string nick, string secret)
+        public ItemRequestResponse PopTrade(int botid, string secret)
         {
             ItemRequestResponse trade = null;
 
             lock (_lock)
             {
-                trade = _trades.FirstOrDefault(x => x.botid == botid && x.nick == nick && x.secret == secret);
+                while (_trades.Count == 0)
+                    Monitor.Wait(_lock);
+
+                trade = _trades.FirstOrDefault(x => x.botid == botid && x.secret == secret);
                 if (trade != null)
                 {
                     _trades.Remove(trade);

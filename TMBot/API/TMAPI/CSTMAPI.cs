@@ -106,7 +106,6 @@ namespace TMBot.API.TMAPI
 		        check_errors(response.Content);
 
 		        //Если что-то пойдет не так, тут почему-то будут null в полях
-		        //TODO: нормальная обработка ошибок запросов
 		        if (response.Data?.name == null)
 		            return null;
 
@@ -189,7 +188,6 @@ namespace TMBot.API.TMAPI
 
 		        var response = rest_client.Execute<ItemRequestResponse>(request);
 
-		        //TODO: нормальная обработка ошибок запросов
 		        check_errors(response.Content);
 
 		        return response.Data;
@@ -221,7 +219,6 @@ namespace TMBot.API.TMAPI
 		        var response = rest_client.Execute<SetPriceResponse>(request);
 
 		        check_errors(response.Content);
-		        //TODO: нормальная обработка ошибок запросов
 
 		        return response.Data;
 		    }
@@ -259,7 +256,6 @@ namespace TMBot.API.TMAPI
 		        var response = rest_client.Execute<SetPriceResponse>(request);
 
 		        check_errors(response.Content);
-		        //TODO: нормальная обработка ошибок запросов
 
 		        return response.Data;
 		    }
@@ -292,7 +288,6 @@ namespace TMBot.API.TMAPI
 		        var response = rest_client.Execute<UpdateOrderResponse>(request);
 
 		        check_errors(response.Content);
-		        //TODO: нормальная обработка ошибок запросов
 
 		        return response.Data;
 		    }

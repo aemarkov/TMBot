@@ -72,14 +72,13 @@ namespace TMBot.ViewModels
                 ISteamAPI steamApi = SteamFactory.GetInstance<SteamFactory>().GetAPI<TSteamAPI>();
                 ITMAPI tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
 
+                //Получаем инвентарь стим
                 var inventory = await steamApi.GetSteamInventoryAsync();
 
+                //Получаем трейды
                 IList<Trade> trades = tmApi.GetTrades();
                 if (trades == null)
                     throw new Exception();
-
-                //Число предметов, которые уже выставляются
-                int sellingCount = 0;
 
                 InventoryItems.Clear();
 
@@ -91,23 +90,22 @@ namespace TMBot.ViewModels
 
                     string imageUrl = "http://cdn.steamcommunity.com/economy/image/" + description.icon_url;
 
-                    bool isSelling = trades.Any(x => x.i_classid == rgItem.classid && x.ui_real_instance == rgItem.instanceid);
-
-                    if (isSelling)
-                        sellingCount++;
-
+                    
+                    //Определяем статус предмета
+                    var trade_item = trades.FirstOrDefault(x=>x.i_classid == rgItem.classid && x.ui_real_instance == rgItem.instanceid);
+                    
                     InventoryItemViewModel inventoryItemViewModel = new InventoryItemViewModel()
                     {
                         Name = description.market_name,
                         ImageUrl = imageUrl,
-                        IsSelling = isSelling,
+                        Status = trade_item == null ? ItemStatus.NOT_TRADING : UiStatusToStatusConverter.Convert(trade_item.ui_status),
                         ClassId = rgItem.classid,
                         IntanceId = rgItem.instanceid
                     };
                     InventoryItems.Add(inventoryItemViewModel);
                 }
 
-                Log.d("Загружено {0} предметов, выставляются: {1}", inventory.rgInventory.Count, sellingCount);
+                Log.d($"Загружено {InventoryItems.Count} предметов");
             }
             catch (BadKeyException)
             {
@@ -154,7 +152,7 @@ namespace TMBot.ViewModels
             int count = 0;
 
             //Определяем цену предметов и выставляем
-            foreach (var item in InventoryItems.Where(item => !item.IsSelling))
+            foreach (var item in InventoryItems.Where(item => item.Status==ItemStatus.NOT_TRADING))
             {
 
                 //Получаем цену предмета на ТМ

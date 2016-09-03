@@ -8,6 +8,17 @@
              xmlns:system="clr-namespace:System;assembly=mscorlib">
     <Application.Resources>
         <ResourceDictionary>
+
+            <!-- converters -->
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <converters:KopekToRubleConverter x:Key="KopekToRubleConverter"/>
+            <converters:CountConverter x:Key="CountConverter"/>
+            <validation:DecimalValidationRule x:Key="DecimalValidator"/>
+            <validation:IntValidationRule x:Key="IntValidator"/>
+            <converters:StatusToStringConverter x:Key="StatusToStringConverter"/>
+            <converters:StatusToColorConverter x:Key="StatusToColorConverter"/>
+
             <ResourceDictionary.MergedDictionaries>
 
                 <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
@@ -27,13 +38,6 @@
 
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- converters -->
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-            <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
-            <converters:KopekToRubleConverter x:Key="KopekToRubleConverter"/>
-            <converters:CountConverter x:Key="CountConverter"/>
-            <validation:DecimalValidationRule x:Key="DecimalValidator"/>
-            <validation:IntValidationRule x:Key="IntValidator"/>
 
         </ResourceDictionary>
     </Application.Resources>

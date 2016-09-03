@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using TMBot.API.TMAPI.Models;
 using TMBot.Models;
 using TMBot.ViewModels.ViewModels;
@@ -14,7 +15,8 @@ namespace TMBot.Utilities
         {
             Mapper.Initialize(cfg =>
             {
-                MapTradeToTradeItemViewModel(cfg);
+                //MapTradeToTradeItemViewModel(cfg);
+                cfg.CreateMap<Trade, TradeItemViewModel>().ConvertUsing<TradeToTradeItemViewModelConverter>();
                 MapOrderToTradeItemViewModel(cfg);
                 cfg.CreateMap<Item, TradeItemViewModel>();
             });
@@ -29,6 +31,7 @@ namespace TMBot.Utilities
             map.ForMember(d => d.ClassId, o => o.MapFrom(s => s.i_classid));
             map.ForMember(d => d.Name, o => o.MapFrom(s => s.i_name));
             map.ForMember(d => d.MyPrice, o => o.MapFrom(s => s.ui_price));
+            //map.ForMember(d=>d.Status, o=>o.MapFrom(s=>s.ui_status)).ConvertUsing<StatusTypeConverter>();
         }
 
         private static void MapOrderToTradeItemViewModel(IMapperConfigurationExpression cfg)
@@ -39,6 +42,23 @@ namespace TMBot.Utilities
             map.ForMember(d => d.ClassId, o => o.MapFrom(s => s.i_classid));
             map.ForMember(d => d.Name, o => o.MapFrom(s => s.i_market_name));
             map.ForMember(d => d.MyPrice, o => o.MapFrom(s => s.o_price));
+        }
+    }
+
+    class TradeToTradeItemViewModelConverter : ITypeConverter<Trade, TradeItemViewModel>
+    {
+        public TradeItemViewModel Convert(Trade source, TradeItemViewModel destination, ResolutionContext context)
+        {
+            var dest = new TradeItemViewModel();
+            dest.ItemId = source.ui_id;
+            dest.IntanceId = source.ui_real_instance;
+            dest.ClassId = source.i_classid;
+            dest.Name = source.i_name;
+            dest.MyPrice = (int)source.ui_price;
+            dest.Status = UiStatusToStatusConverter.Convert(source.ui_status);
+
+            return dest;
+
         }
     }
 }

@@ -1,11 +1,15 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:TMBot">
+                    xmlns:local="clr-namespace:TMBot"
+                    xmlns:converters="clr-namespace:TMBot.Utilities.MVVM.Converters">
 
     <!-- шаблоны ячеек для отображения предметов
          - хардкорный биндинг
          + юзание в одну строку
     -->
+
+    <converters:StatusToStringConverter x:Key="StatusToStringConverter"/>
+    <converters:StatusToColorConverter x:Key="StatusToColorConverter"/>
 
     <!-- картинка предмета -->
     <Style x:Key="ItemImageCell" TargetType="{x:Type DataGridCell}">
@@ -25,21 +29,13 @@
                 <ControlTemplate>
                     <StackPanel>
                         <TextBlock Text="{Binding Path=Name, Mode=OneWay}" TextWrapping="Wrap"/>
-                        <TextBlock x:Name="txtSelling" Text="Не выставляется" Foreground="Red"/>
+                        <TextBlock Text="{Binding Status, Converter={StaticResource StatusToStringConverter}}" Foreground="{Binding Status, Converter={StaticResource StatusToColorConverter}}"/>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding Path=ClassId}"/>
                             <TextBlock Text="_"/>
                             <TextBlock Text="{Binding Path=IntanceId}"/>
                         </StackPanel>
                     </StackPanel>
-
-                    <ControlTemplate.Triggers>
-                        <DataTrigger Binding="{Binding Path=IsSelling, Mode=OneWay}"
-                                                 Value="True">
-                            <Setter Property="Text" TargetName="txtSelling" Value="Выставляется"/>
-                            <Setter Property="Foreground" TargetName="txtSelling" Value="Green"/>
-                        </DataTrigger>
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

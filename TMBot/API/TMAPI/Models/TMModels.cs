@@ -31,7 +31,7 @@ namespace TMBot.API.TMAPI.Models
 		/// 3 - Ожидание передачи боту купленной вами вещи от продавца
 		/// 4 - Вы можете забрать купленную вещь
 		/// </summary>
-		public string ui_status { get; set; }
+		public int ui_status { get; set; }
 
 		public string he_name { get; set; }
 		public double ui_price { get; set; }

@@ -140,6 +140,8 @@
     <Compile Include="Database\DatabaseContext.cs" />
     <Compile Include="Database\Exceptions.cs" />
     <Compile Include="Data\ItemCollectionsContainer.cs" />
+    <Compile Include="Utilities\MVVM\Converters\StatusToColorConverter.cs" />
+    <Compile Include="Utilities\MVVM\Converters\StatusToStringConverter.cs" />
     <Compile Include="Utilities\MVVM\SynchronizedObservableCollection.cs" />
     <Compile Include="Data\SteamTradeContainer.cs" />
     <Compile Include="Data\SteamTradeList.cs" />
@@ -179,6 +181,7 @@
       <DependentUpon>TradesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utilities\MVVM\RelayCommand.cs" />
+    <Compile Include="Utilities\UiStatusToStatusConverter.cs" />
     <Compile Include="ViewModels\BaseWorkerViewModel.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />

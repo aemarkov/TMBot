@@ -15,6 +15,7 @@ using TMBot.API.Factory;
 using TMBot.API.SteamAPI;
 using TMBot.API.TMAPI;
 using TMBot.API.TMAPI.Models;
+using TMBot.Data;
 using TMBot.Database;
 using TMBot.Models;
 using TMBot.Settings;
@@ -32,8 +33,8 @@ namespace TMBot.Workers
 	public class SellWorker<TTMAPI,TSteamAPI> : BaseItemWorker<TTMAPI, TSteamAPI, Trade> where TTMAPI : ITMAPI where TSteamAPI : ISteamAPI
     {
 
-	    public SellWorker():base()
-	    {
+	    public SellWorker(SynchronizedObservableCollection<TradeItemViewModel> items) : base(items)
+        {
             //Загрузка порога цены
 	        var settings = SettingsManager.LoadSettings();
 	        PriceThreshold = settings.TradeMaxThreshold;

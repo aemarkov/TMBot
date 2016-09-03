@@ -11,11 +11,10 @@ using TMBot.API.Exceptions;
 using TMBot.API.Factory;
 using TMBot.API.SteamAPI;
 using TMBot.API.TMAPI;
-using TMBot.API.TMAPI.Models;
+using TMBot.Data;
 using TMBot.Database;
 using TMBot.Models;
 using TMBot.Utilities;
-using TMBot.Utilities.MVVM;
 using TMBot.ViewModels.ViewModels;
 
 namespace TMBot.Workers
@@ -36,9 +35,9 @@ namespace TMBot.Workers
         //Список предметов
         #region Items
         private object _itemsLock = new object();
-        private ObservableCollection<TradeItemViewModel> _items;
+        private SynchronizedObservableCollection<TradeItemViewModel> _items;
 
-        public ObservableCollection<TradeItemViewModel> Items
+        public SynchronizedObservableCollection<TradeItemViewModel> Items
         {
             get { return _items; }
             protected set
@@ -81,12 +80,13 @@ namespace TMBot.Workers
 
         #endregion
 
-        protected BaseItemWorker()
+        protected BaseItemWorker(SynchronizedObservableCollection<TradeItemViewModel> items )
         {
             //_repository = new ItemsRepository();
             tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
             steamApi = SteamFactory.GetInstance<SteamFactory>().GetAPI<TSteamAPI>();
-            Items = new ObservableCollection<TradeItemViewModel>();
+
+            Items = items;
         }
 
         /// <summary>
@@ -172,10 +172,9 @@ namespace TMBot.Workers
 
             while (IsRunning)
             {
-                foreach (var item in Items)
+                for(int i = 0; i<Items.Count; i++)
                 {
-                    update_price(item);
-                    LastUpdateItem = item;
+                    update_price(Items[i]);
 
                     if (!IsRunning)
                         return;

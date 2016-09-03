@@ -3,6 +3,7 @@ using System.Windows;
 using TMBot.API.SteamAPI;
 using TMBot.API.TMAPI;
 using TMBot.API.TMAPI.Models;
+using TMBot.Data;
 using TMBot.Database;
 using TMBot.Models;
 using TMBot.Settings;
@@ -13,7 +14,7 @@ namespace TMBot.Workers
 {
     public class OrderWorker<TTMAPI, TSteamAPI> : BaseItemWorker<TTMAPI, TSteamAPI, Order> where TTMAPI : ITMAPI where TSteamAPI : ISteamAPI
     {
-        public OrderWorker():base()
+        public OrderWorker(SynchronizedObservableCollection<TradeItemViewModel>  items):base(items)
 	    {
             var settings = SettingsManager.LoadSettings();
             PriceThreshold = settings.OrderMinThreshold;

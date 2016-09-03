@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using TMBot.API.SteamAPI;
 using TMBot.API.TMAPI;
 using TMBot.API.TMAPI.Models;
+using TMBot.Data;
 using TMBot.Utilities.MVVM;
+using TMBot.ViewModels.ViewModels;
 using TMBot.Workers;
 
 namespace TMBot.ViewModels
@@ -16,9 +18,9 @@ namespace TMBot.ViewModels
 	/// </summary>
 	public class OrdersViewModel : BaseWorkerViewModel<Order>
 	{
-	    public OrdersViewModel()
+	    public OrdersViewModel(SynchronizedObservableCollection<TradeItemViewModel>  items)
 	    {
-	        Worker = new OrderWorker<CSTMAPI, CSSteamAPI>();
+	        Worker = new OrderWorker<CSTMAPI, CSSteamAPI>(items);
 	    }
 
 

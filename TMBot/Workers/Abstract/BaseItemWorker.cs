@@ -199,7 +199,7 @@ namespace TMBot.Workers
                 if (item.Status == ItemStatus.SOLD)
                 {
                     //ItemRequest
-                    ItemRequestHelper.MakeItemRequest(tmApi, item.ItemId);
+                    ItemRequestHelper.MakeSellItemRequest(tmApi, item.ItemId);
                     return;
                 }
 

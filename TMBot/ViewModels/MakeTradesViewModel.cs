@@ -22,7 +22,7 @@ namespace TMBot.ViewModels
     public class MakeTradesViewModel
     {
         //Список предметов в инвентаре стим
-        public ObservableCollection<InventoryItemViewModel> InventoryItems { get; private set; }
+        public ObservableCollection<MakeTradesItemViewModel> InventoryItems { get; private set; }
 
         public IAsyncCommand UpdateInventoryCommand { get; private set; }
         public IAsyncCommand BeginCommand { get; private set; }
@@ -33,7 +33,7 @@ namespace TMBot.ViewModels
 
         public MakeTradesViewModel()
         {
-            InventoryItems = new ObservableCollection<InventoryItemViewModel>();
+            InventoryItems = new ObservableCollection<MakeTradesItemViewModel>();
 
             UpdateInventoryCommand = AsyncCommand.Create(update_inventory);
             BeginCommand = AsyncCommand.Create(begin);
@@ -93,16 +93,54 @@ namespace TMBot.ViewModels
                     
                     //Определяем статус предмета
                     var trade_item = trades.FirstOrDefault(x=>x.i_classid == rgItem.classid && x.ui_real_instance == rgItem.instanceid);
+                    var status = trade_item == null
+                        ? ItemStatus.NOT_TRADING
+                        : UiStatusToStatusConverter.Convert(trade_item.ui_status);
+
+                    //Расчитываем цену предмета
+                    //Если предмет не выставляется, то определяем его цену
+                    //Если цена не найдена, то не выставляем
+                    //Если предмет уже выставляетсЯ, то пишем цену, по которой
+                    //Он выставляется
+
+
+                    int price;
+                    bool shouldSell;
+
+                    if (status == ItemStatus.NOT_TRADING)
+                    {
+                        int? _price = getPrice<TTMAPI>(rgItem.classid, rgItem.instanceid);
+
+                        if (_price != null)
+                        {
+                            price = _price.Value;
+                            shouldSell = true;
+                        }
+                        else
+                        {
+                            price = 0;
+                            shouldSell = false;
+                        }
+                    }
+                    else
+                    {
+                        price = (int)trade_item.ui_price;
+                        shouldSell = false;
+                    }
                     
-                    InventoryItemViewModel inventoryItemViewModel = new InventoryItemViewModel()
+
+                    //Заполняем поля
+                    MakeTradesItemViewModel tradeItem = new MakeTradesItemViewModel()
                     {
                         Name = description.market_name,
                         ImageUrl = imageUrl,
-                        Status = trade_item == null ? ItemStatus.NOT_TRADING : UiStatusToStatusConverter.Convert(trade_item.ui_status),
+                        Status = status,
                         ClassId = rgItem.classid,
-                        IntanceId = rgItem.instanceid
+                        IntanceId = rgItem.instanceid,
+                        ShouldSell = shouldSell,
+                        SellPrice = price
                     };
-                    InventoryItems.Add(inventoryItemViewModel);
+                    InventoryItems.Add(tradeItem);
                 }
 
                 Log.d($"Загружено {InventoryItems.Count} предметов");
@@ -131,7 +169,7 @@ namespace TMBot.ViewModels
         }
 
         //Начинает выставлять предметы определенной площадки
-        private async Task begin_sell_game<TTMAPI>(ICollection<InventoryItemViewModel> items) where TTMAPI : ITMAPI
+        private async Task begin_sell_game<TTMAPI>(ICollection<MakeTradesItemViewModel> items) where TTMAPI : ITMAPI
         {
             if (items == null)
             {
@@ -152,41 +190,13 @@ namespace TMBot.ViewModels
             int count = 0;
 
             //Определяем цену предметов и выставляем
-            foreach (var item in InventoryItems.Where(item => item.Status==ItemStatus.NOT_TRADING))
+            foreach (var item in InventoryItems.Where(item => item.Status==ItemStatus.NOT_TRADING && item.ShouldSell))
             {
                 try
                 {
-                    //Получаем цену предмета на ТМ
-                    int price;
-                    int? _price = PriceCounter.GetMinSellPrice<TTMAPI>(item.ClassId, item.IntanceId);
-
-
-                    if (_price == null)
-                    {
-                        //Товар не найден, поиск на площадке стима
-                        _price = PriceCounter.GetSteamMinSellPrice(item.ClassId, item.IntanceId);
-                        if (_price != null)
-                        {
-                            //Товар найден на площадке стима
-                            //Выставляем за 100% от цены стим
-                            price = _price.Value;
-                        }
-                        else
-                        {
-                            //Товар не найден даже в стиме
-                            Log.w($"Товар {item.ClassId}_{item.IntanceId} не найден ни на ТМ, ни в Steam. Не выставляется");
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        //Выставляем за % от минимальной цены
-                        price = _price.Value;
-                        price = (int) (PricePercentage*price);
-                    }
-
-                    tmApi.SetNewItem(item.ClassId, item.IntanceId, (int) price);
-                    Log.d("Предмет {0}_{1} выставлен. за цену {2} коп.", item.ClassId, item.IntanceId, price);
+                    
+                    tmApi.SetNewItem(item.ClassId, item.IntanceId, (int) item.SellPrice);
+                    Log.d("Предмет {0}_{1} выставлен. за цену {2} коп.", item.ClassId, item.IntanceId, item.SellPrice);
                     count++;
 
                 }
@@ -206,5 +216,39 @@ namespace TMBot.ViewModels
         }
 
         #endregion
+
+        //Расчитывает цену предмета
+        private int? getPrice<TTMAPI>(string classid, string instanceid) where TTMAPI : ITMAPI
+        {
+            //Получаем цену предмета на ТМ
+            int price;
+            int? _price = PriceCounter.GetMinSellPrice<TTMAPI>(classid, instanceid);
+
+
+            if (_price == null)
+            {
+                //Товар не найден, поиск на площадке стима
+                _price = PriceCounter.GetSteamMinSellPrice(classid, instanceid);
+                if (_price != null)
+                {
+                    //Товар найден на площадке стима
+                    //Выставляем за 100% от цены стим
+                    return _price.Value;
+                }
+                else
+                {
+                    //Товар не найден даже в стиме
+                    Log.w($"Товар {classid}_{instanceid} не найден ни на ТМ, ни в Steam");
+                    return null;
+                }
+            }
+            else
+            {
+                //Выставляем за % от минимальной цены
+                price = _price.Value;
+                return (int)(PricePercentage * price);
+            }
+
+        }
     }
 }

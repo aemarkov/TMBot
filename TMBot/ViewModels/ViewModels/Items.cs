@@ -18,7 +18,7 @@ namespace TMBot.ViewModels.ViewModels
     /// Удобное представление объекта инвентаря стим
     /// Комбинация важных параметров RgItem и RgDescription
     /// </summary>
-    public class InventoryItemViewModel : PropertyChangedBase
+    public abstract class AbstractItemViewModel : PropertyChangedBase
     {
         private string _name;
         private string _imageUrl;
@@ -26,18 +26,80 @@ namespace TMBot.ViewModels.ViewModels
         private string _classId;
         private string _instanceId;
 
+        private object statusLock = new object();
+
+        /// <summary>
+        /// Название предмета
+        /// </summary>
 		public string Name { get { return _name;  } set { _name = value; NotifyPropertyChanged(); } }
+
+        /// <summary>
+        /// Ссылка на изображение предмета
+        /// </summary>
 		public string ImageUrl { get { return _imageUrl; } set { _imageUrl = value; NotifyPropertyChanged(); } }
-        public ItemStatus Status { get { return _itemStatus; } set { _itemStatus = value; NotifyPropertyChanged(); } }
+
+        /// <summary>
+        /// Статус предмета. Так же используется
+        /// для обеспечения безопасного межпоточного взаимодействия
+        /// с предметов
+        /// </summary>
+        public ItemStatus Status
+        {
+
+            get
+            {
+                lock (statusLock)
+                {
+                    return _itemStatus;
+                }
+            }
+
+            set
+            {
+                lock (statusLock)
+                {
+                    _itemStatus = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+
+
         public string ClassId { get { return _classId; } set { _classId = value; NotifyPropertyChanged(); } }
         public string IntanceId { get { return _instanceId; } set { _instanceId = value; NotifyPropertyChanged(); } }
 
     }
 
+    public class MakeTradesItemViewModel : AbstractItemViewModel
+    {
+        private bool _shouldSell;
+        private int _sellPrice;
+
+        /// <summary>
+        /// Нужно ли выставлять предмет
+        /// </summary>
+        public bool ShouldSell
+        {
+            get { return _shouldSell;}
+            set { _shouldSell = value; NotifyPropertyChanged(); }
+        }
+
+        /// <summary>
+        /// Цена, по которой надо будет выставлять
+        /// </summary>
+        public int SellPrice
+        {
+            get { return _sellPrice; }
+            set { _sellPrice = value; NotifyPropertyChanged(); }
+        }
+    }
+
+
     /// <summary>
     /// Представление предмета для покупки/продажия
     /// </summary>
-    public class TradeItemViewModel : InventoryItemViewModel
+    public class TradeItemViewModel : AbstractItemViewModel
     {
         private string _itemId;
         private int _tmPrice;
@@ -66,6 +128,9 @@ namespace TMBot.ViewModels.ViewModels
             }
         }
 
+        /// <summary>
+        /// Ограничение по количеству (для покупки)
+        /// </summary>
         public int? CountLimit
         {
             get { return _countLimit; }
@@ -101,19 +166,23 @@ namespace TMBot.ViewModels.ViewModels
 
     /// <summary>
     /// Статусы предмета
+    /// Вот немного костыльно, потому что они учитывают
+    /// логику работы приложения
     /// </summary>
     public enum ItemStatus
     {
-        NOT_TRADING,        //Не выставляется
-        TRADING,            //Выставляется
-        SOLD,               //Вещь продана
-        SOLD_REQUEST,       //Выполнен ItemRequest после продажи
-        GIVEN,              //Вещь передана боту
+        NOT_TRADING,            //Не выставляется
+        TRADING,                //Выставляется
+        SOLD,                   //Вещь продана
+        //SOLD_START_REQUEST,     //Вещь продана, начало выполнения ItemRequest
+        SOLD_REQUEST,           //Выполнен ItemRequest после продажи
+        GIVEN,                  //Вещь передана боту
         
-        ORDERING,           //Ордер на вещь
-        BOUGHT,             //Мы купили вещь
-        BOUGHT_REQUEST,     //Выполнен ItemRequest после покупки
-        TAKEN,              //Вещь получена от бота
+        ORDERING,               //Ордер на вещь
+        BOUGHT,                 //Мы купили вещь
+        //BOUGHT_START_REQUEST,   //Мы купили вещь, начало выполнение ItemRequest
+        BOUGHT_REQUEST,         //Выполнен ItemRequest после покупки
+        TAKEN,                  //Вещь получена от бота
 
         UNKNOWN
     }

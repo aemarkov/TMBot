@@ -69,8 +69,10 @@
                       CanUserReorderColumns="False">
 
                 <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Header="Выставлять" Binding="{Binding ShouldSell}"/>
                     <DataGridTemplateColumn Header="Изображение" IsReadOnly="True" MinWidth="100" MaxWidth="100" CellStyle="{StaticResource ItemImageCell}"/>
                     <DataGridTemplateColumn Header="Название"  IsReadOnly="True" CellStyle="{StaticResource ItemNameCell}"/>
+                    <DataGridTextColumn Header="Стоимость" Binding="{Binding SellPrice, Converter={StaticResource KopekToRubleConverter}}"/>
                 </DataGrid.Columns>
                 
             </DataGrid>

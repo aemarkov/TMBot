@@ -31,7 +31,7 @@ namespace TMBot.API.TMWebSockAPI
             Log.d("ItemNewGo");
 
             var itemnew_go = JsonConvert.DeserializeObject<ItemNewGoResponse>(data);
-            await ItemRequestHelper.MakeItemRequest(api, itemnew_go.ui_id);
+            ItemRequestHelper.MakeSellItemRequest(api, itemnew_go.ui_id);
 
         }
 

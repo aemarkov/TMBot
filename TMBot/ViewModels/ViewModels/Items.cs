@@ -106,7 +106,9 @@ namespace TMBot.ViewModels.ViewModels
         private int _myPrice;
         private int _priceLimit;
         private int? _countLimit;
+        private string _botId;
 
+        public string BotId { get { return _botId;} set { _botId = value; NotifyPropertyChanged(); } }
         public string ItemId { get { return _itemId; } set { _itemId = value; NotifyPropertyChanged(); } }
         public int TMPrice { get { return _tmPrice; } set { _tmPrice = value; NotifyPropertyChanged(); } }
         public int MyPrice { get { return _myPrice; } set { _myPrice = value; NotifyPropertyChanged(); } }
@@ -174,13 +176,12 @@ namespace TMBot.ViewModels.ViewModels
         NOT_TRADING,            //Не выставляется
         TRADING,                //Выставляется
         SOLD,                   //Вещь продана
-        //SOLD_START_REQUEST,     //Вещь продана, начало выполнения ItemRequest
         SOLD_REQUEST,           //Выполнен ItemRequest после продажи
         GIVEN,                  //Вещь передана боту
         
         ORDERING,               //Ордер на вещь
-        BOUGHT,                 //Мы купили вещь
-        //BOUGHT_START_REQUEST,   //Мы купили вещь, начало выполнение ItemRequest
+        BOUGHT,                 //Мы купили вещь: ожидание передачи боту от продавца
+        BOUGHT_TAKE,            //Мы купили вещь: можете забрать купленную вещь
         BOUGHT_REQUEST,         //Выполнен ItemRequest после покупки
         TAKEN,                  //Вещь получена от бота
 

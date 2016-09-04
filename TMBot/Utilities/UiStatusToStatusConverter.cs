@@ -15,6 +15,10 @@ namespace TMBot.Utilities
                     return ItemStatus.TRADING;
                 case 2:
                     return ItemStatus.SOLD;
+                case 3:
+                    return ItemStatus.BOUGHT;
+                case 4:
+                    return ItemStatus.BOUGHT_TAKE;
                 default:
                     return ItemStatus.UNKNOWN;
             }

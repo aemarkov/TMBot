@@ -102,6 +102,12 @@ namespace TMBot.Data
             return Platforms.Select(platform => platform.Value.Orders.FirstOrDefault(x => x.ClassId == classid && x.IntanceId==instanceid)).FirstOrDefault(item => item != null);
         }
 
+        public TradeItemViewModel FindOrderItem(string itemId)
+        {
+            return Platforms.Select(platform => platform.Value.Orders.FirstOrDefault(x => x.ItemId == itemId)).FirstOrDefault(item => item != null);
+        }
+
+
         /// <summary>
         /// Находит и удаляет предмет среди ордеров и трейдов
         /// </summary>

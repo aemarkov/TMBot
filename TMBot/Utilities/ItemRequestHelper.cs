@@ -13,6 +13,7 @@ namespace TMBot.Utilities
     public static class ItemRequestHelper
     {
         private static readonly object _sellLock = new object();
+        private static readonly object _buyLock = new object();
 
         /// <summary>
         /// Выполняет ItemRequest при продаже
@@ -37,7 +38,7 @@ namespace TMBot.Utilities
                 try
                 {
                     //Делаем ItemRequest, чтобы бот ТМ инициировал обмен в Стим
-                    var itemrequest = makeRequest(api, "1");
+                    var itemrequest = makeRequest(api, "1", ItemRequestDirection.IN);
                     if (itemrequest == null)
                     {
                         return;
@@ -60,30 +61,44 @@ namespace TMBot.Utilities
         /// <param name="api"></param>
         /// <param name="botid"></param>
         /// <returns></returns>
-        public static void MakeBuyItemRequest(ITMAPI api, string botid)
+        public static void MakeBuyItemRequest(ITMAPI api, string botid, string itemId)
         {
-            try
+            lock (_buyLock)
             {
-                //Делаем ItemRequest, чтобы бот ТМ инициировал обмен в Стим
-                var itemrequest =  makeRequest(api, botid);
-                if (itemrequest == null)
+                var item = ItemCollectionsContainer.GetInstance().FindOrderItem(itemId);
+
+                //Проверяем статус
+                if (item.Status == ItemStatus.BOUGHT_REQUEST || item.Status == ItemStatus.TAKEN)
                     return;
 
-            }
-            catch (Exception exp)
-            {
-                Log.e($"Произошла ошибка при выполнении ItemRequest: {exp.Message}");
-                throw;
+                //Меняем статус
+                item.Status = ItemStatus.BOUGHT_TAKE;
+
+                try
+                {
+                    //Делаем ItemRequest, чтобы бот ТМ инициировал обмен в Стим
+                    var itemrequest = makeRequest(api, botid, ItemRequestDirection.OUT);
+                    if (itemrequest == null)
+                        return;
+
+                    item.Status = ItemStatus.BOUGHT_REQUEST;
+
+                }
+                catch (Exception exp)
+                {
+                    Log.e($"Произошла ошибка при выполнении ItemRequest: {exp.Message}");
+                    throw;
+                }
             }
         }
 
 
 
-        private static ItemRequestResponse makeRequest(ITMAPI api, string botid)
+        private static ItemRequestResponse makeRequest(ITMAPI api, string botid, ItemRequestDirection direction)
         {
             //Выполняем асинхронно, чтобы как можно скорее возвратиться в вызывающий метод
             //и он продолжил следить за сокетами
-            var itemrequest = api.ItemRequest(ItemRequestDirection.IN, botid);
+            var itemrequest = api.ItemRequest(direction, botid);
 
             if (itemrequest == null || !itemrequest.success)
             {

@@ -33,6 +33,8 @@ namespace TMBot.Utilities.MVVM.Converters
                 case ItemStatus.ORDERING:
                     return "Выставлен ордер";
                 case ItemStatus.BOUGHT:
+                    return "Куплено, ожидание передачи боту вещи от продавца";
+                case ItemStatus.BOUGHT_TAKE:
                     return "Куплено, ожидание ItemRequest";
                 case ItemStatus.BOUGHT_REQUEST:
                     return "Продано, ожидание получение от бота";

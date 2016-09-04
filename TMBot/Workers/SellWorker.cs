@@ -42,7 +42,7 @@ namespace TMBot.Workers
 
 
         //Показывает сообщение об ошибке
-        protected override void ShowErrorMessage(string error_reason)
+	    protected override void ShowErrorMessage(string error_reason)
 	    {
 	        MessageBox.Show($"Не удалось начать продажу: {error_reason}", "Не удалось начать продажу", MessageBoxButton.OK,
 	            MessageBoxImage.Warning);
@@ -51,7 +51,9 @@ namespace TMBot.Workers
         //Получает список трейдов
 	    protected override ICollection<Trade> GetTMItems()
 	    {
-	        return tmApi.GetTrades();
+            //В трейдах еще указываются покупаемые предметы с разными статусами, поэтому
+            //мы их игнорируем
+	        return tmApi.GetTrades().Where(x=>x.ui_status==1 || x.ui_status==2).ToList();
         }
 
         //Находит в базе предмет, соответствующий трейду
@@ -63,9 +65,10 @@ namespace TMBot.Workers
         //Получает цену предмета
 	    protected override int GetItemMyPrice(Trade api_item)
 	    {
-	        return (int)api_item.ui_price*100;
+	        return (int)(api_item.ui_price*100);
 	    }
 
+        //Расчитываем новую стоимость
         protected override bool GetItemNewPrice(TradeItemViewModel item, int tm_price, ref int myNewPrice)
         {
             /* Если минимальная цена меньше текущей - делаем нашу меньше минимальной на 
@@ -74,7 +77,7 @@ namespace TMBot.Workers
              * Если минимальная - наша, то увеличиваем цену (до минимальной - 1коп) только
              * если разница больше заданных %
              */
-            if ((tm_price < item.MyPrice) || (item.MyPrice < item.PriceLimit) || ((tm_price - item.MyPrice) / (float)tm_price > PriceThreshold))
+            if ((item.MyPrice!=myNewPrice) && ((tm_price < item.MyPrice) || (item.MyPrice < item.PriceLimit) || ((tm_price - item.MyPrice) / (float)tm_price > PriceThreshold)))
             {
                 myNewPrice = tm_price - 1;
                 return true;
@@ -85,10 +88,74 @@ namespace TMBot.Workers
             return false;
         }
 
+        //Расчитывает миимальную цену на TM
         protected override int? GetItemTMPrice(TradeItemViewModel item)
         {
             return PriceCounter.GetMinSellPrice<TTMAPI>(item.ClassId, item.IntanceId, item.PriceLimit);
         }
+
+        //Обновление списка
+        protected override void UpdateItems()
+        {
+            /* Сделаем запрос трейдов и сравним его с текущим списком
+             * Новые предметы добавим
+             * Отсутствующие удалим
+             * Если статус изменился с TRADING на SOLD - меняем. Остальные
+             * изменения статуса игнорируем */
+
+            var repository = new ItemsRepository();
+
+            var trades = GetTMItems();
+            foreach (var trade in trades)
+            {
+                var listItem = Items.FirstOrDefault(x => x.ItemId == trade.ui_id);
+                if (listItem == null)
+                {
+                    //Добавляем 
+                    Items.Add(CreateTradeItem(trade,repository));
+                }
+                else
+                {
+                    //Проверяем статус
+                    var newStatus = UiStatusToStatusConverter.Convert(trade.ui_status);
+                    if(listItem.Status==ItemStatus.TRADING && newStatus == ItemStatus.SOLD)
+                        listItem.Status = ItemStatus.SOLD;
+                }
+            }
+
+            //Удаление старых трейдов
+            for (int i = 0; i < Items.Count; i++)
+            {
+                var trade = trades.FirstOrDefault(x => x.ui_id == Items[i].ItemId);
+                if(trade==null)
+                    Items.RemoveAt(i);
+            }
+        }
+
+        //Обработка статуса
+        protected override bool CheckStatusAndMakeRequest(TradeItemViewModel item)
+        {
+            {
+                //Если предмет уже в состоянии продажи - не меняем его цену
+                if (item.Status != ItemStatus.TRADING && item.Status!=ItemStatus.SOLD)
+                    return false;
+
+
+                //Если статус предмета - продано, но ItemRequest почему-то еще не сделан, то
+                //надо сделать
+                //ВНИМАНИЕ: может случится вызов этого дерьма в момент работы обработчика
+                //вебсокета (т.е. все ОК, а не сломалось). надо как-то обработать
+                if (item.Status == ItemStatus.SOLD)
+                {
+                    //ItemRequest
+                    ItemRequestHelper.MakeSellItemRequest(tmApi, item.ItemId);
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        
 
         //Остановка
         /* Немного говнокод. У меня Stop
@@ -97,7 +164,7 @@ namespace TMBot.Workers
          * 
          * На самом деле говнокод в том, что настройка находится
          * в воркере и к ней прибинжено окно */
-	    public override void Stop()
+        public override void Stop()
 	    {
 	        base.Stop();
 	        var settings = SettingsManager.LoadSettings();

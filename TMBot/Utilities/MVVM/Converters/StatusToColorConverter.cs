@@ -23,7 +23,7 @@ namespace TMBot.Utilities.MVVM.Converters
                 case ItemStatus.TRADING:
                     return Brushes.Green;
                 case ItemStatus.SOLD:
-                    return Brushes.Orange;
+                    return Brushes.Chocolate;
                 case ItemStatus.SOLD_REQUEST:
                     return Brushes.Purple;
                 case ItemStatus.GIVEN:
@@ -31,7 +31,9 @@ namespace TMBot.Utilities.MVVM.Converters
                 case ItemStatus.ORDERING:
                     return Brushes.Green;
                 case ItemStatus.BOUGHT:
-                    return Brushes.Orange;
+                    return Brushes.Aqua;
+                case ItemStatus.BOUGHT_TAKE:
+                    return Brushes.Chocolate;
                 case ItemStatus.BOUGHT_REQUEST:
                     return Brushes.Purple;
                 case ItemStatus.TAKEN:

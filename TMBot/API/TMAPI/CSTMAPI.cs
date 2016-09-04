@@ -136,6 +136,10 @@ namespace TMBot.API.TMAPI
 		        var request = new RestRequest("GetOrders", Method.GET);
 		        var response = rest_client.Execute<OrdersList>(request);
 
+		        var obj = JObject.Parse(response.Content);
+		        if ((obj["Orders"].Type==JTokenType.String) && ((string)obj["Orders"]== "No orders"))
+		            return new OrdersList() {Orders = new List<Order>(), success = true};
+
 		        check_errors(response.Content);
 
 		        return response.Data;

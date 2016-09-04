@@ -20,7 +20,35 @@ using TMBot.ViewModels.ViewModels;
 namespace TMBot.Workers
 {
     /// <summary>
-    /// Базовый класс потока, осуществляющего покупку\продажу
+    /// Базовый класс потока, осуществляющего покупку\продажу.
+    /// Циклически обрабатывает список предметов, меняя им цену
+    /// 
+    /// Алгоритм покупки\продажи:
+    /// При запуске потока загружается список  ордеров\трейдов с 
+    /// сайта. Каждый переводится в TradeItemViewModel и сохраяется
+    /// в базе данных (если не был сохранен ранее).
+    /// 
+    /// Затем циклически обновляется цена:
+    /// 1. Находится минимальная\максимальная цена на торговой
+    ///    площадке, наша выставляется +- 1 коп. Если цена не
+    ///    найдена - наша не трогается.
+    /// 
+    /// 2. Так же существует такое ограничение: если наша цена 
+    ///    самая маленькая\большая, то вычислияется разница между
+    ///    нашим и следующим предметом, и если разница меньше
+    ///    порога, то мы не меняем цену (держми мин\макс)
+    /// 
+    /// 3. После каждой итерации по всем предметам, список
+    ///    предметов загружается заново, для обновления списка
+    ///    (см. реализацию в наследниках)
+    /// 
+    /// 4. В процессе обновления учитывается статус предмета. Нормально
+    ///    обрабатываются только продаваемые\покупаемые предметы.
+    ///    (те, которые еще не купили\продали)
+    ///    Если предмет находится в одном из состояний покупки\продажи,
+    ///    то либо выполняется ItemRequest, либо предмет игнорируется
+    ///    (ItemRequest уже выполнен) 
+    /// 
     /// предметов
     /// </summary>
     /// <typeparam name="TTMAPI">Тип АПИ для ТМ</typeparam>
@@ -90,7 +118,10 @@ namespace TMBot.Workers
         }
 
         /// <summary>
-        /// Запуск обновления цен
+        /// Запуск обновления цен.
+        /// 
+        /// Загружается список всех предметов с сайта
+        /// и переводится в список TradeItemViewModel
         /// </summary>
         public override void Start()
         {
@@ -106,37 +137,7 @@ namespace TMBot.Workers
                 var repository = new ItemsRepository();
                 Items.Clear();
 
-                var api_items = GetTMItems();
-                foreach (var api_item in api_items)
-                {
-                    Item db_item = GetDbItem(repository, api_item);
-
-                    //Заполняем поля
-                    var item = Mapper.Map<TItem, TradeItemViewModel>(api_item);
-
-                    //TODO: сделать нормально
-                    //Цена почему-то не в копейках, а в рублях double
-                    item.MyPrice = GetItemMyPrice(api_item);
-
-                    if (db_item != null)
-                    {
-                        Mapper.Map<Item, TradeItemViewModel>(db_item, item);
-                    }
-                    else
-                    {
-                        //Такого предмета нет в БД, создадим новый
-                        db_item = new Item()
-                        {
-                            ClassId = item.ClassId,
-                            InstanceId = item.IntanceId
-                        };
-
-                        repository.Create(db_item);
-                    }
-
-                    item.ImageUrl = steamApi.GetImageUrl(item.ClassId);
-                    Items.Add(item);
-                }
+                GetItems(repository);
 
                 RunThread();
 
@@ -155,6 +156,65 @@ namespace TMBot.Workers
             }
         }
 
+
+        /// <summary>
+        /// Получает предметы с сайта
+        /// </summary>
+        /// <param name="repository"></param>
+        protected virtual void GetItems(ItemsRepository repository)
+        {
+            var api_items = GetTMItems();
+            foreach (var api_item in api_items)
+            {
+                Items.Add(CreateTradeItem(api_item, repository));
+            }
+        }
+
+       
+        /// <summary>
+        /// Создает модель вида для предмета на основе
+        /// модели ААИ
+        /// </summary>
+        /// <param name="apiItem">Модель АПИ</param>
+        /// <param name="repository">Репозиторий</param>
+        /// <returns></returns>
+        protected TradeItemViewModel CreateTradeItem(TItem apiItem, ItemsRepository repository)
+        {
+            //Заполняем поля
+            var item = Mapper.Map<TItem, TradeItemViewModel>(apiItem);
+
+            item.MyPrice = GetItemMyPrice(apiItem);
+
+            //Добавляем данные из базы данных
+            MapDbItem(apiItem, repository, item);
+
+            item.ImageUrl = steamApi.GetImageUrl(item.ClassId);
+
+            return item;
+        }
+
+        //Загружает из БД или создает новую запись в БД
+        private void MapDbItem(TItem apiItem, ItemsRepository repository, TradeItemViewModel item)
+        {
+            Item db_item = GetDbItem(repository, apiItem);
+            if (db_item != null)
+            {
+                Mapper.Map<Item, TradeItemViewModel>(db_item, item);
+            }
+            else
+            {
+                //Такого предмета нет в БД, создадим новый
+                db_item = new Item()
+                {
+                    ClassId = item.ClassId,
+                    InstanceId = item.IntanceId
+                };
+
+                repository.Create(db_item);
+            }
+        }
+
+
         //Функция потока обновления цены
         protected override void worker_tread()
         {
@@ -172,6 +232,7 @@ namespace TMBot.Workers
 
             while (IsRunning)
             {
+                //НЕ МЕНЯТЬ НА FOREACH,БЛЕАТЬ
                 for(int i = 0; i<Items.Count; i++)
                 {
                     update_price(Items[i]);
@@ -180,28 +241,20 @@ namespace TMBot.Workers
                         return;
 
                 }
+                
+                //Обновляем список и статусы предметов
+                UpdateItems();
             }
         }
+
 
         private void update_price(TradeItemViewModel item)
         {
             try
             {
-                //Если предмет уже в состоянии продажи - не меняем его цену
-                //TODO: обработка статусов об покупке, если вебсокеты не работают
-                if(item.Status==ItemStatus.SOLD_REQUEST || item.Status==ItemStatus.GIVEN)
-                    return;;
-
-                //Если статус предмета - продано, но ItemRequest почему-то еще не сделан, то
-                //надо сделать
-                //ВНИМАНИЕ: может случится вызов этого дерьма в момент работы обработчика
-                //вебсокета (т.е. все ОК, а не сломалось). надо как-то обработать
-                if (item.Status == ItemStatus.SOLD)
-                {
-                    //ItemRequest
-                    ItemRequestHelper.MakeSellItemRequest(tmApi, item.ItemId);
-                    return;
-                }
+                //Необходимо проверить статус предмета
+                //и выполинить, при необходимости, действия
+                if (!CheckStatusAndMakeRequest(item)) return;
 
                 //Находим цену этого предмета на площадке
                 int? _tm_price = GetItemTMPrice(item);
@@ -236,8 +289,10 @@ namespace TMBot.Workers
             }
         }
 
-
         ///////////////////////////////////////////////////////////////////////////////////////////
+        /// Абстрактные методы
+        ///////////////////////////////////////////////////////////////////////////////////////////
+
 
         /// <summary>
         /// Показывает сообщение об ошибке
@@ -279,5 +334,21 @@ namespace TMBot.Workers
         /// <param name="item">Предмет</param>
         /// <returns>Стоимость</returns>
         protected abstract int? GetItemTMPrice(TradeItemViewModel item);
+
+
+        /// <summary>
+        /// Обновление списка предметов
+        /// </summary>
+        protected abstract void UpdateItems();
+
+        /// <summary>
+        /// Проверяем статус предмета. В зависимости от статуса:
+        ///  - нормально меняем цену
+        ///  - делаем ItemRequest
+        ///  - игнорируем
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns>Продолжать выполнение</returns>
+        protected abstract bool CheckStatusAndMakeRequest(TradeItemViewModel item);
     }
 }

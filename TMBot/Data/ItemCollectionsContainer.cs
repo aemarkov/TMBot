@@ -68,6 +68,61 @@ namespace TMBot.Data
 
             return Platforms[platform];
         }
+
+        /// <summary>
+        /// Находит предмет среди трейдов по его ID
+        /// </summary>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
+        public TradeItemViewModel FindTradeItem(string itemId)
+        {
+            return Platforms.Select(platform => platform.Value.Trades.FirstOrDefault(x => x.ItemId == itemId)).FirstOrDefault(item => item != null);
+        }
+
+        /// <summary>
+        /// Находит МНОЖЕСТВО предметов по его classid, instanceid
+        /// </summary>
+        /// <param name="classid"></param>
+        /// <param name="instanceid"></param>
+        /// <returns>Список подходящих предметов</returns>
+        public IEnumerable<TradeItemViewModel> FindTradeItems(string classid, string instanceid)
+        {
+            return Platforms.Aggregate((IEnumerable<TradeItemViewModel>)new List<TradeItemViewModel>(), (list, item) => 
+                        list.Concat(item.Value.Trades.Where(y => y.ClassId == classid && y.IntanceId == instanceid)));
+        }
+
+        /// <summary>
+        /// Находит ордер по classid, instanceid. Ордер всегда единственный
+        /// </summary>
+        /// <param name="classid"></param>
+        /// <param name="instanceid"></param>
+        /// <returns></returns>
+        public TradeItemViewModel FindOrderItem(string classid, string instanceid)
+        {
+            return Platforms.Select(platform => platform.Value.Orders.FirstOrDefault(x => x.ClassId == classid && x.IntanceId==instanceid)).FirstOrDefault(item => item != null);
+        }
+
+        /// <summary>
+        /// Находит и удаляет предмет среди ордеров и трейдов
+        /// </summary>
+        /// <param name="item"></param>
+        public void RemoveItem(TradeItemViewModel item)
+        {
+            foreach (var platform in Platforms)
+            {
+                if (platform.Value.Trades.Contains(item))
+                {
+                    platform.Value.Trades.Remove(item);
+                    return;
+                }
+
+                if (platform.Value.Orders.Contains(item))
+                {
+                    platform.Value.Orders.Remove(item);
+                    return;
+                }
+            }
+        }
     }
 
     /// <summary>

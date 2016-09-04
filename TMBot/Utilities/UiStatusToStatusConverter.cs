@@ -9,10 +9,15 @@ namespace TMBot.Utilities
     {
         public static ItemStatus Convert(int ui_status)
         {
-            if (ui_status == 1)
-                return ItemStatus.TRADING;
-
-            return ItemStatus.UNKNOWN;
+            switch (ui_status)
+            {
+                case 1:
+                    return ItemStatus.TRADING;
+                case 2:
+                    return ItemStatus.SOLD;
+                default:
+                    return ItemStatus.UNKNOWN;
+            }
         }
     }
 }

@@ -39,6 +39,9 @@ namespace TMBot.Workers
         //Проверяет, какие из входящих предложений были отправлены ботом ТМ
         private void acceptReceiveOffers(IList<SteamTrades.TradeOffer> offers)
         {
+            if(offers==null)
+                return;
+
             foreach (var offer in offers)
             {
                 var trade = SteamTradeContainer.Trades.PopTrade(offer.accountid_other, offer.message);

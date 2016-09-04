@@ -154,40 +154,49 @@ namespace TMBot.ViewModels
             //Определяем цену предметов и выставляем
             foreach (var item in InventoryItems.Where(item => item.Status==ItemStatus.NOT_TRADING))
             {
-
-                //Получаем цену предмета на ТМ
-                int price;
-                int? _price = PriceCounter.GetMinSellPrice<TTMAPI>(item.ClassId, item.IntanceId);
-
-                
-                if (_price == null)
+                try
                 {
-                    //Товар не найден, поиск на площадке стима
-                    _price = PriceCounter.GetSteamMinSellPrice(item.ClassId, item.IntanceId);
-                    if (_price != null)
+                    //Получаем цену предмета на ТМ
+                    int price;
+                    int? _price = PriceCounter.GetMinSellPrice<TTMAPI>(item.ClassId, item.IntanceId);
+
+
+                    if (_price == null)
                     {
-                        //Товар найден на площадке стима
-                        //Выставляем за 100% от цены стим
-                        price = _price.Value;
+                        //Товар не найден, поиск на площадке стима
+                        _price = PriceCounter.GetSteamMinSellPrice(item.ClassId, item.IntanceId);
+                        if (_price != null)
+                        {
+                            //Товар найден на площадке стима
+                            //Выставляем за 100% от цены стим
+                            price = _price.Value;
+                        }
+                        else
+                        {
+                            //Товар не найден даже в стиме
+                            Log.w($"Товар {item.ClassId}_{item.IntanceId} не найден ни на ТМ, ни в Steam. Не выставляется");
+                            continue;
+                        }
                     }
                     else
                     {
-                        //Товар не найден даже в стиме
-                        Log.w($"Товар {item.ClassId}_{item.IntanceId} не найден ни на ТМ, ни в Steam. Не выставляется");
-                        continue;
+                        //Выставляем за % от минимальной цены
+                        price = _price.Value;
+                        price = (int) (PricePercentage*price);
                     }
+
+                    tmApi.SetNewItem(item.ClassId, item.IntanceId, (int) price);
+                    Log.d("Предмет {0}_{1} выставлен. за цену {2} коп.", item.ClassId, item.IntanceId, price);
+                    count++;
+
                 }
-                else
+                catch (APIException exp)
                 {
-                    //Выставляем за % от минимальной цены
-                    price = _price.Value;
-                    price = (int) (PricePercentage*price);
                 }
-
-                tmApi.SetNewItem(item.ClassId, item.IntanceId, (int)price);
-                Log.d("Предмет {0}_{1} выставлен. за цену {2} коп.", item.ClassId, item.IntanceId, price);
-                count++;
-
+                catch (Exception exp)
+                {
+                    
+                }
             }
 
 

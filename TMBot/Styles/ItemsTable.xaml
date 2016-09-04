@@ -10,13 +10,14 @@
 
     <converters:StatusToStringConverter x:Key="StatusToStringConverter"/>
     <converters:StatusToColorConverter x:Key="StatusToColorConverter"/>
+    <BitmapImage x:Key="NoImage" UriSource="../Images/NoImage.jpg"/>
 
     <!-- картинка предмета -->
     <Style x:Key="ItemImageCell" TargetType="{x:Type DataGridCell}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Image Source="{Binding ImageUrl, Mode=OneWay}"/>
+                    <Image Height="100" Source="{Binding ImageUrl, TargetNullValue={StaticResource NoImage}}"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

@@ -187,6 +187,22 @@ namespace TMBot.Workers
         {
             try
             {
+                //Если предмет уже в состоянии продажи - не меняем его цену
+                //TODO: обработка статусов об покупке, если вебсокеты не работают
+                if(item.Status==ItemStatus.SOLD_REQUEST || item.Status==ItemStatus.GIVEN)
+                    return;;
+
+                //Если статус предмета - продано, но ItemRequest почему-то еще не сделан, то
+                //надо сделать
+                //ВНИМАНИЕ: может случится вызов этого дерьма в момент работы обработчика
+                //вебсокета (т.е. все ОК, а не сломалось). надо как-то обработать
+                if (item.Status == ItemStatus.SOLD)
+                {
+                    //ItemRequest
+                    ItemRequestHelper.MakeItemRequest(tmApi, item.ItemId);
+                    return;
+                }
+
                 //Находим цену этого предмета на площадке
                 int? _tm_price = GetItemTMPrice(item);
                 int tm_price;

@@ -72,7 +72,7 @@ namespace TMBot.ViewModels
 		    var settings = SettingsManager.LoadSettings();
 
             TMFactory tm_factory = AbstactAPIFactory<ITMAPI>.GetInstance<TMFactory>();
-            tm_factory.CreateAPI<CSTMAPI>(settings.TMApiKey, true);
+            tm_factory.CreateAPI<CSTMAPI>(settings.TMApiKey, false);
 
             SteamFactory s_factory = AbstactAPIFactory<ISteamAPI>.GetInstance<SteamFactory>();
             s_factory.CreateAPI<CSSteamAPI>(settings.SteamProfileId, settings.SteamApiKey);

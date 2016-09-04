@@ -175,7 +175,7 @@ namespace TMBot.API.TMAPI
 		            return null;
 		        }
 
-		        var request = new RestRequest("Trades/{in_out}/{botid}", Method.GET);
+		        var request = new RestRequest("ItemRequest/{in_out}/{botid}", Method.GET);
 
 		        string direction;
 		        if (in_out == ItemRequestDirection.IN)
@@ -327,5 +327,7 @@ namespace TMBot.API.TMAPI
 	            return response.Data;
 	        }
 	    }
+
+
     }
 }

@@ -39,7 +39,7 @@ namespace TMBot.Workers
                 try
                 {
                     token = new CancellationTokenSource();
-                    token.Token.WaitHandle.WaitOne(3*60*1000);
+                    token.Token.WaitHandle.WaitOne(3*60*1000+10*1000);
 
                     var pong = api.PingPong();
 

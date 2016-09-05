@@ -37,7 +37,7 @@ namespace TMBot.Utilities.MVVM.Converters
                 case ItemStatus.BOUGHT_TAKE:
                     return "Куплено, ожидание ItemRequest";
                 case ItemStatus.BOUGHT_REQUEST:
-                    return "Продано, ожидание получение от бота";
+                    return "Куплено, ожидание получение от бота";
                 case ItemStatus.TAKEN:
                     return "Получено от бота";
                 case ItemStatus.UNKNOWN:

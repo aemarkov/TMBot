@@ -77,7 +77,7 @@ namespace TMBot.Workers
              * Если минимальная - наша, то увеличиваем цену (до минимальной - 1коп) только
              * если разница больше заданных %
              */
-            if ((item.MyPrice!=myNewPrice) && ((tm_price < item.MyPrice) || (item.MyPrice < item.PriceLimit) || ((tm_price - item.MyPrice) / (float)tm_price > PriceThreshold)))
+            if ((item.MyPrice!=tm_price-1) && ((tm_price < item.MyPrice) || (item.MyPrice < item.PriceLimit) || ((tm_price - item.MyPrice) / (float)tm_price > PriceThreshold)))
             {
                 myNewPrice = tm_price - 1;
                 return true;
@@ -171,5 +171,15 @@ namespace TMBot.Workers
 	        settings.TradeMaxThreshold = PriceThreshold;
             SettingsManager.SaveSettings(settings);
 	    }
+
+	    /// <summary>
+	    /// Обновляет цену
+	    /// </summary>
+	    /// <param name="itemid">ID предмета</param>
+	    /// <param name="price">новая цена</param>
+	    protected override void UpdatePrice(TradeItemViewModel item, int price)
+	    {
+            tmApi.SetPrice(item.ItemId, price);
+        }
     }
 }

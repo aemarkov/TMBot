@@ -243,7 +243,7 @@ namespace TMBot.Workers
                 }
                 
                 //Обновляем список и статусы предметов
-                UpdateItems();
+                //UpdateItems();
             }
         }
 
@@ -277,7 +277,7 @@ namespace TMBot.Workers
                     return;
 
                 //Обновляем цену предмета
-                tmApi.SetPrice(item.ItemId, (int)my_new_price);
+                UpdatePrice(item, (int)my_new_price);
 
                 //Обновляем модель
                 item.MyPrice = my_new_price;
@@ -350,5 +350,12 @@ namespace TMBot.Workers
         /// <param name="item"></param>
         /// <returns>Продолжать выполнение</returns>
         protected abstract bool CheckStatusAndMakeRequest(TradeItemViewModel item);
+
+        /// <summary>
+        /// Обновляет цену
+        /// </summary>
+        /// <param name="itemid">ID предмета</param>
+        /// <param name="price">новая цена</param>
+        protected abstract void UpdatePrice(TradeItemViewModel item, int price);
     }
 }

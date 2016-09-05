@@ -284,7 +284,7 @@ namespace TMBot.API.TMAPI
 		            return null;
 		        }
 
-		        var request = new RestRequest("SetPrice/{classid}/{instanceid}/{price}", Method.GET);
+		        var request = new RestRequest("UpdateOrder/{classid}/{instanceid}/{price}", Method.GET);
 		        request.AddParameter("classid", classid, ParameterType.UrlSegment);
 		        request.AddParameter("instanceid", instanceid, ParameterType.UrlSegment);
 		        request.AddParameter("price", price, ParameterType.UrlSegment);

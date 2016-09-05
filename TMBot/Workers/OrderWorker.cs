@@ -135,7 +135,7 @@ namespace TMBot.Workers
                 return false;
             }
 
-            if ((item.MyPrice!=myNewPrice) && ((tm_price > item.MyPrice) || (item.MyPrice > item.PriceLimit) || ((item.MyPrice - tm_price)/(float) item.MyPrice > PriceThreshold)))
+            if ((item.MyPrice!=tm_price+1) && ((tm_price > item.MyPrice) || (item.MyPrice > item.PriceLimit) || ((item.MyPrice - tm_price)/(float) item.MyPrice > PriceThreshold)))
             {
                 myNewPrice = tm_price + 1;
                 return true;
@@ -248,6 +248,16 @@ namespace TMBot.Workers
             var settings = SettingsManager.LoadSettings();
             settings.OrderMinThreshold = PriceThreshold;
             SettingsManager.SaveSettings(settings);
+        }
+
+        /// <summary>
+        /// Обновляет цену
+        /// </summary>
+        /// <param name="itemid">ID предмета</param>
+        /// <param name="price">новая цена</param>
+        protected override void UpdatePrice(TradeItemViewModel item, int price)
+        {
+            tmApi.UpdateOrder(item.ClassId, item.IntanceId, price);
         }
     }
 }

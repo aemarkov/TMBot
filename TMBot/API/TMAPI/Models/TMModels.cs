@@ -42,7 +42,7 @@ namespace TMBot.API.TMAPI.Models
 		public string ui_real_instance { get; set; }
 		public string i_quality { get; set; }
 		public string i_market_hash_name { get; set; }
-		public int i_market_price { get; set; }
+		public double i_market_price { get; set; }
 		public int position { get; set; }
 		public int min_price { get; set; }
 

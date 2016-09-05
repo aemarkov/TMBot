@@ -132,7 +132,9 @@
     <Compile Include="API\SteamAPI\CSSteamAPI.cs" />
     <Compile Include="API\TMAPI\ITMAPI.cs" />
     <Compile Include="API\TMAPI\CSTMAPI.cs" />
-    <Compile Include="API\TMWebSockAPI\ItemNewGoEvent.cs" />
+    <Compile Include="API\TMWebSockAPI\AddItemGo.cs" />
+    <Compile Include="API\TMWebSockAPI\BaseEvent.cs" />
+    <Compile Include="API\TMWebSockAPI\ItemOutNewGoEvent.cs" />
     <Compile Include="API\TMWebSockAPI\ItemStatusGoEvent.cs" />
     <Compile Include="API\TMWebSockAPI\Models\ItemNewGoResponse.cs" />
     <Compile Include="API\TMWebSockAPI\Models\ItemStatusGoResponse.cs" />

@@ -243,7 +243,7 @@ namespace TMBot.Workers
                 }
                 
                 //Обновляем список и статусы предметов
-                //UpdateItems();
+                UpdateItems();
             }
         }
 

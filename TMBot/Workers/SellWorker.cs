@@ -103,32 +103,40 @@ namespace TMBot.Workers
              * Если статус изменился с TRADING на SOLD - меняем. Остальные
              * изменения статуса игнорируем */
 
-            var repository = new ItemsRepository();
-
-            var trades = GetTMItems();
-            foreach (var trade in trades)
+            try
             {
-                var listItem = Items.FirstOrDefault(x => x.ItemId == trade.ui_id);
-                if (listItem == null)
+
+                var repository = new ItemsRepository();
+
+                var trades = GetTMItems();
+                foreach (var trade in trades)
                 {
-                    //Добавляем 
-                    Items.Add(CreateTradeItem(trade,repository));
+                    var listItem = Items.FirstOrDefault(x => x.ItemId == trade.ui_id);
+                    if (listItem == null)
+                    {
+                        //Добавляем 
+                        Items.Add(CreateTradeItem(trade, repository));
+                    }
+                    else
+                    {
+                        //Проверяем статус
+                        var newStatus = UiStatusToStatusConverter.Convert(trade.ui_status);
+                        if (listItem.Status == ItemStatus.TRADING && newStatus == ItemStatus.SOLD)
+                            listItem.Status = ItemStatus.SOLD;
+                    }
                 }
-                else
+
+                //Удаление старых трейдов
+                for (int i = 0; i < Items.Count; i++)
                 {
-                    //Проверяем статус
-                    var newStatus = UiStatusToStatusConverter.Convert(trade.ui_status);
-                    if(listItem.Status==ItemStatus.TRADING && newStatus == ItemStatus.SOLD)
-                        listItem.Status = ItemStatus.SOLD;
+                    var trade = trades.FirstOrDefault(x => x.ui_id == Items[i].ItemId);
+                    if (trade == null)
+                        Items.RemoveAt(i);
                 }
             }
-
-            //Удаление старых трейдов
-            for (int i = 0; i < Items.Count; i++)
+            catch (Exception exp)
             {
-                var trade = trades.FirstOrDefault(x => x.ui_id == Items[i].ItemId);
-                if(trade==null)
-                    Items.RemoveAt(i);
+                Log.e($"Не удалось обновить список предметов: {exp}");
             }
         }
 

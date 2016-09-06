@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using TMBot.API.Factory;
 using TMBot.API.TMAPI;
 using TMBot.API.TMAPI.Models;
@@ -15,7 +16,7 @@ namespace TMBot.API.TMWebSockAPI
     /// <summary>
     /// Событие получения данных по каналу itemoutnew_go - 
     /// исчезание предмета на странице sell
-    /// веб сокетов. Это событие вызывается
+    /// веб сокетов.
     /// 
     /// КОГДА У НАС КУПИЛИ ПРЕДМЕТ
     /// </summary>
@@ -27,6 +28,10 @@ namespace TMBot.API.TMWebSockAPI
 
             try
             {
+                var obj = JObject.Parse(data);
+                if (obj["clear"] != null)
+                    return;
+
                 var itemnew_go = JsonConvert.DeserializeObject<Trade>(data);
                 ItemRequestHelper.MakeSellItemRequest(api, itemnew_go.ui_id);
             }

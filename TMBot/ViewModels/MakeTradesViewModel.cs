@@ -11,6 +11,7 @@ using TMBot.API.TMAPI;
 using TMBot.API.TMAPI.Models;
 using TMBot.Utilities;
 using TMBot.Utilities.CallWaiter;
+using TMBot.Utilities.MVVM;
 using TMBot.Utilities.MVVM.AsyncCommand;
 using TMBot.ViewModels.ViewModels;
 
@@ -19,7 +20,7 @@ namespace TMBot.ViewModels
     /// <summary>
     /// Модель вида для страницы выставления ордеров
     /// </summary>
-    public class MakeTradesViewModel
+    public class MakeTradesViewModel:PropertyChangedBase
     {
         //Список предметов в инвентаре стим
         public ObservableCollection<MakeTradesItemViewModel> InventoryItems { get; private set; }
@@ -27,6 +28,25 @@ namespace TMBot.ViewModels
         public IAsyncCommand UpdateInventoryCommand { get; private set; }
         public IAsyncCommand BeginCommand { get; private set; }
 
+        //Переключение выделения всех элементов
+        private bool _selectAll = true;
+
+        public bool SelectAll
+        {
+            get { return _selectAll;}
+            set
+            {
+                _selectAll = value;
+
+                if(InventoryItems==null) return;
+                foreach (var item in InventoryItems)
+                {
+                    item.ShouldSell = _selectAll;
+                }
+
+                NotifyPropertyChanged();
+            }
+        }
 
         // За какой процент цены выставлять
         public float PricePercentage { get; set; } = 1;
@@ -114,7 +134,7 @@ namespace TMBot.ViewModels
                         if (_price != null)
                         {
                             price = _price.Value;
-                            shouldSell = true;
+                            shouldSell = SelectAll;
                         }
                         else
                         {
@@ -193,8 +213,7 @@ namespace TMBot.ViewModels
             foreach (var item in InventoryItems.Where(item => item.Status==ItemStatus.NOT_TRADING && item.ShouldSell))
             {
                 try
-                {
-                    
+                {                    
                     tmApi.SetNewItem(item.ClassId, item.IntanceId, (int) item.SellPrice);
                     Log.d("Предмет {0}_{1} выставлен. за цену {2} коп.", item.ClassId, item.IntanceId, item.SellPrice);
                     count++;

@@ -106,7 +106,6 @@ namespace TMBot.API.TMAPI
 		        check_errors(response.Content);
 
 		        //Если что-то пойдет не так, тут почему-то будут null в полях
-		        //TODO: нормальная обработка ошибок запросов
 		        if (response.Data?.name == null)
 		            return null;
 
@@ -136,6 +135,10 @@ namespace TMBot.API.TMAPI
 
 		        var request = new RestRequest("GetOrders", Method.GET);
 		        var response = rest_client.Execute<OrdersList>(request);
+
+		        var obj = JObject.Parse(response.Content);
+		        if ((obj["Orders"].Type==JTokenType.String) && ((string)obj["Orders"]== "No orders"))
+		            return new OrdersList() {Orders = new List<Order>(), success = true};
 
 		        check_errors(response.Content);
 
@@ -176,7 +179,7 @@ namespace TMBot.API.TMAPI
 		            return null;
 		        }
 
-		        var request = new RestRequest("Trades/{in_out}/{botid}", Method.GET);
+		        var request = new RestRequest("ItemRequest/{in_out}/{botid}", Method.GET);
 
 		        string direction;
 		        if (in_out == ItemRequestDirection.IN)
@@ -189,7 +192,6 @@ namespace TMBot.API.TMAPI
 
 		        var response = rest_client.Execute<ItemRequestResponse>(request);
 
-		        //TODO: нормальная обработка ошибок запросов
 		        check_errors(response.Content);
 
 		        return response.Data;
@@ -221,7 +223,6 @@ namespace TMBot.API.TMAPI
 		        var response = rest_client.Execute<SetPriceResponse>(request);
 
 		        check_errors(response.Content);
-		        //TODO: нормальная обработка ошибок запросов
 
 		        return response.Data;
 		    }
@@ -259,7 +260,6 @@ namespace TMBot.API.TMAPI
 		        var response = rest_client.Execute<SetPriceResponse>(request);
 
 		        check_errors(response.Content);
-		        //TODO: нормальная обработка ошибок запросов
 
 		        return response.Data;
 		    }
@@ -284,7 +284,7 @@ namespace TMBot.API.TMAPI
 		            return null;
 		        }
 
-		        var request = new RestRequest("SetPrice/{classid}/{instanceid}/{price}", Method.GET);
+		        var request = new RestRequest("UpdateOrder/{classid}/{instanceid}/{price}", Method.GET);
 		        request.AddParameter("classid", classid, ParameterType.UrlSegment);
 		        request.AddParameter("instanceid", instanceid, ParameterType.UrlSegment);
 		        request.AddParameter("price", price, ParameterType.UrlSegment);
@@ -292,7 +292,6 @@ namespace TMBot.API.TMAPI
 		        var response = rest_client.Execute<UpdateOrderResponse>(request);
 
 		        check_errors(response.Content);
-		        //TODO: нормальная обработка ошибок запросов
 
 		        return response.Data;
 		    }
@@ -315,5 +314,24 @@ namespace TMBot.API.TMAPI
                 return response.Data;
             }
         }
+
+	    /// <summary>
+	    /// Пинг, нужо вызывать раз в 3 минуты, чтобы быть онлайн
+	    /// </summary>
+	    /// <returns></returns>
+	    public PingPongResponse PingPong()
+	    {
+	        using (new CallHelper(callInterval))
+	        {
+	            var request = new RestRequest("PingPong", Method.GET);
+	            var response = rest_client.Execute<PingPongResponse>(request);
+
+                check_errors(response.Content);
+
+	            return response.Data;
+	        }
+	    }
+
+
     }
 }

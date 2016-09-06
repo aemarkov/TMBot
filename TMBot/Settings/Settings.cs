@@ -40,5 +40,10 @@ namespace TMBot.Settings
         /// который наша цена не поднимается
         /// </summary>
         public float OrderMinThreshold { get; set; } = 0.1f;
+
+        /// <summary>
+        /// Интервал обновления предложенйи обмена в стиме в миллисекундах
+        /// </summary>
+        public int SteamCheckInterval { get; set; } = 30000;
     }
 }

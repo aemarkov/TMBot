@@ -2,6 +2,8 @@
 using TMBot.API.SteamAPI;
 using TMBot.API.TMAPI;
 using TMBot.API.TMAPI.Models;
+using TMBot.Data;
+using TMBot.ViewModels.ViewModels;
 using TMBot.Workers;
 
 namespace TMBot.ViewModels
@@ -12,9 +14,9 @@ namespace TMBot.ViewModels
 	public class TradesViewModel:BaseWorkerViewModel<Trade>
 	{
        
-        public TradesViewModel():base()
+        public TradesViewModel(SynchronizedObservableCollection<TradeItemViewModel> items):base()
         {
-            Worker = new SellWorker<CSTMAPI,CSSteamAPI>();
+            Worker = new SellWorker<CSTMAPI,CSSteamAPI>(items);
         }
 
 

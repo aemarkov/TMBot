@@ -69,8 +69,23 @@
                       CanUserReorderColumns="False">
 
                 <DataGrid.Columns>
+                    
+                    <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <CheckBox Content="Выставлять" IsChecked="{Binding DataContext.SelectAll, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Path=ShouldSell, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
                     <DataGridTemplateColumn Header="Изображение" IsReadOnly="True" MinWidth="100" MaxWidth="100" CellStyle="{StaticResource ItemImageCell}"/>
                     <DataGridTemplateColumn Header="Название"  IsReadOnly="True" CellStyle="{StaticResource ItemNameCell}"/>
+                    <DataGridTextColumn Header="Стоимость" Binding="{Binding SellPrice, Converter={StaticResource KopekToRubleConverter}}"/>
                 </DataGrid.Columns>
                 
             </DataGrid>

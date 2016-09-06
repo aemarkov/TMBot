@@ -11,11 +11,13 @@ using TMBot.API.Factory;
 using TMBot.API.SteamAPI;
 using TMBot.API.TMAPI;
 using TMBot.API.TMWebSockAPI;
+using TMBot.Data;
 using TMBot.Settings;
 using TMBot.Utilities;
 using TMBot.Utilities.MVVM;
 using TMBot.ViewModels.ViewModels;
 using TMBot.Windows;
+using TMBot.Workers;
 using TMBot.Workers.WebSocket;
 
 namespace TMBot.ViewModels
@@ -45,6 +47,12 @@ namespace TMBot.ViewModels
         //Слушание сокетов
 	    public WebSocketWorker WebSocketWorker;
 
+        //Пинг
+	    public PingWorker PingWorker;
+
+        //Подтверждение стима
+	    public SteamWorker SteamWorker;
+
         //Лог
         private ObservableCollection<LogItem> _logList;
 	    private readonly object _logListLock = new object();
@@ -64,30 +72,58 @@ namespace TMBot.ViewModels
 		    var settings = SettingsManager.LoadSettings();
 
             TMFactory tm_factory = AbstactAPIFactory<ITMAPI>.GetInstance<TMFactory>();
-            tm_factory.CreateAPI<CSTMAPI>(settings.TMApiKey, true);
+            tm_factory.CreateAPI<CSTMAPI>(settings.TMApiKey, false);
 
             SteamFactory s_factory = AbstactAPIFactory<ISteamAPI>.GetInstance<SteamFactory>();
             s_factory.CreateAPI<CSSteamAPI>(settings.SteamProfileId, settings.SteamApiKey);
+
+		    ITMAPI csTmapi = TMFactory.GetInstance<TMFactory>().GetAPI<CSTMAPI>();
+		    ISteamAPI csSteamApi = SteamFactory.GetInstance<SteamFactory>().GetAPI<CSSteamAPI>();
+
+
+            //Контейнер для элементов
+            ItemCollectionsContainer.GetInstance().CreateList(TradePlatform.CSGO);
+		    var csgoItems = ItemCollectionsContainer.GetInstance().GetList(TradePlatform.CSGO);
+
 
             //Лог
             LogList = new ObservableCollection<LogItem>();
 			Log.NewLogMessage += Log_NewLogMessage;
 
+
+
             //Mapper
             MapperHelpers.InitializeMapper();
+
+
 
             //ViewModels
 			HomePage = new HomeViewModel();
 			MakeTradesPage = new MakeTradesViewModel();
-			TradesPage = new TradesViewModel();
-			OrdersPage = new OrdersViewModel();
+			TradesPage = new TradesViewModel(csgoItems.Trades);
+			OrdersPage = new OrdersViewModel(csgoItems.Orders);
+
+
 
             //Веб-сокеты
             WebSocketWorker = new WebSocketWorker("wss://wsn.dota2.net/wsn/");
             WebSocketWorker.Start();
 
-            WebSocketWorker.Subscribe("itemout_new_go", new ItemNewGoEvent());
-            WebSocketWorker.Subscribe("itemstatus_go", new ItemStatusGoEvent());
+            WebSocketWorker.Subscribe("itemout_new_go", new ItemOutNewGoEvent<CSTMAPI>());
+            WebSocketWorker.Subscribe("itemstatus_go", new ItemStatusGoEvent<CSTMAPI>());
+            WebSocketWorker.Subscribe("additem_go", new AddItemGo<CSTMAPI>());
+
+
+
+            //Пинг
+            PingWorker = new PingWorker();
+            PingWorker.Start();
+
+
+
+            //steam
+            SteamWorker = new SteamWorker(csSteamApi);
+            SteamWorker.Start();
 		}
 
 		//Получение сообщения лога
@@ -105,6 +141,8 @@ namespace TMBot.ViewModels
 	    public void Dispose()
 	    {
 	        WebSocketWorker.Stop();
+            PingWorker.Stop();
+	        SteamWorker.Stop();
 
             TradesPage.Dispose();
             OrdersPage.Dispose();

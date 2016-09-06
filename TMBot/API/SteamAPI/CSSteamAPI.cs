@@ -38,6 +38,7 @@ namespace TMBot.API.SteamAPI
 		{
 			//TOOD: не только CS:GO
 			//TODO: нормальная обработка ошибок запросов
+
 			var response =  await http_client.GetAsync("http://steamcommunity.com/profiles/"+userid+$"/inventory/json/{cs_go_id}/2").ConfigureAwait(false);
 			string content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 			return JsonConvert.DeserializeObject<SteamInventory>(content);

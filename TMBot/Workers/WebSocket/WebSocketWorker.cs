@@ -222,7 +222,7 @@ namespace TMBot.Workers.WebSocket
         {
             if (_observers.ContainsKey(eventName))
                 foreach (var observer in _observers[eventName])
-                    observer.HandleEvebt(data);
+                    observer.HandleEvent(data);
         }
 
 

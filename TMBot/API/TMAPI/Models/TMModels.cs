@@ -31,7 +31,7 @@ namespace TMBot.API.TMAPI.Models
 		/// 3 - Ожидание передачи боту купленной вами вещи от продавца
 		/// 4 - Вы можете забрать купленную вещь
 		/// </summary>
-		public string ui_status { get; set; }
+		public int ui_status { get; set; }
 
 		public string he_name { get; set; }
 		public double ui_price { get; set; }
@@ -42,7 +42,7 @@ namespace TMBot.API.TMAPI.Models
 		public string ui_real_instance { get; set; }
 		public string i_quality { get; set; }
 		public string i_market_hash_name { get; set; }
-		public int i_market_price { get; set; }
+		public double i_market_price { get; set; }
 		public int position { get; set; }
 		public int min_price { get; set; }
 
@@ -90,7 +90,7 @@ namespace TMBot.API.TMAPI.Models
 		public bool success { get; set; }
 		public string trade { get; set; }
 		public string nick { get; set; }
-		public string botid { get; set; }
+		public int botid { get; set; }
 		public string profile { get; set; }
 		public string secret { get; set; }
 		public List<string> items { get; set; }

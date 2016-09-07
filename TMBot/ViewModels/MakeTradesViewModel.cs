@@ -96,11 +96,31 @@ namespace TMBot.ViewModels
                 var inventory = await steamApi.GetSteamInventoryAsync();
 
                 //Получаем трейды
-                IList<Trade> trades = tmApi.GetTrades();
-                if (trades == null)
+                IList<Trade> trades = tmApi.GetTrades().Where(x=>x.ui_status==1 || x.ui_status==2).ToList();
+                if (trades.Count==0)
                     throw new Exception();
 
                 InventoryItems.Clear();
+
+                /* Неообходимо определить, какие предметы выставляются, а какие - нет.
+                 * Общего ID между ТМ и стимом нет
+                 * Выставление идет по classid_instanceid, т.е. предметы в инвентаре не
+                 * различаются. 
+                 * 
+                 * Поэтому просто посчитаем, сколько предметов с разными
+                 * classid_instanceid выставляются, и столько первых предметов
+                 * в инвентаре пометим, как выставляемые */
+
+                //Подсчет количества трейдов по разным предметам
+                var tradesCount = new Dictionary<string, int>();
+                foreach (var trade in trades)
+                {
+                    string id = $"{trade.i_classid}_{trade.ui_real_instance}";
+                    if (tradesCount.ContainsKey(id))
+                        tradesCount[id]++;
+                    else
+                        tradesCount.Add(id, 1);
+                }
 
                 //Составляем список инвентаря
                 foreach (var item in inventory.rgInventory)
@@ -110,10 +130,21 @@ namespace TMBot.ViewModels
 
                     string imageUrl = "http://cdn.steamcommunity.com/economy/image/" + description.icon_url;
 
-                    
+
                     //Определяем статус предмета
                     var trade_item = trades.FirstOrDefault(x=>x.i_classid == rgItem.classid && x.ui_real_instance == rgItem.instanceid);
-                    var status = trade_item == null
+
+                    //Определяем, выставляется ли предмет
+                    //Просто основываемся на количестве таких же выставляемых предметов
+                    bool isSelling = false;
+                    string id = $"{rgItem.classid}_{rgItem.instanceid}";
+                    if (tradesCount.ContainsKey(id) && tradesCount[id]>0)
+                    {
+                        isSelling = true;
+                        tradesCount[id]--;
+                    }
+
+                    var status = (trade_item == null) || !isSelling
                         ? ItemStatus.NOT_TRADING
                         : UiStatusToStatusConverter.Convert(trade_item.ui_status);
 
@@ -129,7 +160,7 @@ namespace TMBot.ViewModels
 
                     if (status == ItemStatus.NOT_TRADING)
                     {
-                        int? _price = getPrice<TTMAPI>(rgItem.classid, rgItem.instanceid);
+                        int? _price = await getPrice<TTMAPI>(rgItem.classid, rgItem.instanceid);
 
                         if (_price != null)
                         {
@@ -237,17 +268,17 @@ namespace TMBot.ViewModels
         #endregion
 
         //Расчитывает цену предмета
-        private int? getPrice<TTMAPI>(string classid, string instanceid) where TTMAPI : ITMAPI
+        private async Task<int?> getPrice<TTMAPI>(string classid, string instanceid) where TTMAPI : ITMAPI
         {
             //Получаем цену предмета на ТМ
             int price;
-            int? _price = PriceCounter.GetMinSellPrice<TTMAPI>(classid, instanceid);
+            int? _price = await Task.Run(()=> PriceCounter.GetMinSellPrice<TTMAPI>(classid, instanceid));
 
 
             if (_price == null)
             {
                 //Товар не найден, поиск на площадке стима
-                _price = PriceCounter.GetSteamMinSellPrice(classid, instanceid);
+                _price = await Task.Run(()=>PriceCounter.GetSteamMinSellPrice(classid, instanceid));
                 if (_price != null)
                 {
                     //Товар найден на площадке стима

@@ -16,15 +16,16 @@ namespace TMBot.ViewModels
 	/// <summary>
 	/// Модель вида для страницы ордеров (покупка)
 	/// </summary>
-	public class OrdersViewModel : BaseWorkerViewModel<Order>
+	public class OrdersViewModel : BaseWorkerViewModel<Order, OrderItemViewModel>
 	{
-	    public OrdersViewModel(SynchronizedObservableCollection<TradeItemViewModel>  items)
+	    public OrdersViewModel(SynchronizedObservableCollection<ItemViewModel>  items)
 	    {
 	        Worker = new OrderWorker<CSTMAPI, CSSteamAPI>(items);
 	    }
 
 
-	    public override bool HasCountLimit => true;
+	    public override bool IsBuying => true;
+
 	    public override string PriceLimitName => "Максимальная цена";
 	}
 }

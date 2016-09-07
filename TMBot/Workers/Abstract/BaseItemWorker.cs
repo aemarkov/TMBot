@@ -54,7 +54,8 @@ namespace TMBot.Workers
     /// <typeparam name="TTMAPI">Тип АПИ для ТМ</typeparam>
     /// <typeparam name="TSteamAPI">Тип АПИ для стима</typeparam>
     /// <typeparam name="TItem">Тип модели АПИ (ордеры, трейды итп)</typeparam>
-    public abstract class BaseItemWorker<TTMAPI, TSteamAPI, TItem> : BaseWorker where TTMAPI : ITMAPI where TSteamAPI : ISteamAPI
+    /// <typeparam name="TViewModel">Тип модели вида для элемента</typeparam>
+    public abstract class BaseItemWorker<TTMAPI, TSteamAPI, TItem, TViewModel> : BaseWorker where TTMAPI : ITMAPI where TSteamAPI : ISteamAPI where TViewModel : ItemViewModel
     {
         //Апи для выполнения запросов
         protected ITMAPI tmApi;
@@ -63,9 +64,9 @@ namespace TMBot.Workers
         //Список предметов
         #region Items
         private object _itemsLock = new object();
-        private SynchronizedObservableCollection<TradeItemViewModel> _items;
+        private SynchronizedObservableCollection<ItemViewModel> _items;
 
-        public SynchronizedObservableCollection<TradeItemViewModel> Items
+        public SynchronizedObservableCollection<ItemViewModel> Items
         {
             get { return _items; }
             protected set
@@ -81,18 +82,17 @@ namespace TMBot.Workers
         /// Текущий выделенный элемент списка
         /// </summary>
         #region LastUpdateItemIndex
-        public TradeItemViewModel LastUpdateItem
+        public ItemViewModel LastUpdateItem
         {
             get { return _lastUpdatedItem; }
             set { _lastUpdatedItem = value; NotifyPropertyChanged(); }
         }
-        private TradeItemViewModel _lastUpdatedItem;
+        private ItemViewModel _lastUpdatedItem;
         #endregion
 
         /// Максимальная разница между нашей и следующей ценой, при
         /// который наша цена не меняется
         #region PriceThreshold
-
         public float PriceThreshold
         {
 
@@ -108,7 +108,7 @@ namespace TMBot.Workers
 
         #endregion
 
-        protected BaseItemWorker(SynchronizedObservableCollection<TradeItemViewModel> items )
+        protected BaseItemWorker(SynchronizedObservableCollection<ItemViewModel> items )
         {
             //_repository = new ItemsRepository();
             tmApi = TMFactory.GetInstance<TMFactory>().GetAPI<TTMAPI>();
@@ -178,10 +178,10 @@ namespace TMBot.Workers
         /// <param name="apiItem">Модель АПИ</param>
         /// <param name="repository">Репозиторий</param>
         /// <returns></returns>
-        protected TradeItemViewModel CreateTradeItem(TItem apiItem, ItemsRepository repository)
+        protected ItemViewModel CreateTradeItem(TItem apiItem, ItemsRepository repository)
         {
             //Заполняем поля
-            var item = Mapper.Map<TItem, TradeItemViewModel>(apiItem);
+            var item = Mapper.Map<TItem, TViewModel>(apiItem);
 
             item.MyPrice = GetItemMyPrice(apiItem);
 
@@ -194,12 +194,12 @@ namespace TMBot.Workers
         }
 
         //Загружает из БД или создает новую запись в БД
-        private void MapDbItem(TItem apiItem, ItemsRepository repository, TradeItemViewModel item)
+        private void MapDbItem(TItem apiItem, ItemsRepository repository, TViewModel item)
         {
             Item db_item = GetDbItem(repository, apiItem);
             if (db_item != null)
             {
-                Mapper.Map<Item, TradeItemViewModel>(db_item, item);
+                Mapper.Map<Item, TViewModel>(db_item, item);
             }
             else
             {
@@ -248,7 +248,7 @@ namespace TMBot.Workers
         }
 
 
-        private void update_price(TradeItemViewModel item)
+        private void update_price(ItemViewModel item)
         {
             try
             {
@@ -326,14 +326,14 @@ namespace TMBot.Workers
         /// <param name="item">Предмет</param>
         /// <param name="myNewPrice">Полученная цена</param>
         /// <returns>Изменилась ли цена</returns>
-        protected abstract bool GetItemNewPrice(TradeItemViewModel item, int tm_price, ref int myNewPrice);
+        protected abstract bool GetItemNewPrice(ItemViewModel item, int tm_price, ref int myNewPrice);
 
         /// <summary>
         /// Находит экстремеальную стоимость предмета на площадке
         /// </summary>
         /// <param name="item">Предмет</param>
         /// <returns>Стоимость</returns>
-        protected abstract int? GetItemTMPrice(TradeItemViewModel item);
+        protected abstract int? GetItemTMPrice(ItemViewModel item);
 
 
         /// <summary>
@@ -349,13 +349,13 @@ namespace TMBot.Workers
         /// </summary>
         /// <param name="item"></param>
         /// <returns>Продолжать выполнение</returns>
-        protected abstract bool CheckStatusAndMakeRequest(TradeItemViewModel item);
+        protected abstract bool CheckStatusAndMakeRequest(ItemViewModel item);
 
         /// <summary>
         /// Обновляет цену
         /// </summary>
         /// <param name="itemid">ID предмета</param>
         /// <param name="price">новая цена</param>
-        protected abstract void UpdatePrice(TradeItemViewModel item, int price);
+        protected abstract void UpdatePrice(ItemViewModel item, int price);
     }
 }

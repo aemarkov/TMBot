@@ -97,8 +97,8 @@ namespace TMBot.ViewModels
 
                 //Получаем трейды
                 IList<Trade> trades = tmApi.GetTrades().Where(x=>x.ui_status==1 || x.ui_status==2).ToList();
-                if (trades.Count==0)
-                    throw new Exception();
+                //if (trades.Count==0)
+                //    throw new Exception();
 
                 InventoryItems.Clear();
 
@@ -202,9 +202,9 @@ namespace TMBot.ViewModels
                 MessageBox.Show("Не удалось загрузить инвентарь: неверный API-key", "Не удалось загрузить инвентарь",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            catch (Exception)
+            catch (Exception exp)
             {
-                MessageBox.Show("Не удалось загрузить инвентарь: неизвестная ошибка", "Не удалось загрузить инвентарь",
+                MessageBox.Show($"Не удалось загрузить инвентарь: {exp.Message}", "Не удалось загрузить инвентарь",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }

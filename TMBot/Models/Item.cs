@@ -16,11 +16,14 @@ namespace TMBot.Models
         public string InstanceId { get; set; }
 
         /// <summary>
-        /// Максимальная\минимальная цена за которую не может
-        /// выходить бот при торге
+        /// Максимальная цена при покупке
         /// </summary>
-        [Required]
-        public int PriceLimit { get; set; }
+        public int MaxPrice { get; set; }
+
+        /// <summary>
+        /// Минимальная цена при продаже
+        /// </summary>
+        public int MinPrice { get; set; }
 
         /// <summary>
         /// Максимальное число предметов, которые бот

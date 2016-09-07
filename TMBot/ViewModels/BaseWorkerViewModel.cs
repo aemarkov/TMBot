@@ -12,17 +12,17 @@ namespace TMBot.ViewModels
     /// <summary>
     /// Базовая модель вида для продаж и покупок
     /// </summary>
-    public abstract class BaseWorkerViewModel<TItem> : IDisposable
+    public abstract class BaseWorkerViewModel<TItem, TViewModel> : IDisposable where TViewModel : ItemViewModel
     {
 
         //Команда запуска\остановки воркера
         public IAsyncCommand ToggleCommand { get; set; }
 
         //Воркер для изменения цен
-        public  BaseItemWorker<CSTMAPI, CSSteamAPI, TItem> Worker { get; set; }
+        public  BaseItemWorker<CSTMAPI, CSSteamAPI, TItem, TViewModel> Worker { get; set; }
 
-        //Существует ли ограничение по количеству предметов
-        public abstract bool HasCountLimit { get; }
+        //Продажи или покупки
+        public abstract bool IsBuying { get; }
 
         //Как называется столбец с ограничем по стоимости
         public abstract string PriceLimitName { get; }

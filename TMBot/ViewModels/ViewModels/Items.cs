@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TMBot.Annotations;
 using TMBot.Database;
+using TMBot.Models;
 using TMBot.Utilities;
 using TMBot.Utilities.MVVM;
 using TMBot.ViewModels.ViewModels;
@@ -99,13 +100,12 @@ namespace TMBot.ViewModels.ViewModels
     /// <summary>
     /// Представление предмета для покупки/продажия
     /// </summary>
-    public class TradeItemViewModel : AbstractItemViewModel
+    public abstract class ItemViewModel : AbstractItemViewModel
     {
         private string _itemId;
         private int _tmPrice;
         private int _myPrice;
         private int _priceLimit;
-        private int? _countLimit;
         private string _botId;
 
         public string BotId { get { return _botId;} set { _botId = value; NotifyPropertyChanged(); } }
@@ -130,6 +130,46 @@ namespace TMBot.ViewModels.ViewModels
             }
         }
 
+       
+        //Сохраняет изменения этой модели в репозитории
+        /* Не знаю, насколько это вообще кошерно - обновлять
+         * модель из модели вида, потому что неизвестно, в общем случае,
+         * из чего сделана эта модель вида, может она не имеет отношения
+         * к Item */
+        protected void _save()
+        {
+            var repository = new ItemsRepository();
+            var dto_model = repository.GetById(ClassId, IntanceId);
+
+            if(dto_model==null)
+                return;
+
+            //dto_model.PriceLimit = PriceLimit;
+            //dto_model.CountLimit = CountLimit;
+            mapData(dto_model);
+
+            repository.Update(dto_model);
+        }
+
+        protected abstract void mapData(Item dtoModel);
+    }
+
+    /// <summary>
+    /// Модель вида для продаж
+    /// </summary>
+    public class TradeItemViewModel:ItemViewModel
+    {
+        protected override void mapData(Item dtoModel)
+        {
+            dtoModel.MinPrice = PriceLimit;
+        }
+    }
+
+    /// <summary>
+    /// Модель вида для покупок
+    /// </summary>
+    public class OrderItemViewModel : ItemViewModel
+    {
         /// <summary>
         /// Ограничение по количеству (для покупки)
         /// </summary>
@@ -138,7 +178,7 @@ namespace TMBot.ViewModels.ViewModels
             get { return _countLimit; }
             set
             {
-                if(CountLimit == value) return;
+                if (CountLimit == value) return;
 
                 _countLimit = value;
                 NotifyPropertyChanged();
@@ -147,22 +187,12 @@ namespace TMBot.ViewModels.ViewModels
             }
         }
 
-        //Сохраняет изменения этой модели в репозитории
-        /* Не знаю, насколько это вообще кошерно - обновлять
-         * модель из модели вида, потому что неизвестно, в общем случае,
-         * из чего сделана эта модель вида, может она не имеет отношения
-         * к Item */
-        private void _save()
+        private int? _countLimit;
+
+        protected override void mapData(Item dtoModel)
         {
-            var repository = new ItemsRepository();
-            var dto_model = repository.GetById(ClassId, IntanceId);
-
-            if(dto_model==null)
-                return;
-
-            dto_model.PriceLimit = PriceLimit;
-            dto_model.CountLimit = CountLimit;
-            repository.Update(dto_model);
+            dtoModel.MaxPrice = PriceLimit;
+            dtoModel.CountLimit = CountLimit;
         }
     }
 

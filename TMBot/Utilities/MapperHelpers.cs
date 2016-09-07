@@ -15,34 +15,16 @@ namespace TMBot.Utilities
         {
             Mapper.Initialize(cfg =>
             {
-                //MapTradeToTradeItemViewModel(cfg);
                 cfg.CreateMap<Trade, TradeItemViewModel>().ConvertUsing<TradeToTradeItemViewModelConverter>();
-                cfg.CreateMap<Order, TradeItemViewModel>().ConvertUsing<OrderToTradeItemViewModelConverter>();
+                cfg.CreateMap<Order, OrderItemViewModel>().ConvertUsing<OrderToOrderItemViewModelConverter>();
                 //MapOrderToTradeItemViewModel(cfg);
-                cfg.CreateMap<Item, TradeItemViewModel>();
+                cfg.CreateMap<Item, TradeItemViewModel>()
+                    .ForMember(o => o.PriceLimit, m => m.MapFrom(x => x.MinPrice));
+                cfg.CreateMap<Item, OrderItemViewModel>()
+                    .ForMember(o => o.PriceLimit, m => m.MapFrom(x => x.MaxPrice));
             });
         }
 
-
-        private static void MapTradeToTradeItemViewModel(IMapperConfigurationExpression cfg)
-        {
-            var map = cfg.CreateMap<Trade, TradeItemViewModel>();
-            map.ForMember(d => d.ItemId, o => o.MapFrom(s => s.ui_id));
-            map.ForMember(d => d.IntanceId, o => o.MapFrom(s => s.ui_real_instance));
-            map.ForMember(d => d.ClassId, o => o.MapFrom(s => s.i_classid));
-            map.ForMember(d => d.Name, o => o.MapFrom(s => s.i_name));
-            map.ForMember(d => d.MyPrice, o => o.MapFrom(s => s.ui_price));
-            //map.ForMember(d=>d.Status, o=>o.MapFrom(s=>s.ui_status)).ConvertUsing<StatusTypeConverter>();
-        }
-
-        private static void MapOrderToTradeItemViewModel(IMapperConfigurationExpression cfg)
-        {
-            var map = cfg.CreateMap<Order, TradeItemViewModel>();
-            map.ForMember(d => d.IntanceId, o => o.MapFrom(s => s.i_instanceid));
-            map.ForMember(d => d.ClassId, o => o.MapFrom(s => s.i_classid));
-            map.ForMember(d => d.Name, o => o.MapFrom(s => s.i_market_name));
-            map.ForMember(d => d.MyPrice, o => o.MapFrom(s => s.o_price));
-        }
     }
 
     class TradeToTradeItemViewModelConverter : ITypeConverter<Trade, TradeItemViewModel>
@@ -63,11 +45,11 @@ namespace TMBot.Utilities
         }
     }
 
-    class OrderToTradeItemViewModelConverter : ITypeConverter<Order, TradeItemViewModel>
+    class OrderToOrderItemViewModelConverter : ITypeConverter<Order, OrderItemViewModel>
     {
-        public TradeItemViewModel Convert(Order source, TradeItemViewModel destination, ResolutionContext context)
+        public OrderItemViewModel Convert(Order source, OrderItemViewModel destination, ResolutionContext context)
         {
-            var dest = new TradeItemViewModel();
+            var dest = new OrderItemViewModel();
 
             dest.IntanceId = source.i_instanceid;
             dest.ClassId = source.i_classid;
@@ -77,5 +59,10 @@ namespace TMBot.Utilities
 
             return dest;
         }
+    }
+
+    class ItemToTradeItemViewModelConverter
+    {
+        
     }
 }

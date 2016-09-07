@@ -92,8 +92,7 @@
                     <DataGridTemplateColumn Header="Название"  IsReadOnly="True" CellStyle="{StaticResource ItemNameCell}"/>
                     <DataGridTextColumn Header="Цена ТМ" IsReadOnly="True" Binding="{Binding TMPrice, Converter={StaticResource KopekToRubleConverter}}"/>
                     <DataGridTextColumn Header="Моя цена" IsReadOnly="True" Binding="{Binding MyPrice, Converter={StaticResource KopekToRubleConverter}}"/>
-                    <!--<DataGridTextColumn Header="Минимальная цена" 
-                                        Binding="{Binding PriceLimit, Converter={StaticResource KopekToRubleConverter}, ValidationRules={StaticResource DecimalValidator}}"/>-->
+                    
                     <DataGridTextColumn>
                         <DataGridTextColumn.HeaderTemplate>
                             <DataTemplate>
@@ -109,12 +108,8 @@
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
                     
-                    <!--<DataGridTextColumn Header="Максимальное количество"
-                                        Binding="{Binding CountLimit, Converter={StaticResource CountConverter}}"/>-->
 
-                    <DataGridTextColumn Header="Максимальное количество"
-                                        Visibility="{Binding DataContext.Vis, RelativeSource={RelativeSource AncestorType=DataGrid}}">
-
+                    <DataGridTextColumn Header="Максимальное количество">
                         <DataGridTextColumn.Binding>
                             <Binding Path="CountLimit" Converter="{StaticResource CountConverter}">
                                 <Binding.ValidationRules>

@@ -28,9 +28,9 @@ namespace TMBot.Workers
     /// </summary>
     /// <typeparam name="TTMAPI"></typeparam>
     /// <typeparam name="TSteamAPI"></typeparam>
-    public class OrderWorker<TTMAPI, TSteamAPI> : BaseItemWorker<TTMAPI, TSteamAPI, Order> where TTMAPI : ITMAPI where TSteamAPI : ISteamAPI
+    public class OrderWorker<TTMAPI, TSteamAPI> : BaseItemWorker<TTMAPI, TSteamAPI, Order, OrderItemViewModel> where TTMAPI : ITMAPI where TSteamAPI : ISteamAPI
     {
-        public OrderWorker(SynchronizedObservableCollection<TradeItemViewModel>  items):base(items)
+        public OrderWorker(SynchronizedObservableCollection<ItemViewModel>  items):base(items)
 	    {
             var settings = SettingsManager.LoadSettings();
             PriceThreshold = settings.OrderMinThreshold;
@@ -88,7 +88,7 @@ namespace TMBot.Workers
         }
 
         //Создает модель из модели ТРЕЙДА
-        private TradeItemViewModel CreateTradeOrderItem(Trade trade, ItemsRepository repository)
+        private ItemViewModel CreateTradeOrderItem(Trade trade, ItemsRepository repository)
         {
             //Пиздец говнокод, копипаст дохуищи из BaseItemWorker + SellWorker 
             var item = Mapper.Map<Trade, TradeItemViewModel>(trade);
@@ -119,7 +119,7 @@ namespace TMBot.Workers
     
 
         //Расчет новой цены
-        protected override bool GetItemNewPrice(TradeItemViewModel item, int tm_price, ref int myNewPrice)
+        protected override bool GetItemNewPrice(ItemViewModel item, int tm_price, ref int myNewPrice)
         {
             /* Если максимальная цена больше текущей, то увеличиваем на 1 коп
              * нашу цену. 
@@ -146,7 +146,7 @@ namespace TMBot.Workers
         }
 
         //Получение минимальной цены на площадке
-        protected override int? GetItemTMPrice(TradeItemViewModel item)
+        protected override int? GetItemTMPrice(ItemViewModel item)
         {
             //Если ограничение по макс. цене 0 - то даже не ищем такие предметы
             if (item.PriceLimit == 0)
@@ -224,7 +224,7 @@ namespace TMBot.Workers
         }
 
         //Обработка статуса
-        protected override bool CheckStatusAndMakeRequest(TradeItemViewModel item)
+        protected override bool CheckStatusAndMakeRequest(ItemViewModel item)
         {
             if (item.Status != ItemStatus.ORDERING && item.Status != ItemStatus.BOUGHT_TAKE)
                 return false;
@@ -255,7 +255,7 @@ namespace TMBot.Workers
         /// </summary>
         /// <param name="itemid">ID предмета</param>
         /// <param name="price">новая цена</param>
-        protected override void UpdatePrice(TradeItemViewModel item, int price)
+        protected override void UpdatePrice(ItemViewModel item, int price)
         {
             tmApi.UpdateOrder(item.ClassId, item.IntanceId, price);
         }

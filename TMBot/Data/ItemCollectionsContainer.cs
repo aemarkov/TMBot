@@ -51,8 +51,8 @@ namespace TMBot.Data
                 throw new ArgumentException("This list is already created");
 
             TradePlatformConainer container = new TradePlatformConainer();
-            container.Trades = new SynchronizedObservableCollection<TradeItemViewModel>();
-            container.Orders = new SynchronizedObservableCollection<TradeItemViewModel>();
+            container.Trades = new SynchronizedObservableCollection<ItemViewModel>();
+            container.Orders = new SynchronizedObservableCollection<ItemViewModel>();
             Platforms.Add(platform, container);
         }
 
@@ -74,7 +74,7 @@ namespace TMBot.Data
         /// </summary>
         /// <param name="itemId"></param>
         /// <returns></returns>
-        public TradeItemViewModel FindTradeItem(string itemId)
+        public ItemViewModel FindTradeItem(string itemId)
         {
             return Platforms.Select(platform => platform.Value.Trades.FirstOrDefault(x => x.ItemId == itemId)).FirstOrDefault(item => item != null);
         }
@@ -85,9 +85,9 @@ namespace TMBot.Data
         /// <param name="classid"></param>
         /// <param name="instanceid"></param>
         /// <returns>Список подходящих предметов</returns>
-        public IEnumerable<TradeItemViewModel> FindTradeItems(string classid, string instanceid)
+        public IEnumerable<ItemViewModel> FindTradeItems(string classid, string instanceid)
         {
-            return Platforms.Aggregate((IEnumerable<TradeItemViewModel>)new List<TradeItemViewModel>(), (list, item) => 
+            return Platforms.Aggregate((IEnumerable<ItemViewModel>)new List<ItemViewModel>(), (list, item) => 
                         list.Concat(item.Value.Trades.Where(y => y.ClassId == classid && y.IntanceId == instanceid)));
         }
 
@@ -97,12 +97,12 @@ namespace TMBot.Data
         /// <param name="classid"></param>
         /// <param name="instanceid"></param>
         /// <returns></returns>
-        public TradeItemViewModel FindOrderItem(string classid, string instanceid)
+        public ItemViewModel FindOrderItem(string classid, string instanceid)
         {
             return Platforms.Select(platform => platform.Value.Orders.FirstOrDefault(x => x.ClassId == classid && x.IntanceId==instanceid)).FirstOrDefault(item => item != null);
         }
 
-        public TradeItemViewModel FindOrderItem(string itemId)
+        public ItemViewModel FindOrderItem(string itemId)
         {
             return Platforms.Select(platform => platform.Value.Orders.FirstOrDefault(x => x.ItemId == itemId)).FirstOrDefault(item => item != null);
         }
@@ -112,7 +112,7 @@ namespace TMBot.Data
         /// Находит и удаляет предмет среди ордеров и трейдов
         /// </summary>
         /// <param name="item"></param>
-        public void RemoveItem(TradeItemViewModel item)
+        public void RemoveItem(ItemViewModel item)
         {
             foreach (var platform in Platforms)
             {
@@ -148,7 +148,7 @@ namespace TMBot.Data
     /// </summary>
     public class TradePlatformConainer
     {
-        public SynchronizedObservableCollection<TradeItemViewModel> Trades { get; set; }
-        public SynchronizedObservableCollection<TradeItemViewModel> Orders { get; set; } 
+        public SynchronizedObservableCollection<ItemViewModel> Trades { get; set; }
+        public SynchronizedObservableCollection<ItemViewModel> Orders { get; set; } 
     }
 }

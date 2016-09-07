@@ -30,10 +30,10 @@ namespace TMBot.Workers
 	/// предметов в фоне
 	/// </summary>
 	/// <typeparam name="TTMAPI">Класс АПИ площадки</typeparam>
-	public class SellWorker<TTMAPI,TSteamAPI> : BaseItemWorker<TTMAPI, TSteamAPI, Trade> where TTMAPI : ITMAPI where TSteamAPI : ISteamAPI
+	public class SellWorker<TTMAPI,TSteamAPI> : BaseItemWorker<TTMAPI, TSteamAPI, Trade, TradeItemViewModel> where TTMAPI : ITMAPI where TSteamAPI : ISteamAPI
     {
 
-	    public SellWorker(SynchronizedObservableCollection<TradeItemViewModel> items) : base(items)
+	    public SellWorker(SynchronizedObservableCollection<ItemViewModel> items) : base(items)
         {
             //Загрузка порога цены
 	        var settings = SettingsManager.LoadSettings();
@@ -69,7 +69,7 @@ namespace TMBot.Workers
 	    }
 
         //Расчитываем новую стоимость
-        protected override bool GetItemNewPrice(TradeItemViewModel item, int tm_price, ref int myNewPrice)
+        protected override bool GetItemNewPrice(ItemViewModel item, int tm_price, ref int myNewPrice)
         {
             /* Если минимальная цена меньше текущей - делаем нашу меньше минимальной на 
              * 1 коп.
@@ -89,7 +89,7 @@ namespace TMBot.Workers
         }
 
         //Расчитывает миимальную цену на TM
-        protected override int? GetItemTMPrice(TradeItemViewModel item)
+        protected override int? GetItemTMPrice(ItemViewModel item)
         {
             return PriceCounter.GetMinSellPrice<TTMAPI>(item.ClassId, item.IntanceId, item.PriceLimit);
         }
@@ -141,7 +141,7 @@ namespace TMBot.Workers
         }
 
         //Обработка статуса
-        protected override bool CheckStatusAndMakeRequest(TradeItemViewModel item)
+        protected override bool CheckStatusAndMakeRequest(ItemViewModel item)
         {
             {
                 //Если предмет уже в состоянии продажи - не меняем его цену
@@ -185,7 +185,7 @@ namespace TMBot.Workers
 	    /// </summary>
 	    /// <param name="itemid">ID предмета</param>
 	    /// <param name="price">новая цена</param>
-	    protected override void UpdatePrice(TradeItemViewModel item, int price)
+	    protected override void UpdatePrice(ItemViewModel item, int price)
 	    {
             tmApi.SetPrice(item.ItemId, price);
         }

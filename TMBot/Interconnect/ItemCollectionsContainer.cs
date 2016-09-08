@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TMBot.API.Factory;
+using TMBot.Data;
 using TMBot.ViewModels.ViewModels;
 
-namespace TMBot.Data
+namespace TMBot.Interconnect
 {
     /// <summary>
     /// Хранит и предоставляет доступ к 

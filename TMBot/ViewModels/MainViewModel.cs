@@ -12,6 +12,7 @@ using TMBot.API.SteamAPI;
 using TMBot.API.TMAPI;
 using TMBot.API.TMWebSockAPI;
 using TMBot.Data;
+using TMBot.Interconnect;
 using TMBot.Settings;
 using TMBot.Utilities;
 using TMBot.Utilities.MVVM;

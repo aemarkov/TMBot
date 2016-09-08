@@ -1,11 +1,9 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using AutoMapper.QueryableExtensions.Impl;
 using TMBot.API.TMAPI.Models;
 
-namespace TMBot.Data
+namespace TMBot.Interconnect
 {
     /// <summary>
     /// Реализует взаимодействие между мониторингом 

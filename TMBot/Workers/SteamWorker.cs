@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using TMBot.API.SteamAPI;
 using TMBot.Data;
+using TMBot.Interconnect;
 using TMBot.Models.Steam;
 using TMBot.Settings;
 using TMBot.Utilities;

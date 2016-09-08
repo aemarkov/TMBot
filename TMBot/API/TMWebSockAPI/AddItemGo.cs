@@ -5,6 +5,7 @@ using TMBot.API.Factory;
 using TMBot.API.TMAPI;
 using TMBot.API.TMAPI.Models;
 using TMBot.Data;
+using TMBot.Interconnect;
 using TMBot.Utilities;
 using TMBot.Workers.WebSocket;
 
